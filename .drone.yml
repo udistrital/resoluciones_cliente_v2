@@ -10,7 +10,8 @@ steps:
     branch:
     - develop
     - feature/*
-    - release
+    - hotfix/*
+    - release/*
     event:
     - push
 
@@ -22,22 +23,24 @@ steps:
     branch:
     - develop
     - feature/*
-    - release
+    - hotfix/*
+    - release/*
     event:
     - push
 
-#- name: check_commits
-#  image: jjvargass/qa_develoment:latest
-#  failure: ignore
-#  commands:
-#  - python /app/check_commits.py
-#  when:
-#    branch:
-#    - develop
-#    - feature/*
-#    - release/*
-#    event:
-#    - push
+- name: check_commits
+  image: jjvargass/qa_develoment:latest
+  failure: ignore
+  commands:
+  - python /app/check_commits.py
+  when:
+    branch:
+    - develop
+    - feature/*
+    - hotfix/*
+    - release/*
+    event:
+    - push
 
 # - name: prueba_unitarias
 #   image: node:14.15.2
@@ -68,7 +71,7 @@ steps:
     branch:
     - develop
     - feature/*
-    - release
+    - release/*
     event:
     - push
 
@@ -80,7 +83,7 @@ steps:
   - npm run build:test
   when:
     branch:
-    - release
+    - release/*
     event:
     - push
 
@@ -155,7 +158,7 @@ steps:
   when:
     branch:
     - develop
-    - release
+    - release/*
     - master
     event:
     - push
