@@ -7,8 +7,9 @@ import { PagesComponent } from './pages.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestManager } from './services/requestManager';
 
-import {MatRadioModule} from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
@@ -31,15 +32,20 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { UtilService } from './services/utilService';
 import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
+import { PlantillasComponent } from './plantillas/plantillas.component';
+import { FormDetalleResolucionComponent } from './form-detalle-resolucion/form-detalle-resolucion.component';
 
 
 const pagesComponents = [
+  FormDetalleResolucionComponent,
+  PlantillasComponent,
   DashboardComponent,
   PagesComponent,
 ];
 
 const materialModules = [
   MatCardModule,
+  MatTabsModule,
   MatListModule,
   MatIconModule,
   MatInputModule,
