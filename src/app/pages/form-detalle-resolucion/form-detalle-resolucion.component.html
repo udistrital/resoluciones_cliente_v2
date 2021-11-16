@@ -1,0 +1,33 @@
+<form novalidate >
+    <mat-grid-list cols="2">
+        <mat-grid-tile>
+            <div class="section">
+                <h2 class="section-title">Formato de la Resolución</h2>
+            </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <div class="section">
+                <h2 class="section-title">Artículos</h2>
+                <mat-expansion-panel *ngFor="let articulo of articulos; let i=index">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Artículo {{i + 1}}</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-form-field style="width: 100%">
+                        <mat-label>Texto:</mat-label>
+                        <textarea matInput cols="20" rows="5"></textarea>
+                    </mat-form-field>
+                              
+                    
+                    <button mat-button class="button button-remove" type="button" (click)="eliminarArticulo(i)">Eliminar artículo</button>
+                    <button mat-button class="button button-add" type="button" (click)="agregarParagrafo()">Agregar parágrafo</button>
+                </mat-expansion-panel>
+                <button mat-button class="button button-add" type="button" (click)="agregarArticulo()">Agregar artículo</button>
+            </div>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <h3 style="text-align: center;">Cuadro de responsabilidades</h3>
+    <ng2-smart-table [settings]="responsabilidadesSettings" [source]="responsabilidadesData"></ng2-smart-table>
+    
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()">Guardar cambios</button>
+    <button mat-button class="button button-remove" type="button" (click)="salir()">Salir</button>
+</form>
