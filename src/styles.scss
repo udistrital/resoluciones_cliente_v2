@@ -90,7 +90,7 @@ mat-label {
 }
 
 .mat-grid-tile {
-  overflow-y: auto;
+  overflow: auto !important;
 }
 
 .mat-grid-tile-content {

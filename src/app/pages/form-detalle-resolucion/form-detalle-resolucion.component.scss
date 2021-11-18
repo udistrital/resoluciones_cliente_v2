@@ -1,6 +1,6 @@
 .section {
-    width: 95%;
     text-align: center;
+    width: 95%;
 }
 
 .button {
@@ -18,4 +18,20 @@
         background-color: var(--success-base);
     }
 
+}
+
+.paragrafo {
+    text-align: right;
+}
+
+.form-field-column {
+    width: 48%;
+    padding: 0 1%;
+}
+
+@media screen and (max-width: 1024px) {
+    .form-field-column {
+        width: 100%;
+        padding: 0;
+    }
 }

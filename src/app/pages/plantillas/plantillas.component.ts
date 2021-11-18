@@ -11,6 +11,7 @@ export class PlantillasComponent implements OnInit {
   plantillasSettings: any;
   plantillasData: LocalDataSource;
   selectedTab: number = 0;
+  resolucionId: number = 0;
 
   constructor() {
     this.initTable();
@@ -19,6 +20,7 @@ export class PlantillasComponent implements OnInit {
   ngOnInit(): void {
     this.plantillasData = new LocalDataSource([
       {
+        Id: 1,
         Dedicacion: 'HCH',
         NivelAcademico: 'PREGRADO',
         Facultad: 'FACULTAD DE INGENIERIA',
@@ -27,9 +29,12 @@ export class PlantillasComponent implements OnInit {
     ]);
   }
 
-  initTable() {
+  initTable(): void {
     this.plantillasSettings = {
       columns: {
+        Id: {
+          hide: true,
+        },
         Dedicacion: {
           title: 'Dedicacion',
           width: '15%',
@@ -69,20 +74,21 @@ export class PlantillasComponent implements OnInit {
     };
   }
 
-  createPlantilla() {
+  createPlantilla(): void {
     this.setSelectedTab(1);
+    this.resolucionId = 0;
   }
 
-  editPlantilla(event: any) {
+  editPlantilla(event: any): void {
     this.setSelectedTab(1);
-    console.log(event.data)
+    this.resolucionId = event.data.Id;
   }
 
-  deletePlantilla(event: any) {
+  deletePlantilla(event: any): void {
 
   }
 
-  setSelectedTab(tab: number) {
+  setSelectedTab(tab: number): void {
     this.selectedTab = tab;
   }
 

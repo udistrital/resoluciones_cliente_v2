@@ -1,45 +1,76 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { ContenidoResolucion } from 'src/app/@core/models/contenido_resolucion';
+import { Parametro } from 'src/app/@core/models/parametro';
 
 @Component({
   selector: 'app-form-detalle-resolucion',
   templateUrl: './form-detalle-resolucion.component.html',
   styleUrls: ['./form-detalle-resolucion.component.scss'],
 })
-export class FormDetalleResolucionComponent implements OnInit {
+export class FormDetalleResolucionComponent implements OnInit, OnChanges {
 
   resolucionForm: any = {};
+  contenidoResolucion: ContenidoResolucion;
   responsabilidadesSettings: any;
   responsabilidadesData: LocalDataSource;
-  articulos: number[];
+  articulos: any[];
+  paragrafos: any[];
+  niveles: Parametro[];
+  dedicaciones: Parametro[];
+  facultades: any[];
+  tiposResoluciones: Parametro[];
+
+
+  @Input()
+  resolucionId: number;
 
   constructor() {
     this.initTable()
   }
 
   ngOnInit(): void {
-    this.articulos = [1,2,3,4]
+    this.articulos = [
+      {
+        texto: "",
+        paragrafos: [
+        ],
+      },
+      {
+        texto: "",
+        paragrafos: [
+        ],
+      }
+    ]
   }
 
-  initTable() {
+  ngOnChanges(changes: SimpleChanges): void {
+    switch (changes.resolucionId.currentValue) {
+      case 0:
+      case undefined:
+        this.contenidoResolucion = new ContenidoResolucion();
+        break;
+      default:
+        this.cargarContenidoResolucion(changes.resolucionId.currentValue);
+        break;
+    }
+  }
+
+  initTable(): void {
     this.responsabilidadesSettings = {
       columns: {
         Funcion: {
           title: "Función",
-          width: '15%',
+          width: '20%',
         },
         Nombre: {
           title: "Nombre",
-          width: '25%',
+          width: '35%',
         },
         Cargo: {
           title: "Cargo",
-          width: '25%',
+          width: '30%',
         },
-        Firma: {
-          title: 'Firma',
-          width: '20%'
-        }
       },
       actions: {
         position: 'right',
@@ -57,30 +88,43 @@ export class FormDetalleResolucionComponent implements OnInit {
       delete: {
         deleteButtonContent: '<i class="material-icons" title="Eliminar">delete</i>',
       },
+      noDataMessage: 'No hay información de responsabilidades',
     }
   }
 
-  agregarArticulo() {
-    this.articulos.push(this.articulos.length)
+  cargarContenidoResolucion(Id: number): void {
+    console.log(Id)
   }
 
-  eliminarArticulo(a: number) {
+  agregarArticulo(): void {
+    this.articulos.push({
+      texto: "",
+      paragrafos: [
+      ],
+    })
+  }
+
+  eliminarArticulo(a: number): void {
     this.articulos.splice(a, 1)
   }
 
-  agregarParagrafo() {
+  agregarParagrafo(i: number): void {
+    this.articulos[i].paragrafos.push({texto: ""})
+  }
+
+  eliminarParagrafo(i: number, j: number): void {
+    this.articulos[i].paragrafos.splice(j, 1)
+  }
+
+  guardarCambios(): void {
 
   }
 
-  eliminarParagrafo() {
-
+  generarVistaPrevia(): void {
+    
   }
 
-  guardarCambios() {
-
-  }
-
-  salir() {
+  salir(): void {
 
   }
 
