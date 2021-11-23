@@ -1,7 +1,15 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { RequestManager } from '../services/requestManager';
+import { environment } from 'src/environments/environment';
 import { ContenidoResolucion } from 'src/app/@core/models/contenido_resolucion';
 import { Parametro } from 'src/app/@core/models/parametro';
+import { NivelFormacion } from 'src/app/@core/models/nivel_formacion';
+import { Articulo } from 'src/app/@core/models/articulo';
+import { ComponenteResolucion } from 'src/app/@core/models/componente_resolucion';
+import { Resolucion } from 'src/app/@core/models/resolucion';
+import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
+import { CuadroResponsabilidades } from 'src/app/@core/models/cuadro_responsabilidades';
 
 @Component({
   selector: 'app-form-detalle-resolucion',
@@ -14,9 +22,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   contenidoResolucion: ContenidoResolucion;
   responsabilidadesSettings: any;
   responsabilidadesData: LocalDataSource;
-  articulos: any[];
-  paragrafos: any[];
-  niveles: Parametro[];
+  niveles: NivelFormacion[];
   dedicaciones: Parametro[];
   facultades: any[];
   tiposResoluciones: Parametro[];
@@ -25,23 +31,17 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   @Input()
   resolucionId: number;
 
-  constructor() {
+  @Input()
+  esPlantilla: boolean = false;
+
+  constructor(
+    private request: RequestManager,
+  ) {
     this.initTable()
   }
 
   ngOnInit(): void {
-    this.articulos = [
-      {
-        texto: "",
-        paragrafos: [
-        ],
-      },
-      {
-        texto: "",
-        paragrafos: [
-        ],
-      }
-    ]
+    this.cargarDatos()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -49,6 +49,12 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       case 0:
       case undefined:
         this.contenidoResolucion = new ContenidoResolucion();
+        this.contenidoResolucion.Articulos = new Array();
+        this.contenidoResolucion.Resolucion = new Resolucion();
+        this.contenidoResolucion.Vinculacion = new ResolucionVinculacionDocente();
+        const articulo = new Articulo();
+        articulo.Paragrafos = new Array();
+        this.contenidoResolucion.Articulos.push(articulo)
         break;
       default:
         this.cargarContenidoResolucion(changes.resolucionId.currentValue);
@@ -90,6 +96,37 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       },
       noDataMessage: 'No hay información de responsabilidades',
     }
+    this.responsabilidadesData = new LocalDataSource();
+  }
+
+  cargarDatos(): void {
+    this.request.get(
+      environment.PARAMETROS_SERVICE, 
+      `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
+    ).subscribe((response: any) => {
+      this.dedicaciones = response.Data;
+    });
+
+    this.request.get(
+      environment.PARAMETROS_SERVICE, 
+      `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
+    ).subscribe((response: any) => {
+      this.tiposResoluciones = response.Data;
+    });
+
+    this.request.get(
+      environment.OIKOS_SERVICE, 
+      `dependencia_tipo_dependencia?query=TipoDependenciaId.Id:2&limit=0`
+    ).subscribe((response: any) => {
+      this.facultades = response;
+    });
+
+    this.request.get(
+      environment.PROYECTOS_SERVICE,
+      `nivel_formacion?limit=0`
+    ).subscribe((response: NivelFormacion[]) => {
+      this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null)
+    });
   }
 
   cargarContenidoResolucion(Id: number): void {
@@ -97,27 +134,29 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   agregarArticulo(): void {
-    this.articulos.push({
-      texto: "",
-      paragrafos: [
-      ],
-    })
+    const articulo = new Articulo();
+    articulo.Paragrafos = new Array();
+    this.contenidoResolucion.Articulos.push(articulo)
   }
 
   eliminarArticulo(a: number): void {
-    this.articulos.splice(a, 1)
+    this.contenidoResolucion.Articulos.splice(a, 1)
   }
 
   agregarParagrafo(i: number): void {
-    this.articulos[i].paragrafos.push({texto: ""})
+    const paragrafo = new ComponenteResolucion()
+    this.contenidoResolucion.Articulos[i].Paragrafos.push(paragrafo)
   }
 
   eliminarParagrafo(i: number, j: number): void {
-    this.articulos[i].paragrafos.splice(j, 1)
+    this.contenidoResolucion.Articulos[i].Paragrafos.splice(j, 1)
   }
 
   guardarCambios(): void {
-
+    this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+      this.contenidoResolucion.Resolucion.CuadroResponsabilidades = data;
+      console.log(this.contenidoResolucion)
+    })
   }
 
   generarVistaPrevia(): void {

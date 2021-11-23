@@ -1,74 +1,81 @@
-<form novalidate >
+<form #form="ngForm" novalidate >
     <mat-grid-list cols="2">
         <mat-grid-tile>
             <div class="section">
                 <h2 class="section-title">Formato de la Resolución</h2>
-                <mat-form-field class="form-field-column">
+                <mat-form-field class="form-field-column" *ngIf="!esPlantilla">
                     <mat-label>Numero de resolucion</mat-label>
-                    <input matInput type="text" >
-                </mat-form-field>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Titulo de la resolución</mat-label>
-                    <input matInput type="text" >
-                    <mat-error>
-                        Indique el título de la resolución
-                    </mat-error>
+                    <input matInput type="number" name="NumeroResolucion" [(ngModel)]="contenidoResolucion.Resolucion.NumeroResolucion" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Nivel académico</mat-label>
-                    <mat-select>
+                    <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" [disabled]="!esPlantilla" #niv="ngModel">
                         <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let nivel of niveles">
+                        <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
                             {{ nivel.Nombre }}
                         </mat-option>
                     </mat-select>
-                    <mat-error>
+                    <mat-error *ngIf="niv.errors?.['required'] && niv.touched">
                         Seleccione el nivel académico 
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Dedicación</mat-label>
-                    <mat-select>
+                    <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" [disabled]="!esPlantilla" #dedic="ngModel">
                         <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let dedicacion of dedicaciones">
-                            {{ dedicacion.Nombre }}
+                        <mat-option *ngFor="let dedicacion of dedicaciones" [value]="dedicacion.CodigoAbreviacion">
+                            {{ dedicacion.CodigoAbreviacion }}
                         </mat-option>
                     </mat-select>
-                    <mat-error>
+                    <mat-error *ngIf="dedic.errors?.['required'] && dedic.touched">
                         Seleccione la dedicación 
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Facultad</mat-label>
-                    <mat-select>
+                    <mat-select name="fac" [(ngModel)]="contenidoResolucion.Vinculacion.FacultadId" [disabled]="!esPlantilla" #fac="ngModel">
                         <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let facultad of facultades">
-                            {{ facultad.Nombre }}
+                        <mat-option *ngFor="let facultad of facultades" [value]="facultad.DependenciaId.Id">
+                            {{ facultad.DependenciaId.Nombre }}
                         </mat-option>
                     </mat-select>
-                    <mat-error>
+                    <mat-error *ngIf="fac.errors?.['required'] && fac.touched">
                         Seleccione la facultad 
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Tipo de resolución</mat-label>
-                    <mat-select>
+                    <mat-select name="tr" [(ngModel)]="contenidoResolucion.Resolucion.TipoResolucionId" [disabled]="!esPlantilla" #tr="ngModel">
                         <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let tipo of tiposResoluciones">
-                            {{ facultad.Nombre }}
+                        <mat-option *ngFor="let tipo of tiposResoluciones" [value]="tipo.Id">
+                            {{ tipo.Nombre }}
                         </mat-option>
                     </mat-select>
-                    <mat-error>
-                        Seleccione la facultad 
+                    <mat-error *ngIf="tr.errors?.['required'] && tr.touched">
+                        Seleccione el tipo de resoución 
+                    </mat-error>
+                </mat-form-field>
+                <div class="form-field-column"></div>
+                <mat-form-field style="width: 100%">
+                    <mat-label>Titulo de la resolución:</mat-label>
+                    <input matInput type="text" name="Titulo" [(ngModel)]="contenidoResolucion.Resolucion.Titulo" required #titulo="ngModel">
+                    <mat-error *ngIf="titulo.errors?.['required'] && titulo.touched">
+                        Indique el título de la resolución
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field style="width: 100%">
                     <mat-label>Preambulo:</mat-label>
-                    <textarea matInput cols="20" rows="5"></textarea>
+                    <textarea matInput cols="20" rows="5" name="Preambulo" [(ngModel)]="contenidoResolucion.Resolucion.PreambuloResolucion" required #preambulo="ngModel"></textarea>
+                    <mat-error *ngIf="preambulo.errors?.['required'] && preambulo.touched">
+                        Indique el preambulo de la resolución
+                    </mat-error>
                 </mat-form-field>
                 <mat-form-field style="width: 100%">
                     <mat-label>Consideración:</mat-label>
-                    <textarea matInput cols="20" rows="5"></textarea>
+                    <textarea matInput cols="20" rows="10" name="Consideracion" [(ngModel)]="contenidoResolucion.Resolucion.ConsideracionResolucion" required #consider="ngModel"></textarea>
+                    <mat-error *ngIf="consider.errors?.['required'] && consider.touched">
+                        Indique la consideración de la resolución
+                    </mat-error>
                 </mat-form-field>
                 <button mat-button class="button button-add" type="button" (click)="generarVistaPrevia()">Vista previa de la resolución</button>
             </div>
@@ -76,18 +83,24 @@
         <mat-grid-tile>
             <div class="section">
                 <h2 class="section-title">Artículos</h2>
-                <mat-expansion-panel *ngFor="let articulo of articulos; let i=index">
+                <mat-expansion-panel *ngFor="let articulo of contenidoResolucion.Articulos; let i=index">
                     <mat-expansion-panel-header>
                         <mat-panel-title><b>Artículo {{i + 1}}</b></mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-form-field style="width: 100%">
                         <mat-label>Texto:</mat-label>
-                        <textarea matInput cols="20" rows="5"></textarea>
+                        <textarea matInput name="Articulo{{i + 1}}" [(ngModel)]="articulo.Texto" cols="20" rows="5" required></textarea>
+                        <mat-error>
+                            No se admiten artículos vacíos
+                        </mat-error>
                     </mat-form-field>
-                    <div class="paragrafo" *ngFor="let paragrafo of articulo.paragrafos; let j=index" >
+                    <div class="paragrafo" *ngFor="let paragrafo of articulo.Paragrafos; let j=index" >
                         <mat-form-field style="width: 90%">
                             <mat-label>Paragrafo {{j + 1}}:</mat-label>
-                            <textarea matInput cols="20" rows="3"></textarea>
+                            <textarea matInput name="Paragrafo{{j + 1}}" [(ngModel)]="paragrafo.Texto" cols="20" rows="3" required></textarea>
+                            <mat-error>
+                                No se admiten parágrafos vacíos
+                            </mat-error>
                         </mat-form-field>
                         <button mat-button class="button button-remove" type="button" (click)="eliminarParagrafo(i, j)">Eliminar parágrafo</button>
                     </div>
