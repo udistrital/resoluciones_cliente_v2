@@ -17,6 +17,11 @@
     &.button-submit {
         background-color: var(--success-base);
     }
+    &.button-submit:disabled,
+    &.button-submit[disabled] {
+        background-color: var(--success-accent);
+        color: #999;
+    }
 
 }
 

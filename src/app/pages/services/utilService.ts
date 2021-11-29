@@ -9,6 +9,33 @@ export class UtilService {
 
     constructor() { }
 
+    confirm(titulo: string, texto: string, option: string): Promise<any> {
+        return Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: 'question',
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: `${option === 'update' ? 'Actualizar' : option === 'create' ? 'Crear': 'Eliminar'}`,
+        });
+    }
+
+    success(texto: string) {
+        Swal.fire({
+            title: 'Exito!',
+            text: texto,
+            icon: 'success',
+        });
+    }
+
+    error(texto: string) {
+        Swal.fire({
+            title: 'Error',
+            text: texto,
+            icon: 'error',
+        });
+    }
+
     submitAlert({ option, type, fn, data, info, fnReturn }) {
         Swal.fire({
             title: `Se ${option === 'update' ? 'actualizará' : 'creará'} ${type}`,

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { environment } from 'src/environments/environment';
+import { RequestManager } from '../services/requestManager';
+import { UtilService } from '../services/utilService';
 
 @Component({
   selector: 'app-plantillas',
@@ -13,20 +16,20 @@ export class PlantillasComponent implements OnInit {
   selectedTab: number = 0;
   resolucionId: number = 0;
 
-  constructor() {
+  constructor(
+    private request: RequestManager,
+    private popUp: UtilService,
+  ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.plantillasData = new LocalDataSource([
-      {
-        Id: 1,
-        Dedicacion: 'HCH',
-        NivelAcademico: 'PREGRADO',
-        Facultad: 'FACULTAD DE INGENIERIA',
-        TipoResolucion: 'Vinculación'
-      },
-    ]);
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_plantillas`
+    ).subscribe((response: any) => {
+      this.plantillasData = new LocalDataSource(response.Data);
+    });
   }
 
   initTable(): void {
@@ -85,7 +88,24 @@ export class PlantillasComponent implements OnInit {
   }
 
   deletePlantilla(event: any): void {
-
+    this.popUp.confirm(
+      'Eliminar plantilla',
+      '¿Esta seguro que desea eliminar esta plantilla?',
+      'delete'
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.request.delete(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_plantillas`,
+          event.data.Id
+        ).subscribe((response: any) => {
+          if (response.Status) {
+            this.popUp.success('La plantilla se ha eliminado con éxito');
+            this.ngOnInit()
+          }
+        });
+      }
+    });
   }
 
   setSelectedTab(tab: number): void {

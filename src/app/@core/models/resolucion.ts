@@ -15,7 +15,7 @@ export class Resolucion {
     DependenciaFirmaId: number;
     VigenciaCarga: number;
     PeriodoCarga: number;
-    CuadroResponsabilidades: CuadroResponsabilidades;
+    CuadroResponsabilidades: string;
     NuxeoUid: string;
     Activo: Boolean;
     FechaCreacion: string;

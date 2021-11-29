@@ -1,4 +1,4 @@
-<form #form="ngForm" novalidate >
+<form #fform="ngForm" novalidate >
     <mat-grid-list cols="2">
         <mat-grid-tile>
             <div class="section">
@@ -9,7 +9,7 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Nivel académico</mat-label>
-                    <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" [disabled]="!esPlantilla" #niv="ngModel">
+                    <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" [disabled]="!esPlantilla || edicion" #niv="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
                             {{ nivel.Nombre }}
@@ -21,7 +21,7 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Dedicación</mat-label>
-                    <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" [disabled]="!esPlantilla" #dedic="ngModel">
+                    <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" [disabled]="!esPlantilla || edicion" #dedic="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let dedicacion of dedicaciones" [value]="dedicacion.CodigoAbreviacion">
                             {{ dedicacion.CodigoAbreviacion }}
@@ -33,7 +33,7 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Facultad</mat-label>
-                    <mat-select name="fac" [(ngModel)]="contenidoResolucion.Vinculacion.FacultadId" [disabled]="!esPlantilla" #fac="ngModel">
+                    <mat-select name="fac" [(ngModel)]="contenidoResolucion.Vinculacion.FacultadId" [disabled]="!esPlantilla || edicion" #fac="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let facultad of facultades" [value]="facultad.DependenciaId.Id">
                             {{ facultad.DependenciaId.Nombre }}
@@ -45,7 +45,7 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Tipo de resolución</mat-label>
-                    <mat-select name="tr" [(ngModel)]="contenidoResolucion.Resolucion.TipoResolucionId" [disabled]="!esPlantilla" #tr="ngModel">
+                    <mat-select name="tr" [(ngModel)]="contenidoResolucion.Resolucion.TipoResolucionId" [disabled]="!esPlantilla || edicion" #tr="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let tipo of tiposResoluciones" [value]="tipo.Id">
                             {{ tipo.Nombre }}
@@ -89,7 +89,7 @@
                     </mat-expansion-panel-header>
                     <mat-form-field style="width: 100%">
                         <mat-label>Texto:</mat-label>
-                        <textarea matInput name="Articulo{{i + 1}}" [(ngModel)]="articulo.Texto" cols="20" rows="5" required></textarea>
+                        <textarea matInput name="Articulo{{i + 1}}" [(ngModel)]="articulo.Articulo.Texto" cols="20" rows="5" required></textarea>
                         <mat-error>
                             No se admiten artículos vacíos
                         </mat-error>
@@ -118,6 +118,6 @@
     <h3 style="text-align: center;">Cuadro de responsabilidades</h3>
     <ng2-smart-table [settings]="responsabilidadesSettings" [source]="responsabilidadesData"></ng2-smart-table>
     
-    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()">Guardar cambios</button>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!fform.valid" >Guardar cambios</button>
     <button mat-button class="button button-remove" type="button" (click)="salir()">Salir</button>
 </form>
