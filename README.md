@@ -30,7 +30,7 @@ npx npm install
 or
 npm install
 # start server
-npx ng serve
+npx run start
 # Whenever you want to change the port just run
 npx ng dev --port = 9528
 ```
