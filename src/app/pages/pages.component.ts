@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { RouteConfigLoadEnd, RouteConfigLoadStart, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
 import { RequestManager } from './services/requestManager';
 import { UserService } from './services/userService';
 import { DatosIdentificacion } from '../@core/models/datos_identificacion';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pages',
@@ -20,9 +20,11 @@ export class PagesComponent implements OnInit {
   loadingRouter: boolean;
   terceroName: string = '';
  
-
-  constructor(    private router: Router, private userService:UserService,
-    private request: RequestManager ) {
+  constructor(
+    private router: Router,
+    private userService:UserService,
+    private request: RequestManager
+  ) {
     this.environment = environment;
     router.events.subscribe((event) => {
       if (event instanceof RouteConfigLoadStart) {
@@ -44,6 +46,7 @@ export class PagesComponent implements OnInit {
       }
     });
   }
+
   ngOnInit(): void {
     this.loaded = true;
 
@@ -56,6 +59,7 @@ export class PagesComponent implements OnInit {
           this.userService.updateTercero(tercero);
         })
       }
-    })
+    });
+   
   }
 }

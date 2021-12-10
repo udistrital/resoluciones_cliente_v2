@@ -1,0 +1,30 @@
+<mat-card style="width: 99%">
+    <mat-card-title class="plantillas-title"><h1>Módulo de plantillas</h1></mat-card-title>
+    <mat-card-content>
+        <mat-tab-group mat-stretch-tabs 
+            [selectedIndex]="selectedTab"
+            (selectedIndexChange)="setSelectedTab($event)"    
+        >
+            <mat-tab label="Lista">
+                <div class="inner-container">
+                    <ng2-smart-table 
+                        [settings]="plantillasSettings" 
+                        [source]="plantillasData"
+                        (create)="createPlantilla()"
+                        (edit)="editPlantilla($event)"
+                        (delete)="deletePlantilla($event)"
+                    ></ng2-smart-table>
+                </div>
+            </mat-tab>
+            <mat-tab label="Detalle">
+                <div class="bigger-container">
+                    <app-form-detalle-resolucion 
+                        [resolucionId]="resolucionId" 
+                        [esPlantilla]="true"
+                        (volver)="setSelectedTab(0)"
+                    ></app-form-detalle-resolucion>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </mat-card-content>
+</mat-card>
