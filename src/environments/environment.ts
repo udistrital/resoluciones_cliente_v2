@@ -10,6 +10,8 @@ export const environment = {
   menuApps: false,
   appname: 'resoluciones',
   appMenu: 'resoluciones',
+  RESOLUCIONES_V2_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/resoluciones_docentes_crud/v2/',
+  RESOLUCIONES_MID_V2_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/resoluciones_docentes_mid/v2/', 
   GESTOR_DOCUMENTAL_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/gestor_documental_mid/v1/',
   OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v1/',
   PARAMETROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/parametros/v1/',
@@ -20,7 +22,7 @@ export const environment = {
   NOTIFICACION_SERVICE: 'wss://pruebasapi.portaloas.udistrital.edu.co:8116/ws',
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
-    CLIENTE_ID: 'e36v1MPQk2jbz9KM4SmKhk8Cyw0a',
+    CLIENTE_ID: 'P4QbKSCNEK1TTB2BmGDMV6iPzNAa',
     RESPONSE_TYPE: 'id_token token',
     SCOPE: 'openid email',
     REDIRECT_URL: 'http://localhost:4200/',
