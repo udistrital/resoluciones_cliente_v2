@@ -1,0 +1,42 @@
+.section {
+    text-align: center;
+    width: 95%;
+}
+
+.button {
+    margin-top: 5px;
+    width: 50%;
+    color: #fff;
+
+    &.button-add {
+        background-color: var(--others-main);
+    }
+    &.button-remove {
+        background-color: var(--danger-main);
+    }
+    &.button-submit {
+        background-color: var(--success-base);
+    }
+    &.button-submit:disabled,
+    &.button-submit[disabled] {
+        background-color: var(--success-accent);
+        color: #999;
+    }
+
+}
+
+.paragrafo {
+    text-align: right;
+}
+
+.form-field-column {
+    width: 48%;
+    padding: 0 1%;
+}
+
+@media screen and (max-width: 1024px) {
+    .form-field-column {
+        width: 100%;
+        padding: 0;
+    }
+}
