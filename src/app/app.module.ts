@@ -25,6 +25,5 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }  ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
   bootstrap: [AppComponent],
-  
 })
 export class AppModule { }

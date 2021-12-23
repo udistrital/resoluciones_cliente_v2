@@ -13,8 +13,8 @@ export class PlantillasComponent implements OnInit {
 
   plantillasSettings: any;
   plantillasData: LocalDataSource;
-  selectedTab: number = 0;
-  resolucionId: number = 0;
+  selectedTab = 0;
+  resolucionId = 0;
 
   constructor(
     private request: RequestManager,
@@ -62,7 +62,7 @@ export class PlantillasComponent implements OnInit {
       mode: 'external',
       actions: {
         position: 'right',
-        columnTitle: "Acciones",
+        columnTitle: 'Acciones',
       },
       add: {
         addButtonContent: '<i class="material-icons title="Agregar">add_circle_outline</i>',
@@ -101,7 +101,7 @@ export class PlantillasComponent implements OnInit {
         ).subscribe((response: any) => {
           if (response.Status) {
             this.popUp.success('La plantilla se ha eliminado con éxito');
-            this.ngOnInit()
+            this.ngOnInit();
           }
         });
       }

@@ -1,4 +1,4 @@
-import { ComponenteResolucion } from "./componente_resolucion";
+import { ComponenteResolucion } from './componente_resolucion';
 
 export class Articulo {
     Articulo: ComponenteResolucion;

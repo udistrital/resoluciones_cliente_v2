@@ -16,18 +16,18 @@ export class AppComponent implements OnInit {
   title = 'resoluciones-cliente-v2';
   constructor(
     private router: Router,
-    private userService: UserService 
+    private userService: UserService,
   ) {
-      this.router.events.subscribe(event => {
-         if(event instanceof NavigationEnd){
-           gtag('config', 'G-RBY2GQV40M', 
-                   {
-                     'page_path': event.urlAfterRedirects
-                   }
-                  );
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        gtag('config', 'G-RBY2GQV40M',
+          {
+            page_path: event.urlAfterRedirects
           }
-       }
-    )
+        );
+      }
+    }
+    );
   }
 
   ngOnInit(): void {
@@ -42,8 +42,7 @@ export class AppComponent implements OnInit {
 
     oas.addEventListener('option', (event: any) => {
       if (event.detail) {
-        setTimeout(()=>(this.router.navigate([event.detail.Url])),50 )
-        ;
+        setTimeout(() => (this.router.navigate([event.detail.Url])), 50);
       }
     });
 

@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, OnInit } from '@angular/core';
 import { MatGridList } from '@angular/material/grid-list';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -13,7 +13,7 @@ export interface GridColumns {
 @Directive({
   selector: '[appOasGridCols]'
 })
-export class OasGridColsDirective {
+export class OasGridColsDirective implements OnInit {
 
   private gridCols: GridColumns = {xs: 1, sm: 2, md: 4, lg: 6, xl: 8};
 
@@ -29,13 +29,13 @@ export class OasGridColsDirective {
   }
 
   public constructor(private grid: MatGridList, private breakpointObserver: BreakpointObserver) {
-    if(this.grid != null) {
+    if (this.grid != null) {
       this.grid.cols = this.gridCols.md;
     }
   }
 
   public ngOnInit(): void {
-    if(this.grid != null) {
+    if (this.grid != null) {
       this.grid.cols = this.gridCols.md;
     }
     this.breakpointObserver.observe([

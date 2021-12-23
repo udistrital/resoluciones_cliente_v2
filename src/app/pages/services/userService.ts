@@ -13,20 +13,16 @@ export class UserService {
 
     private terceroSubject = new BehaviorSubject({});
     public tercero$ = this.terceroSubject.asObservable();
-    public terceroData: any = {}
+    public terceroData: any = {};
 
     constructor() {}
 
-    updateUser(dataUser) {
+    updateUser(dataUser): void {
         this.userSubject.next(dataUser);
     }
 
-    updateTercero(data) {
-      this.terceroData = {...this.terceroData, ...data}
+    updateTercero(data): void {
+      this.terceroData = {...this.terceroData, ...data};
       this.terceroSubject.next(this.terceroData);
-    }
-
-    getAllTercero(){
-      
     }
 }

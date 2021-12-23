@@ -26,13 +26,13 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   dedicaciones: Parametro[];
   facultades: any[];
   tiposResoluciones: Parametro[];
-  edicion: boolean = false;
+  edicion = false;
 
   @Input()
   resolucionId: number;
 
   @Input()
-  esPlantilla: boolean = false;
+  esPlantilla = false;
 
   @Output()
   volver = new EventEmitter<void>();
@@ -64,15 +64,15 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     this.responsabilidadesSettings = {
       columns: {
         Funcion: {
-          title: "Función",
+          title: 'Función',
           width: '20%',
         },
         Nombre: {
-          title: "Nombre",
+          title: 'Nombre',
           width: '35%',
         },
         Cargo: {
-          title: "Cargo",
+          title: 'Cargo',
           width: '30%',
         },
       },
@@ -93,27 +93,27 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         deleteButtonContent: '<i class="material-icons" title="Eliminar">delete</i>',
       },
       noDataMessage: 'No hay información de responsabilidades',
-    }
+    };
     this.responsabilidadesData = new LocalDataSource();
   }
 
   cargarDatos(): void {
     this.request.get(
-      environment.PARAMETROS_SERVICE, 
+      environment.PARAMETROS_SERVICE,
       `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
     ).subscribe((response: any) => {
       this.dedicaciones = response.Data;
     });
 
     this.request.get(
-      environment.PARAMETROS_SERVICE, 
+      environment.PARAMETROS_SERVICE,
       `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
     ).subscribe((response: any) => {
       this.tiposResoluciones = response.Data.filter(tipo => tipo.ParametroPadreId === null);
     });
 
     this.request.get(
-      environment.OIKOS_SERVICE, 
+      environment.OIKOS_SERVICE,
       `dependencia_tipo_dependencia?query=TipoDependenciaId.Id:2&limit=0`
     ).subscribe((response: any) => {
       this.facultades = response;
@@ -132,7 +132,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_plantillas/${Id}`
     ).subscribe((response: any) => {
-      this.contenidoResolucion = <ContenidoResolucion>response.Data;
+      this.contenidoResolucion = response.Data as ContenidoResolucion;
       const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
       this.responsabilidadesData = new LocalDataSource(responsabilidades);
       this.edicion = true;
@@ -209,9 +209,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     });
   }
 
-  generarVistaPrevia(): void {
-    
-  }
+  generarVistaPrevia(): void {}
 
   limpiarFormulario(): void {
     this.contenidoResolucion = new ContenidoResolucion();
