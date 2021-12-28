@@ -34,9 +34,17 @@ import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { FormDetalleResolucionComponent } from './form-detalle-resolucion/form-detalle-resolucion.component';
+import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-resoluciones.component';
+import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
+import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
+import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
 
 
 const pagesComponents = [
+  GeneracionResolucionComponent,
+  GestionResolucionesComponent,
+  DetalleResolucionComponent,
+  ConsultaDocenteComponent,
   FormDetalleResolucionComponent,
   PlantillasComponent,
   DashboardComponent,

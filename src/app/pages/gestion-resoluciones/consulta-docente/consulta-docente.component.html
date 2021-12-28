@@ -1,0 +1,20 @@
+<mat-card class="card-oas">
+    <mat-card-title class="consulta-title"><h1>Consulta por docente</h1></mat-card-title>
+    <mat-card-content>
+        <form #dform="ngForm" novalidate>
+            <mat-form-field class="documento-field" >
+                <mat-label>Documento del docente</mat-label>
+                <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="20" name="documento" #documento="ngModel" [(ngModel)]="documentoDocente" required>
+                <mat-error *ngIf="documento.errors?.['required'] && documento.touched">
+                    Indique el número de documento del docente 
+                </mat-error>
+            </mat-form-field>
+            <button mat-button class="aux-button" type="submit" (click)="consultarDocente()" [disabled]="!dform.valid">Consultar</button>
+        </form>
+        <ng2-smart-table
+            [settings]="resolucionesDocenteSettings"
+            [source]="resolucionesDocenteData"
+            (custom)=eventHandler($event)
+        ></ng2-smart-table>
+    </mat-card-content>
+</mat-card>

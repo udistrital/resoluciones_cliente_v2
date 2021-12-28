@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserService } from './pages/services/userService';
-declare let gtag: Function;
+declare let gtag: (config: string, code: string, path: any) => void;
 
 @Component({
   selector: 'app-root',
