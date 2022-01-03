@@ -170,49 +170,71 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   guardarCambios(): void {
-    this.edicion ?
+    this.esPlantilla ?
+      this.edicion ?
+      this.popUp.confirm(
+        'Actualizar plantilla',
+        '¿Está seguro que desea actualizar la plantilla?',
+        'update',
+      ).then(result => {
+        if (result.isConfirmed) {
+          this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+            this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+            this.request.put(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              `gestion_plantillas`,
+              this.contenidoResolucion,
+              this.contenidoResolucion.Resolucion.Id
+            ).subscribe((response: any) => {
+              if (response.Success) {
+                this.popUp.success('La plantilla se ha actualizado con éxito');
+              }
+            }, (error: any) => {
+              this.popUp.error('No se ha podido actualizar la plantilla');
+            });
+          });
+        }
+      }) :
+      this.popUp.confirm(
+        'Guardar plantilla',
+        '¿Está seguro que desea guardar la plantilla?',
+        'create',
+      ).then(result => {
+        if (result.isConfirmed) {
+          this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+            this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+            this.request.post(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              `gestion_plantillas`,
+              this.contenidoResolucion
+            ).subscribe((response: any) => {
+              if (response.Success) {
+                this.popUp.success('La plantilla se ha guardado con éxito');
+              }
+            }, (error: any) => {
+              console.log(error);
+              this.popUp.error('No se ha podido guardar la plantilla');
+            });
+          });
+        }
+      }) :
     this.popUp.confirm(
-      'Actualizar plantilla',
-      '¿Está seguro que desea actualizar la plantilla?',
-      'update',
+      'Actualizar resolución',
+      '¿Está seguro que desea actualizar la resolución?',
+      'update'
     ).then(result => {
       if (result.isConfirmed) {
         this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
           this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
           this.request.put(
             environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_plantillas`,
+            `gestion_resoluciones`,
             this.contenidoResolucion,
             this.contenidoResolucion.Resolucion.Id
-          ).subscribe((response: any) => {
+          ).subscribe(response => {
             if (response.Success) {
-              this.popUp.success('La plantilla se ha actualizado con éxito');
+              this.popUp.success('La resolución se ha actualizado con éxito');
             }
-          }, (error: any) => {
-            this.popUp.error('No se ha podido actualizar la plantilla');
-          });
-        });
-      }
-    }) :
-    this.popUp.confirm(
-      'Guardar plantilla',
-      '¿Está seguro que desea guardar la plantilla?',
-      'create',
-    ).then(result => {
-      if (result.isConfirmed) {
-        this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
-          this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
-          this.request.post(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_plantillas`,
-            this.contenidoResolucion
-          ).subscribe((response: any) => {
-            if (response.Success) {
-              this.popUp.success('La plantilla se ha guardado con éxito');
-            }
-          }, (error: any) => {
-            console.log(error);
-            this.popUp.error('No se ha podido guardar la plantilla');
           });
         });
       }

@@ -30,56 +30,12 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new LocalDataSource([
-      {
-        Id: 1,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Vinculación'
-      },
-      {
-        Id: 2,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Cancelación'
-      },
-      {
-        Id: 3,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Adición'
-      },
-      {
-        Id: 4,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Reducción'
-      },
-    ]);
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones`
+    ).subscribe((response) => {
+      this.resolucionesData = new LocalDataSource(response.Data);
+    });
   }
 
   initTable(): void {
@@ -168,7 +124,26 @@ export class GestionResolucionesComponent implements OnInit {
     this.router.navigate(['../detalle_resolucion', {Id: id}], { relativeTo: this.route});
   }
 
-  anularResolución(id: number): void {}
+  anularResolución(id: number): void {
+    this.popUp.confirm(
+      'Anular Resolución',
+      '¿Está seguro que desea anular la resolución?',
+      'delete'
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.request.delete(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_resoluciones`,
+          id
+        ).subscribe(response => {
+          if (response.Success) {
+            this.popUp.success('La resolución ha sido anulada con éxito');
+            this.ngOnInit();
+          }
+        });
+      }
+    });
+  }
 
   consultarVinculacionesResolución(id: number): void {}
 
