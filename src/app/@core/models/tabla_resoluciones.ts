@@ -47,4 +47,4 @@ export const TablaResoluciones: any = {
         width: '10%',
         editable: false,
     },
-}
+};

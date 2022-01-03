@@ -102,14 +102,14 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       environment.PARAMETROS_SERVICE,
       `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
     ).subscribe((response: any) => {
-      this.dedicaciones = response.Data;
+      this.dedicaciones = response.Data as Parametro[];
     });
 
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
     ).subscribe((response: any) => {
-      this.tiposResoluciones = response.Data.filter(tipo => tipo.ParametroPadreId === null);
+      this.tiposResoluciones = response.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
     });
 
     this.request.get(
@@ -128,15 +128,25 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   cargarContenidoResolucion(Id: number): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_plantillas/${Id}`
-    ).subscribe((response: any) => {
-      this.contenidoResolucion = response.Data as ContenidoResolucion;
-      const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
-      this.responsabilidadesData = new LocalDataSource(responsabilidades);
-      this.edicion = true;
-    });
+    this.esPlantilla ?
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_plantillas/${Id}`
+      ).subscribe((response: any) => {
+        this.contenidoResolucion = response.Data as ContenidoResolucion;
+        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+        this.responsabilidadesData = new LocalDataSource(responsabilidades);
+        this.edicion = true;
+      }) :
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_resoluciones/${Id}`
+      ).subscribe((response: any) => {
+        this.contenidoResolucion = response.Data as ContenidoResolucion;
+        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+        this.responsabilidadesData = new LocalDataSource(responsabilidades);
+        this.edicion = true;
+      });
   }
 
   agregarArticulo(): void {

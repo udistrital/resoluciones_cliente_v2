@@ -24,7 +24,7 @@
                     <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" [disabled]="!esPlantilla || edicion" #dedic="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let dedicacion of dedicaciones" [value]="dedicacion.CodigoAbreviacion">
-                            {{ dedicacion.CodigoAbreviacion }}
+                            {{ dedicacion.Nombre }}
                         </mat-option>
                     </mat-select>
                     <mat-error *ngIf="dedic.errors?.['required'] && dedic.touched">
@@ -52,7 +52,7 @@
                         </mat-option>
                     </mat-select>
                     <mat-error *ngIf="tr.errors?.['required'] && tr.touched">
-                        Seleccione el tipo de resoución 
+                        Seleccione el tipo de resolución 
                     </mat-error>
                 </mat-form-field>
                 <div class="form-field-column"></div>

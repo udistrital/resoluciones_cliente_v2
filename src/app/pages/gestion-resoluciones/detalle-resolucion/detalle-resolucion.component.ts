@@ -21,7 +21,7 @@ export class DetalleResolucionComponent implements OnInit {
       if (params.get('Id') !== null) {
         this.resolucionId = Number(params.get('Id'));
       }
-    })
+    });
   }
 
   volver(): void {

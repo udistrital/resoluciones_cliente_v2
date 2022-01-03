@@ -5,7 +5,7 @@
             <div class="selector">
                 <mat-form-field class="selector-tipo">
                     <mat-label>Seleccione el tipo de resolución a crear</mat-label>
-                    <mat-select name="tipo" [(ngModel)]="tipoResolucion" #tipo="ngModel" required>
+                    <mat-select name="tipo" [(ngModel)]="tipoResolucion" #tipo="ngModel" (selectionChange)="limpiarFormulario()" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let tipores of tiposResoluciones" [value]="tipores.CodigoAbreviacion">
                             {{ tipores.Nombre }}
@@ -21,14 +21,14 @@
                     <mat-grid-tile>
                         <mat-form-field class="form-field form-field-full" >
                             <mat-label>Numero de resolución</mat-label>
-                            <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numeroRes" [(ngModel)]="NumeroResolucion" #numeroRes="ngModel" required>
+                            <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numeroRes" [(ngModel)]="contenidoResolucion.Resolucion.NumeroResolucion" #numeroRes="ngModel" required>
                             <mat-error *ngIf="numeroRes.errors?.['required'] && numeroRes.touched">
                                 Indique el número de la resolución 
                             </mat-error>
                         </mat-form-field>
                         <mat-form-field class="form-field form-field-full">
                             <mat-label>Nivel académico</mat-label>
-                            <mat-select name="niv" [(ngModel)]="NivelAcademico" #niv="ngModel" required>
+                            <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" #niv="ngModel" required>
                                 <mat-option>--Seleccionar--</mat-option>
                                 <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
                                     {{ nivel.Nombre }}
@@ -40,8 +40,8 @@
                         </mat-form-field>
                         <mat-form-field class="form-field form-field-full" >
                             <mat-label>Semanas</mat-label>
-                            <input matInput type="number" min="1" max="52" name="Semanas" [(ngModel)]="Semanas" required>
-                            <mat-error *ngIf="Semanas.errors?.['required'] && Semanas.touched">
+                            <input matInput type="number" min="1" max="52" name="sem" [(ngModel)]="contenidoResolucion.Resolucion.NumeroSemanas" #sem="ngModel" required>
+                            <mat-error *ngIf="sem.errors?.['required'] && sem.touched">
                                 Indique el número de Semanas 
                             </mat-error>
                         </mat-form-field>
@@ -50,7 +50,7 @@
                         <div class="form-field form-field-full">
                             <mat-form-field style="width: 70%">
                                 <mat-label>Facultad</mat-label>
-                                <mat-select name="fac" [(ngModel)]="FacultadId" #fac="ngModel" required>
+                                <mat-select name="fac" [(ngModel)]="contenidoResolucion.Vinculacion.FacultadId" #fac="ngModel" required>
                                     <mat-option>--Seleccionar--</mat-option>
                                     <mat-option *ngFor="let facultad of facultades" [value]="facultad.DependenciaId.Id">
                                         {{ facultad.DependenciaId.Nombre }}
@@ -66,9 +66,13 @@
                         </div>
                         <mat-form-field class="form-field form-field-full">
                             <mat-label>Dedicación</mat-label>
-                            <mat-select name="dedic" [(ngModel)]="Dedicacion" #dedic="ngModel" required>
+                            <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" #dedic="ngModel" required>
                                 <mat-option>--Seleccionar--</mat-option>
-                                <mat-option *ngFor="let dedicacion of dedicaciones" [value]="dedicacion.CodigoAbreviacion">
+                                <mat-option 
+                                    *ngFor="let dedicacion of dedicaciones" 
+                                    [value]="dedicacion.CodigoAbreviacion" 
+                                    [disabled]="contenidoResolucion.Vinculacion.NivelAcademico === 'Posgrado' && (dedicacion.CodigoAbreviacion === 'TCO' || dedicacion.CodigoAbreviacion === 'MTO')"
+                                >
                                     {{ dedicacion.Nombre }}
                                 </mat-option>
                             </mat-select>
@@ -78,7 +82,7 @@
                         </mat-form-field>
                         <mat-form-field class="form-field form-field-full">
                             <mat-label>Periodo de la resolución</mat-label>
-                            <mat-select name="per" [(ngModel)]="Periodo" #per="ngModel" required>
+                            <mat-select name="per" [(ngModel)]="contenidoResolucion.Resolucion.Periodo" #per="ngModel" required>
                                 <mat-option>--Seleccionar--</mat-option>
                                 <mat-option [value]="1">1</mat-option>
                                 <mat-option [value]="2">2</mat-option>
@@ -98,7 +102,7 @@
                 <div class="carga" *ngIf="periodoAnterior">
                     <mat-form-field class="form-field form-field-half">
                         <mat-label>Vigencia de la carga académica</mat-label>
-                        <mat-select name="vig" [(ngModel)]="Vigencia" #vig="ngModel">
+                        <mat-select name="vig" [(ngModel)]="contenidoResolucion.Resolucion.VigenciaCarga" #vig="ngModel">
                             <mat-option>--Seleccionar--</mat-option>
                             <mat-option *ngFor="let vigencia of vigencias" [value]="vigencia.Year">
                                 {{ vigencia.Year }}
@@ -107,7 +111,7 @@
                     </mat-form-field>
                     <mat-form-field class="form-field form-field-half">
                         <mat-label>Periodo de la carga académica</mat-label>
-                        <mat-select name="per2" [(ngModel)]="PeriodoCarga" #per2="ngModel">
+                        <mat-select name="per2" [(ngModel)]="contenidoResolucion.Resolucion.PeriodoCarga" #per2="ngModel">
                             <mat-option>--Seleccionar--</mat-option>
                             <mat-option [value]="1">1</mat-option>
                             <mat-option [value]="2">2</mat-option>

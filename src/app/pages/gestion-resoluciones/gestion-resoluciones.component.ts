@@ -162,23 +162,23 @@ export class GestionResolucionesComponent implements OnInit {
     }
   }
 
-  cargarDocumento(id: Number): void {}
+  cargarDocumento(id: number): void {}
 
-  editarResolución(id: Number): void {
+  editarResolución(id: number): void {
     this.router.navigate(['../detalle_resolucion', {Id: id}], { relativeTo: this.route});
   }
 
-  anularResolución(id: Number): void {}
+  anularResolución(id: number): void {}
 
-  consultarVinculacionesResolución(id: Number): void {}
+  consultarVinculacionesResolución(id: number): void {}
 
-  vincularDocentesResolución(id: Number): void {}
+  vincularDocentesResolución(id: number): void {}
 
-  desvincularDocentesResolución(id: Number): void {}
+  desvincularDocentesResolución(id: number): void {}
 
-  adicionarHorasDocentesResolución(id: Number): void {}
+  adicionarHorasDocentesResolución(id: number): void {}
 
-  reducirHorasDocentesResolución(id: Number): void {}
+  reducirHorasDocentesResolución(id: number): void {}
 
   crearResolucion(): void {
     this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route});
