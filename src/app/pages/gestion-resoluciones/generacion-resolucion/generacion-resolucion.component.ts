@@ -46,58 +46,7 @@ export class GeneracionResolucionComponent implements OnInit {
       columns: TablaResoluciones,
       mode: 'external',
       actions: false,
-
     };
-    this.resolucionesExpedidasData = new LocalDataSource([
-      {
-        Id: 1,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Vinculación'
-      },
-      {
-        Id: 2,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Cancelación'
-      },
-      {
-        Id: 3,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Adición'
-      },
-      {
-        Id: 4,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Reducción'
-      },
-    ]);
   }
 
   ngOnInit(): void {
@@ -147,7 +96,12 @@ export class GeneracionResolucionComponent implements OnInit {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
     });
 
-    // cargar datos de la tabla
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones/resoluciones_expedidas`
+    ).subscribe(response => {
+      this.resolucionesExpedidasData = new LocalDataSource(response.Data);
+    });
   }
 
   generarResolucion(): void {
@@ -157,9 +111,10 @@ export class GeneracionResolucionComponent implements OnInit {
       'create'
     ).then(result => {
       if (result.isConfirmed) {
-        this.contenidoResolucion.Usuario = localStorage.getItem("user");
-        this.contenidoResolucion.Resolucion.DependenciaId = this.contenidoResolucion.Vinculacion.FacultadId
-        this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter((tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
+        this.contenidoResolucion.Usuario = localStorage.getItem('user');
+        this.contenidoResolucion.Resolucion.DependenciaId = this.contenidoResolucion.Vinculacion.FacultadId;
+        this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
+          (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
         this.contenidoResolucion.Resolucion.DependenciaFirmaId = this.firmaRector ? 7 : this.contenidoResolucion.Resolucion.DependenciaId;
         if (!this.periodoAnterior) {
           this.contenidoResolucion.Resolucion.PeriodoCarga = null;
@@ -171,12 +126,12 @@ export class GeneracionResolucionComponent implements OnInit {
           this.contenidoResolucion
         ).subscribe((response: any) => {
           if (response.Success) {
-            if (response.Data != 0) {
+            if (response.Data !== 0) {
               this.popUp.success('La resolución se ha generado con éxito');
             } else {
               this.popUp.error('No hay plantillas para el tipo de resolución indicada');
             }
-            //this.location.back();
+            // this.location.back();
           }
         });
       }
@@ -184,11 +139,39 @@ export class GeneracionResolucionComponent implements OnInit {
   }
 
   asociarResolucion(): void {
-    
+    if (this.contenidoResolucion.ResolucionAnteriorId !== null) {
+      this.popUp.confirm(
+        'Generar resolución',
+        '¿Está seguro que desea generar una resolución con la información suministrada?',
+        'create'
+      ).then(result => {
+        if (result.isConfirmed) {
+          this.contenidoResolucion.Usuario = localStorage.getItem('user');
+          this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
+            (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
+          this.request.post(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_resoluciones`,
+            this.contenidoResolucion
+          ).subscribe((response: any) => {
+            if (response.Success) {
+              if (response.Data !== 0) {
+                this.popUp.success('La resolución se ha generado con éxito');
+              } else {
+                this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+              }
+              // this.location.back();
+            }
+          });
+        }
+      });
+    } else {
+      this.popUp.error('Por favor seleccione una resolución de la tabla.');
+    }
   }
 
   seleccionarResolucion(event): void {
-    console.log(event.data.Id);
+    this.contenidoResolucion.ResolucionAnteriorId = event.data.Id;
   }
 
 }

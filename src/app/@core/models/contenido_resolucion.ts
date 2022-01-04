@@ -7,4 +7,5 @@ export class ContenidoResolucion {
     Articulos: Articulo[];
     Vinculacion: ResolucionVinculacionDocente;
     Usuario: string;
+    ResolucionAnteriorId: number;
 }

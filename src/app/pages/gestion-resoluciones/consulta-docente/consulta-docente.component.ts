@@ -1,20 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
+import { environment } from 'src/environments/environment';
+import { RequestManager } from '../../services/requestManager';
 
 @Component({
   selector: 'app-consulta-docente',
   templateUrl: './consulta-docente.component.html',
   styleUrls: ['./consulta-docente.component.scss']
 })
-export class ConsultaDocenteComponent implements OnInit {
+export class ConsultaDocenteComponent {
 
   resolucionesDocenteSettings: any;
   resolucionesDocenteData: LocalDataSource;
   documentoDocente = '';
 
-  constructor() {
-    this.initTable()
+  constructor(
+    private request: RequestManager,
+  ) {
+    this.initTable();
   }
 
   initTable(): void {
@@ -38,65 +42,20 @@ export class ConsultaDocenteComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
-    this.resolucionesDocenteData = new LocalDataSource([
-      {
-        Id: 1,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Vinculación'
-      },
-      {
-        Id: 2,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Cancelación'
-      },
-      {
-        Id: 3,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Adición'
-      },
-      {
-        Id: 4,
-        NumeroResolucion: 123,
-        Vigencia: 2020,
-        Periodo: 1,
-        Facultad: 'FACULTAD DE INGENIERIA',
-        NivelAcademico: 'Pregrado',
-        Dedicacion: 'HCH',
-        Semanas: 12,
-        Estado: 'Solicitada',
-        TipoResolucion: 'Resolución de Reducción'
-      },
-    ]);
-  }
-
   consultarDocente(): void {
-
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones/${this.documentoDocente}`
+    ).subscribe(response => {
+      if (response.Success) {
+        this.resolucionesDocenteData = new LocalDataSource(response.Data);
+      }
+    });
   }
 
   eventHandler(event): void {
-    console.log(event.data.Id)
+    // Abrir doc nuxeo
+    console.log(event.data.Id);
   }
 
 }
