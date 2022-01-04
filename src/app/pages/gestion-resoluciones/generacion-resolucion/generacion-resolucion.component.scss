@@ -1,0 +1,38 @@
+@import '../../form-detalle-resolucion/form-detalle-resolucion.component.scss';
+
+.generacion-title {
+    text-align: center;
+}
+
+.selector {
+    text-align: center;
+}
+
+.selector-tipo {
+    width: 50%;
+}   
+
+.form-container {
+    padding: 4%;
+    border: solid 2px var(--primary);
+    border-radius: 20px;
+}
+
+.form-field {
+    padding: 0 5%;
+    &.form-field-full {
+        width: 100%;
+    }
+    &.form-field-half {
+        width: 40%;
+    }
+}
+
+.rector-check {
+    width: 30%;
+    text-align: right;
+}
+
+.carga {
+    margin-top: 3%;
+}

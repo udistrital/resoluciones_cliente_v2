@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { HttpErrorManager } from './errorManager';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { retry } from 'rxjs/operators';
 
 /**
@@ -23,15 +23,15 @@ export class RequestManager {
     this.updateHeaderToken();
   }
 
-  updateHeaderToken() {
-    const access_token = localStorage.getItem('access_token');
-    if (access_token) {
+  updateHeaderToken(): void {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
       this.headerSubject.next({
         headers: new HttpHeaders({
           Accept: 'application/json',
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         })
-      })
+      });
     }
   }
 
@@ -45,7 +45,7 @@ export class RequestManager {
    * @param params (an Key, Value object with que query params for the request)
    * @returns Observable<any>
    */
-  get(path, endpoint) {
+  get(path, endpoint): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
         return this.http.get<any>(`${path}${endpoint}`, header).pipe(
@@ -62,25 +62,25 @@ export class RequestManager {
           catchError(this.errManager.handleError.bind(this)),
         );
       })
-    )
+    );
   }
 
   /**
    * Perform a POST http request
-   * 
+   *
    * @param path service's path from environment end-point
    * @param endpoint service's end-point
    * @param element data to send as JSON
    * @returns Observable<any>
    */
-  post(path, endpoint, element) {
+  post(path, endpoint, element): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
         return this.http.post<any>(`${path}${endpoint}`, element, header).pipe(
           catchError(this.errManager.handleError)
-        )
+        );
       })
-    )
+    );
   }
 
   /**
@@ -91,14 +91,14 @@ export class RequestManager {
    * @param element data to send as JSON, With the id to UPDATE
    * @returns Observable<any>
    */
-  put(path, endpoint, element, id) {
+  put(path, endpoint, element, id): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
         return this.http.put<any>(`${path}${endpoint}/${id}`, element, header).pipe(
           catchError(this.errManager.handleError),
         );
       })
-    )
+    );
   }
 
   /**
@@ -109,13 +109,13 @@ export class RequestManager {
    * @param id element's id for remove
    * @returns Observable<any>
    */
-  delete(path, endpoint, id) {
+  delete(path, endpoint, id): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
         return this.http.delete<any>(`${path}${endpoint}/${id}`, header).pipe(
           catchError(this.errManager.handleError),
         );
       })
-    )
+    );
   }
-};
+}

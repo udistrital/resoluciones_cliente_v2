@@ -18,13 +18,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS,} from '@angular/material-moment-adapter';
+import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { OasGridColsDirective } from './directives/oas-grid-cols.directive';
 
@@ -34,9 +34,17 @@ import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { FormDetalleResolucionComponent } from './form-detalle-resolucion/form-detalle-resolucion.component';
+import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-resoluciones.component';
+import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
+import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
+import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
 
 
 const pagesComponents = [
+  GeneracionResolucionComponent,
+  GestionResolucionesComponent,
+  DetalleResolucionComponent,
+  ConsultaDocenteComponent,
   FormDetalleResolucionComponent,
   PlantillasComponent,
   DashboardComponent,
@@ -79,7 +87,7 @@ const materialModules = [
   providers: [
     RequestManager,
     MatDatepickerModule,
-    { provide:HTTP_INTERCEPTORS,useClass:InterceptorService,multi:true },
+    { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
     { provide: MAT_DATE_LOCALE, useValue: 'es-CO' },
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}

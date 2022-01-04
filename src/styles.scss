@@ -78,11 +78,7 @@ table tbody tr td:nth-child(n + 2) {
 }
 
 .card-oas {
-  width: calc(100vw - 60px);
-}
-
-mat-label {
-  color: var(--primary);
+  width: calc(100vw - 80px);
 }
 
 mat-label {
@@ -94,7 +90,8 @@ mat-label {
 }
 
 .mat-grid-tile-content {
-  align-items: flex-start !important;
+  flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .section-title {
@@ -102,6 +99,17 @@ mat-label {
   text-align: left;
   padding-left: 7%;
   color: var(--primary);
+}
+
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: var(--primary);
+  svg path {
+      fill: var(--primary);
+  }
+}
+
+.mat-card-content {
+  text-align: center;
 }
 
 .mat-radio-outer-circle {

@@ -6,8 +6,5 @@ export class DatosIdentificacion {
   TipoDocumentoId: TipoDocumento;
   TerceroId: Tercero;
   Numero: string;
-  //DigitoVerificacion: number; 
-  //CiudadExpedicion: number;  
   FechaExpedicion: string;
-  //DocumentoSoporte: number;
 }

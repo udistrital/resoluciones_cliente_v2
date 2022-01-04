@@ -1,0 +1,141 @@
+<mat-card class="card-oas">
+    <mat-card-title class="generacion-title"><h1>Generación de resoluciones</h1></mat-card-title>
+    <mat-card-content>
+        <form #gform="ngForm" novalidate>
+            <div class="selector">
+                <mat-form-field class="selector-tipo">
+                    <mat-label>Seleccione el tipo de resolución a crear</mat-label>
+                    <mat-select name="tipo" [(ngModel)]="tipoResolucion" #tipo="ngModel" (selectionChange)="limpiarFormulario()" required>
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let tipores of tiposResoluciones" [value]="tipores.CodigoAbreviacion">
+                            {{ tipores.Nombre }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="tipo.errors?.['required'] && tipo.touched">
+                        Seleccione el tipo de resolución 
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <fieldset class="form-container" *ngIf="tipoResolucion === 'RVIN'">
+                <mat-grid-list cols="2" rowHeight="15vw">
+                    <mat-grid-tile>
+                        <mat-form-field class="form-field form-field-full" >
+                            <mat-label>Numero de resolución</mat-label>
+                            <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numeroRes" [(ngModel)]="contenidoResolucion.Resolucion.NumeroResolucion" #numeroRes="ngModel" required>
+                            <mat-error *ngIf="numeroRes.errors?.['required'] && numeroRes.touched">
+                                Indique el número de la resolución 
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Nivel académico</mat-label>
+                            <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" #niv="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
+                                    {{ nivel.Nombre }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="niv.errors?.['required'] && niv.touched">
+                                Seleccione el nivel académico 
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="form-field form-field-full" >
+                            <mat-label>Semanas</mat-label>
+                            <input matInput type="number" min="1" max="52" name="sem" [(ngModel)]="contenidoResolucion.Resolucion.NumeroSemanas" #sem="ngModel" required>
+                            <mat-error *ngIf="sem.errors?.['required'] && sem.touched">
+                                Indique el número de Semanas 
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="form-field form-field-full">
+                            <mat-form-field style="width: 70%">
+                                <mat-label>Facultad</mat-label>
+                                <mat-select name="fac" [(ngModel)]="contenidoResolucion.Vinculacion.FacultadId" #fac="ngModel" required>
+                                    <mat-option>--Seleccionar--</mat-option>
+                                    <mat-option *ngFor="let facultad of facultades" [value]="facultad.DependenciaId.Id">
+                                        {{ facultad.DependenciaId.Nombre }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="fac.errors?.['required'] && fac.touched">
+                                    Seleccione la facultad 
+                                </mat-error>
+                            </mat-form-field>
+                            <mat-checkbox class="rector-check" labelPosition="before" name="firma" [checked]="firmaRector" [(ngModel)]="firmaRector">
+                                Firma Rector
+                            </mat-checkbox>
+                        </div>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Dedicación</mat-label>
+                            <mat-select name="dedic" [(ngModel)]="contenidoResolucion.Vinculacion.Dedicacion" #dedic="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option 
+                                    *ngFor="let dedicacion of dedicaciones" 
+                                    [value]="dedicacion.CodigoAbreviacion" 
+                                    [disabled]="contenidoResolucion.Vinculacion.NivelAcademico === 'Posgrado' && (dedicacion.CodigoAbreviacion === 'TCO' || dedicacion.CodigoAbreviacion === 'MTO')"
+                                >
+                                    {{ dedicacion.Nombre }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="dedic.errors?.['required'] && dedic.touched">
+                                Seleccione la dedicación 
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Periodo de la resolución</mat-label>
+                            <mat-select name="per" [(ngModel)]="contenidoResolucion.Resolucion.Periodo" #per="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option [value]="1">1</mat-option>
+                                <mat-option [value]="2">2</mat-option>
+                                <mat-option [value]="3">3</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="per.errors?.['required'] && per.touched">
+                                Seleccione el periodo
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <div class=selector>
+                    <mat-checkbox  labelPosition="before" name="anterior" [checked]="periodoAnterior" [(ngModel)]="periodoAnterior">
+                        Carga académica de un periodo anterior
+                    </mat-checkbox>
+                </div>
+                <div class="carga" *ngIf="periodoAnterior">
+                    <mat-form-field class="form-field form-field-half">
+                        <mat-label>Vigencia de la carga académica</mat-label>
+                        <mat-select name="vig" [(ngModel)]="contenidoResolucion.Resolucion.VigenciaCarga" #vig="ngModel">
+                            <mat-option>--Seleccionar--</mat-option>
+                            <mat-option *ngFor="let vigencia of vigencias" [value]="vigencia.Year">
+                                {{ vigencia.Year }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="form-field form-field-half">
+                        <mat-label>Periodo de la carga académica</mat-label>
+                        <mat-select name="per2" [(ngModel)]="contenidoResolucion.Resolucion.PeriodoCarga" #per2="ngModel">
+                            <mat-option>--Seleccionar--</mat-option>
+                            <mat-option [value]="1">1</mat-option>
+                            <mat-option [value]="2">2</mat-option>
+                            <mat-option [value]="3">3</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <button mat-button class="button button-submit" type="submit" (click)="generarResolucion()" [disabled]="!gform.valid" >Generar resolución</button>
+            </fieldset>
+            <fieldset class="form-container" *ngIf="tipoResolucion === 'RADD' || tipoResolucion === 'RRED' || tipoResolucion === 'RCAN'">
+                <mat-form-field class="selector-tipo" >
+                    <mat-label>Numero de resolución</mat-label>
+                    <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numRes" #numRes="ngModel" [(ngModel)]="NumeroResolucion" required>
+                    <mat-error *ngIf="numRes.errors?.['required'] && numRes.touched">
+                        Indique el número de la resolución 
+                    </mat-error>
+                </mat-form-field>
+                <ng2-smart-table
+                    [settings]="resolucionesExpedidasSettings"
+                    [source]="resolucionesExpedidasData"
+                    (userRowSelect)="seleccionarResolucion($event)"
+                ></ng2-smart-table>
+                <button mat-button class="button button-submit" type="submit" (click)="asociarResolucion()" [disabled]="!gform.valid" >Asociar resolución</button>
+            </fieldset>
+        </form>
+    </mat-card-content>
+</mat-card>

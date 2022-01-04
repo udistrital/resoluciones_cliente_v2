@@ -1,0 +1,12 @@
+<mat-card class="card-oas">
+    <mat-card-title class="resoluciones-title"><h1>Gestión de resoluciones</h1></mat-card-title>
+    <mat-card-content>
+        <ng2-smart-table
+            [settings]="resolucionesSettings"
+            [source]="resolucionesData"
+            (custom)=eventHandler($event)
+        ></ng2-smart-table>
+    </mat-card-content>
+    <button mat-button class="button button-submit" type="button" (click)="crearResolucion()" >Crear Resolución de Vinculación Especial</button>
+    <button mat-button class="button button-add" type="button" (click)="consultarDocente()" >Consultar docente</button>
+</mat-card>

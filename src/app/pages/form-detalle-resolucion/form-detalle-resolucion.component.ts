@@ -26,13 +26,13 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   dedicaciones: Parametro[];
   facultades: any[];
   tiposResoluciones: Parametro[];
-  edicion: boolean = false;
+  edicion = false;
 
   @Input()
   resolucionId: number;
 
   @Input()
-  esPlantilla: boolean = false;
+  esPlantilla = false;
 
   @Output()
   volver = new EventEmitter<void>();
@@ -64,15 +64,15 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     this.responsabilidadesSettings = {
       columns: {
         Funcion: {
-          title: "Función",
+          title: 'Función',
           width: '20%',
         },
         Nombre: {
-          title: "Nombre",
+          title: 'Nombre',
           width: '35%',
         },
         Cargo: {
-          title: "Cargo",
+          title: 'Cargo',
           width: '30%',
         },
       },
@@ -93,27 +93,27 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         deleteButtonContent: '<i class="material-icons" title="Eliminar">delete</i>',
       },
       noDataMessage: 'No hay información de responsabilidades',
-    }
+    };
     this.responsabilidadesData = new LocalDataSource();
   }
 
   cargarDatos(): void {
     this.request.get(
-      environment.PARAMETROS_SERVICE, 
+      environment.PARAMETROS_SERVICE,
       `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
     ).subscribe((response: any) => {
-      this.dedicaciones = response.Data;
+      this.dedicaciones = response.Data as Parametro[];
     });
 
     this.request.get(
-      environment.PARAMETROS_SERVICE, 
+      environment.PARAMETROS_SERVICE,
       `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
     ).subscribe((response: any) => {
-      this.tiposResoluciones = response.Data.filter(tipo => tipo.ParametroPadreId === null);
+      this.tiposResoluciones = response.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
     });
 
     this.request.get(
-      environment.OIKOS_SERVICE, 
+      environment.OIKOS_SERVICE,
       `dependencia_tipo_dependencia?query=TipoDependenciaId.Id:2&limit=0`
     ).subscribe((response: any) => {
       this.facultades = response;
@@ -128,15 +128,25 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   cargarContenidoResolucion(Id: number): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_plantillas/${Id}`
-    ).subscribe((response: any) => {
-      this.contenidoResolucion = <ContenidoResolucion>response.Data;
-      const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
-      this.responsabilidadesData = new LocalDataSource(responsabilidades);
-      this.edicion = true;
-    });
+    this.esPlantilla ?
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_plantillas/${Id}`
+      ).subscribe((response: any) => {
+        this.contenidoResolucion = response.Data as ContenidoResolucion;
+        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+        this.responsabilidadesData = new LocalDataSource(responsabilidades);
+        this.edicion = true;
+      }) :
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_resoluciones/${Id}`
+      ).subscribe((response: any) => {
+        this.contenidoResolucion = response.Data as ContenidoResolucion;
+        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+        this.responsabilidadesData = new LocalDataSource(responsabilidades);
+        this.edicion = true;
+      });
   }
 
   agregarArticulo(): void {
@@ -160,58 +170,78 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   guardarCambios(): void {
-    this.edicion ?
+    this.esPlantilla ?
+      this.edicion ?
+      this.popUp.confirm(
+        'Actualizar plantilla',
+        '¿Está seguro que desea actualizar la plantilla?',
+        'update',
+      ).then(result => {
+        if (result.isConfirmed) {
+          this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+            this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+            this.request.put(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              `gestion_plantillas`,
+              this.contenidoResolucion,
+              this.contenidoResolucion.Resolucion.Id
+            ).subscribe((response: any) => {
+              if (response.Success) {
+                this.popUp.success('La plantilla se ha actualizado con éxito');
+              }
+            }, (error: any) => {
+              this.popUp.error('No se ha podido actualizar la plantilla');
+            });
+          });
+        }
+      }) :
+      this.popUp.confirm(
+        'Guardar plantilla',
+        '¿Está seguro que desea guardar la plantilla?',
+        'create',
+      ).then(result => {
+        if (result.isConfirmed) {
+          this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+            this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+            this.request.post(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              `gestion_plantillas`,
+              this.contenidoResolucion
+            ).subscribe((response: any) => {
+              if (response.Success) {
+                this.popUp.success('La plantilla se ha guardado con éxito');
+              }
+            }, (error: any) => {
+              console.log(error);
+              this.popUp.error('No se ha podido guardar la plantilla');
+            });
+          });
+        }
+      }) :
     this.popUp.confirm(
-      'Actualizar plantilla',
-      '¿Está seguro que desea actualizar la plantilla?',
-      'update',
+      'Actualizar resolución',
+      '¿Está seguro que desea actualizar la resolución?',
+      'update'
     ).then(result => {
       if (result.isConfirmed) {
         this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
           this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
           this.request.put(
             environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_plantillas`,
+            `gestion_resoluciones`,
             this.contenidoResolucion,
             this.contenidoResolucion.Resolucion.Id
-          ).subscribe((response: any) => {
+          ).subscribe(response => {
             if (response.Success) {
-              this.popUp.success('La plantilla se ha actualizado con éxito');
+              this.popUp.success('La resolución se ha actualizado con éxito');
             }
-          }, (error: any) => {
-            this.popUp.error('No se ha podido actualizar la plantilla');
-          });
-        });
-      }
-    }) :
-    this.popUp.confirm(
-      'Guardar plantilla',
-      '¿Está seguro que desea guardar la plantilla?',
-      'create',
-    ).then(result => {
-      if (result.isConfirmed) {
-        this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
-          this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
-          this.request.post(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_plantillas`,
-            this.contenidoResolucion
-          ).subscribe((response: any) => {
-            if (response.Success) {
-              this.popUp.success('La plantilla se ha guardado con éxito');
-            }
-          }, (error: any) => {
-            console.log(error);
-            this.popUp.error('No se ha podido guardar la plantilla');
           });
         });
       }
     });
   }
 
-  generarVistaPrevia(): void {
-    
-  }
+  generarVistaPrevia(): void {}
 
   limpiarFormulario(): void {
     this.contenidoResolucion = new ContenidoResolucion();

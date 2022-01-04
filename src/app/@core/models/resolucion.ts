@@ -1,5 +1,3 @@
-import { CuadroResponsabilidades } from "./cuadro_responsabilidades";
-
 export class Resolucion {
     Id: number;
     NumeroResolucion: string;
@@ -17,7 +15,7 @@ export class Resolucion {
     PeriodoCarga: number;
     CuadroResponsabilidades: string;
     NuxeoUid: string;
-    Activo: Boolean;
+    Activo: boolean;
     FechaCreacion: string;
     FechaModificacion: string;
 }
