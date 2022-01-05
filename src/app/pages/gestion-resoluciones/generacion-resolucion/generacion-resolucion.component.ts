@@ -37,9 +37,7 @@ export class GeneracionResolucionComponent implements OnInit {
     private request: RequestManager,
     private location: Location,
     private popUp: UtilService,
-  ) {
-    this.initTable();
-  }
+  ) { }
 
   initTable(): void {
     this.resolucionesExpedidasSettings = {
@@ -52,6 +50,7 @@ export class GeneracionResolucionComponent implements OnInit {
   ngOnInit(): void {
     this.cargarDatos();
     this.limpiarFormulario();
+    this.initTable();
   }
 
   limpiarFormulario(): void {
@@ -147,6 +146,7 @@ export class GeneracionResolucionComponent implements OnInit {
       ).then(result => {
         if (result.isConfirmed) {
           this.contenidoResolucion.Usuario = localStorage.getItem('user');
+          this.contenidoResolucion.Resolucion.NumeroResolucion = this.NumeroResolucion;
           this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
             (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
           this.request.post(
