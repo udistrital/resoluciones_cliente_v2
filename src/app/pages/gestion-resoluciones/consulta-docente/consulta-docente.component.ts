@@ -45,7 +45,7 @@ export class ConsultaDocenteComponent {
   consultarDocente(): void {
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_resoluciones/${this.documentoDocente}`
+      `gestion_resoluciones/consultar_docente/${this.documentoDocente}`
     ).subscribe(response => {
       if (response.Success) {
         this.resolucionesDocenteData = new LocalDataSource(response.Data);
