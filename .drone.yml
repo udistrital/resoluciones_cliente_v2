@@ -42,14 +42,14 @@ steps:
     event:
     - push
 
-- name: prueba_unitarias
-  image: node:16.13.0
-  commands:
-  - npm i
-  - npm run test
-  when:
-    branch:
-    - feature/*
+# - name: prueba_unitarias
+#   image: node:16.13.0
+#   commands:
+#   - npm i
+#   - npm run test
+#   when:
+#     branch:
+#     - feature/*
 #
 # - name:  pruebas_linter
 #   image: node:14.15.2
