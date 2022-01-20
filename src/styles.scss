@@ -160,19 +160,19 @@ ul {
   text-align: left;
   font-size: 1.1rem;
   color: var(--primary);
-  font-family: "Open Sans";
+  font-family: "Open Sans", Arial, sans-serif;
 }
 
 .title-term-conditional {
   text-align: center;
   font-size: 1.5rem;
   color: var(--primary);
-  font-family: "Open Sans";
+  font-family: "Open Sans", Arial, sans-serif;
 }
 
 .text-term-condional {
   text-align: justify;
-  font-family: "Open Sans";
+  font-family: "Open Sans", Arial, sans-serif;
   font-size: 1rem;
 }
 .main-container {
@@ -228,7 +228,7 @@ a {
   justify-content: start;
   align-items: center;
   text-align: justify;
-  font-family: "Open Sans";
+  font-family: "Open Sans", Arial, sans-serif;
   font-size: 1rem;
   .success {
     color: var(--primary);

@@ -20,8 +20,8 @@ export class UtilService {
         });
     }
 
-    success(texto: string): void {
-        Swal.fire({
+    success(texto: string): Promise<any> {
+        return Swal.fire({
             title: 'Exito!',
             text: texto,
             icon: 'success',

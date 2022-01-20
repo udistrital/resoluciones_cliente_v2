@@ -78,12 +78,12 @@ export class PlantillasComponent implements OnInit {
   }
 
   createPlantilla(): void {
-    this.setSelectedTab(1);
+    this.setSelectedTab(1, false);
     this.resolucionId = 0;
   }
 
   editPlantilla(event: any): void {
-    this.setSelectedTab(1);
+    this.setSelectedTab(1, false);
     this.resolucionId = event.data.Id;
   }
 
@@ -108,8 +108,12 @@ export class PlantillasComponent implements OnInit {
     });
   }
 
-  setSelectedTab(tab: number): void {
+  setSelectedTab(tab: number, update: boolean): void {
     this.selectedTab = tab;
+    this.resolucionId = 0;
+    if (update) {
+      this.ngOnInit();
+    }
   }
 
 }

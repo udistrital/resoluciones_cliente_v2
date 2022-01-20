@@ -43,13 +43,13 @@ steps:
     - push
 
 # - name: prueba_unitarias
-#   image: node:14.15.2
+#   image: node:16.13.0
 #   commands:
 #   - npm i
 #   - npm run test
 #   when:
 #     branch:
-#     - unitest
+#     - feature/*
 #
 # - name:  pruebas_linter
 #   image: node:14.15.2
