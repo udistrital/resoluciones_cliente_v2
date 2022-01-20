@@ -3,7 +3,7 @@
     <mat-card-content>
         <mat-tab-group mat-stretch-tabs 
             [selectedIndex]="selectedTab"
-            (selectedIndexChange)="setSelectedTab($event)"    
+            (selectedIndexChange)="setSelectedTab($event, false)"    
         >
             <mat-tab label="Lista">
                 <div class="inner-container">
@@ -21,7 +21,7 @@
                     <app-form-detalle-resolucion 
                         [resolucionId]="resolucionId" 
                         [esPlantilla]="true"
-                        (volver)="setSelectedTab(0)"
+                        (volver)="setSelectedTab(0, true)"
                     ></app-form-detalle-resolucion>
                 </div>
             </mat-tab>

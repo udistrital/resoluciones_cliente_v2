@@ -11,6 +11,7 @@ import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { CuadroResponsabilidades } from 'src/app/@core/models/cuadro_responsabilidades';
 import { UtilService } from '../services/utilService';
+import { Respuesta } from 'src/app/@core/models/respuesta';
 
 @Component({
   selector: 'app-form-detalle-resolucion',
@@ -101,14 +102,14 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
-    ).subscribe((response: any) => {
+    ).subscribe((response: Respuesta) => {
       this.dedicaciones = response.Data as Parametro[];
     });
 
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
-    ).subscribe((response: any) => {
+    ).subscribe((response: Respuesta) => {
       this.tiposResoluciones = response.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
     });
 
@@ -132,7 +133,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_plantillas/${Id}`
-      ).subscribe((response: any) => {
+      ).subscribe((response: Respuesta) => {
         this.contenidoResolucion = response.Data as ContenidoResolucion;
         const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
         this.responsabilidadesData = new LocalDataSource(responsabilidades);
@@ -141,7 +142,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_resoluciones/${Id}`
-      ).subscribe((response: any) => {
+      ).subscribe((response: Respuesta) => {
         this.contenidoResolucion = response.Data as ContenidoResolucion;
         const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
         this.responsabilidadesData = new LocalDataSource(responsabilidades);
@@ -185,9 +186,11 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
               `gestion_plantillas`,
               this.contenidoResolucion,
               this.contenidoResolucion.Resolucion.Id
-            ).subscribe((response: any) => {
+            ).subscribe((response: Respuesta) => {
               if (response.Success) {
-                this.popUp.success('La plantilla se ha actualizado con éxito');
+                this.popUp.success('La plantilla se ha actualizado con éxito').then(() => {
+                  this.salir();
+                });
               }
             }, (error: any) => {
               this.popUp.error('No se ha podido actualizar la plantilla');
@@ -207,9 +210,11 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
               environment.RESOLUCIONES_MID_V2_SERVICE,
               `gestion_plantillas`,
               this.contenidoResolucion
-            ).subscribe((response: any) => {
+            ).subscribe((response: Respuesta) => {
               if (response.Success) {
-                this.popUp.success('La plantilla se ha guardado con éxito');
+                this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
+                  this.salir();
+                });
               }
             }, (error: any) => {
               console.log(error);
@@ -231,9 +236,11 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
             `gestion_resoluciones`,
             this.contenidoResolucion,
             this.contenidoResolucion.Resolucion.Id
-          ).subscribe(response => {
+          ).subscribe((response: Respuesta) => {
             if (response.Success) {
-              this.popUp.success('La resolución se ha actualizado con éxito');
+              this.popUp.success('La resolución se ha actualizado con éxito').then(() => {
+                this.salir();
+              });
             }
           });
         });

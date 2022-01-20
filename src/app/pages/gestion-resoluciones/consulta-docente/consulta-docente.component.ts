@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
+import { UtilService } from '../../services/utilService';
 
 @Component({
   selector: 'app-consulta-docente',
@@ -17,6 +19,7 @@ export class ConsultaDocenteComponent {
 
   constructor(
     private request: RequestManager,
+    private popUp: UtilService,
   ) {
     this.initTable();
   }
@@ -46,9 +49,12 @@ export class ConsultaDocenteComponent {
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_resoluciones/consultar_docente/${this.documentoDocente}`
-    ).subscribe(response => {
+    ).subscribe((response: Respuesta) => {
       if (response.Success) {
         this.resolucionesDocenteData = new LocalDataSource(response.Data);
+        if (response.Data.length === 0) {
+          this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+        }
       }
     });
   }

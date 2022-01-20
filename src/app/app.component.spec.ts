@@ -31,5 +31,5 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     expect(compiled.querySelector('.footer-title h5').textContent).toContain('Oficina Asesora de Sistemas');
-  }) */;
+  }); */
 });

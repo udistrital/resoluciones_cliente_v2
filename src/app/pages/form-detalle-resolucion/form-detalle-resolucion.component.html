@@ -11,8 +11,8 @@
                     <mat-label>Nivel académico</mat-label>
                     <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" [disabled]="!esPlantilla || edicion" #niv="ngModel" required>
                         <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
-                            {{ nivel.Nombre }}
+                        <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre.toUpperCase()">
+                            {{ nivel.Nombre.toUpperCase() }}
                         </mat-option>
                     </mat-select>
                     <mat-error *ngIf="niv.errors?.['required'] && niv.touched">
@@ -97,7 +97,7 @@
                     <div class="paragrafo" *ngFor="let paragrafo of articulo.Paragrafos; let j=index" >
                         <mat-form-field style="width: 90%">
                             <mat-label>Paragrafo {{j + 1}}:</mat-label>
-                            <textarea matInput name="Paragrafo{{j + 1}}" [(ngModel)]="paragrafo.Texto" cols="20" rows="3" required></textarea>
+                            <textarea matInput name="Paragrafo{{i + 1}}-{{j + 1}}" [(ngModel)]="paragrafo.Texto" cols="20" rows="3" required></textarea>
                             <mat-error>
                                 No se admiten parágrafos vacíos
                             </mat-error>

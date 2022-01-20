@@ -4,13 +4,15 @@ import { RequestManager } from '../../services/requestManager';
 import { environment } from 'src/environments/environment';
 import { NivelFormacion } from 'src/app/@core/models/nivel_formacion';
 import { Periodo } from 'src/app/@core/models/periodo';
-import { LocalDataSource } from 'ng2-smart-table';
+import { ServerDataSource } from 'ng2-smart-table';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { ContenidoResolucion } from 'src/app/@core/models/contenido_resolucion';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { UtilService } from '../../services/utilService';
 import { Location } from '@angular/common';
+import { Respuesta } from 'src/app/@core/models/respuesta';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-generacion-resolucion',
@@ -25,7 +27,7 @@ export class GeneracionResolucionComponent implements OnInit {
   niveles: NivelFormacion[];
   facultades: any[];
   resolucionesExpedidasSettings: any;
-  resolucionesExpedidasData: LocalDataSource;
+  resolucionesExpedidasData: ServerDataSource;
   contenidoResolucion: ContenidoResolucion;
 
   tipoResolucion = '';
@@ -37,6 +39,7 @@ export class GeneracionResolucionComponent implements OnInit {
     private request: RequestManager,
     private location: Location,
     private popUp: UtilService,
+    private http: HttpClient,
   ) { }
 
   initTable(): void {
@@ -63,21 +66,21 @@ export class GeneracionResolucionComponent implements OnInit {
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
-    ).subscribe((response: any) => {
+    ).subscribe((response: Respuesta) => {
       this.dedicaciones = response.Data as Parametro[];
     });
 
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
-    ).subscribe((response: any) => {
+    ).subscribe((response: Respuesta) => {
       this.tiposResoluciones = response.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
     });
 
     this.request.get(
       environment.PARAMETROS_SERVICE,
       `periodo?query=CodigoAbreviacion:VG&fields=Year`
-    ).subscribe((response: any) => {
+    ).subscribe((response: Respuesta) => {
       this.vigencias = response.Data as Periodo[];
     });
 
@@ -95,11 +98,12 @@ export class GeneracionResolucionComponent implements OnInit {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
     });
 
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_resoluciones/resoluciones_expedidas`
-    ).subscribe(response => {
-      this.resolucionesExpedidasData = new LocalDataSource(response.Data);
+    this.resolucionesExpedidasData = new ServerDataSource(this.http, {
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas`,
+      dataKey: 'Data',
+      pagerPageKey: 'offset',
+      pagerLimitKey: 'limit',
+      totalKey: 'Total',
     });
   }
 
@@ -126,11 +130,12 @@ export class GeneracionResolucionComponent implements OnInit {
         ).subscribe((response: any) => {
           if (response.Success) {
             if (response.Data !== 0) {
-              this.popUp.success('La resolución se ha generado con éxito');
+              this.popUp.success('La resolución se ha generado con éxito').then(() => {
+                this.location.back();
+              });
             } else {
               this.popUp.error('No hay plantillas para el tipo de resolución indicada');
             }
-            // this.location.back();
           }
         });
       }
@@ -156,11 +161,12 @@ export class GeneracionResolucionComponent implements OnInit {
           ).subscribe((response: any) => {
             if (response.Success) {
               if (response.Data !== 0) {
-                this.popUp.success('La resolución se ha generado con éxito');
+                this.popUp.success('La resolución se ha generado con éxito').then(() => {
+                  this.location.back();
+                });
               } else {
                 this.popUp.error('No hay plantillas para el tipo de resolución indicada');
               }
-              // this.location.back();
             }
           });
         }

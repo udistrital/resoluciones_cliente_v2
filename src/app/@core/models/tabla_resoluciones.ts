@@ -4,17 +4,17 @@ export const TablaResoluciones: any = {
     },
     NumeroResolucion: {
         title: 'Número',
-        width: '8%',
+        width: '7%',
         editable: false,
     },
     Vigencia: {
         title: 'Vigencia',
-        width: '8%',
+        width: '7%',
         editable: false,
     },
     Periodo: {
         title: 'Periodo',
-        width: '8%',
+        width: '7%',
         editable: false,
     },
     Facultad: {
@@ -34,7 +34,7 @@ export const TablaResoluciones: any = {
     },
     Semanas: {
         title: 'Semanas',
-        width: '8%',
+        width: '7%',
         editable: false,
     },
     Estado: {
@@ -44,7 +44,7 @@ export const TablaResoluciones: any = {
     },
     TipoResolucion: {
         title: 'Tipo de resolución',
-        width: '10%',
+        width: '14%',
         editable: false,
     },
 };

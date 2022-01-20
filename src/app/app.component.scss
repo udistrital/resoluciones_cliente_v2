@@ -12,4 +12,41 @@
             color: var(--primary);
         }
     }
+
+    .page-item.disabled .page-link {
+        color: darkgray !important;
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary) !important;
+        color: white !important;
+        border: 1px solid var(--primary) !important;
+    }
+
+    .page-item {
+        margin: 3px;
+    }
+
+    .page-link {
+        color: var(--primary) !important;
+        padding: 8px;
+        padding-left: 14px;
+        padding-right: 14px;
+        border-radius: 4px !important;
+    }
+
+    .page-link:hover {
+        background-color: var(--color3) !important;
+        color: white !important;
+        border: 1px solid var(--color3);
+    }
+
+    .ng2-smart-pagination .page-link-next,
+    .ng2-smart-pagination .page-link-prev {
+        font-size: 14px !important;
+    }
+    
+    .ng2-smart-page-item a:hover {
+        text-decoration: none !important;
+    }
 }

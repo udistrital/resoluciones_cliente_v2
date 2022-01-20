@@ -38,8 +38,8 @@ describe('PlantillasComponent', () => {
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([{path: 'pages/plantillas', component: PlantillasComponent}]),
       ],
-      declarations: [ 
-        PlantillasComponent, 
+      declarations: [
+        PlantillasComponent,
         FormDetalleResolucionComponent,
       ],
       providers: [ RequestManager ],

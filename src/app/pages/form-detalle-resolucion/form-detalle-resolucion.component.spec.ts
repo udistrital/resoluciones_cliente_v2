@@ -21,7 +21,7 @@ describe('FormDetalleResolucionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ FormDetalleResolucionComponent ],
-      imports: [ 
+      imports: [
         FormsModule,
         MatCardModule,
         MatFormFieldModule,

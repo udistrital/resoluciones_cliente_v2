@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LocalDataSource } from 'ng2-smart-table';
+import { ServerDataSource } from 'ng2-smart-table';
+import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
@@ -17,7 +19,7 @@ import { UtilService } from '../services/utilService';
 export class GestionResolucionesComponent implements OnInit {
 
   resolucionesSettings: any;
-  resolucionesData: LocalDataSource;
+  resolucionesData: ServerDataSource;
   resolucionId = 0;
 
   constructor(
@@ -25,16 +27,18 @@ export class GestionResolucionesComponent implements OnInit {
     private route: ActivatedRoute,
     private popUp: UtilService,
     private router: Router,
+    private http: HttpClient,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_resoluciones`
-    ).subscribe((response) => {
-      this.resolucionesData = new LocalDataSource(response.Data);
+    this.resolucionesData = new ServerDataSource(this.http, {
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones`,
+      dataKey: 'Data',
+      pagerPageKey: 'offset',
+      pagerLimitKey: 'limit',
+      totalKey: 'Total',
     });
   }
 
@@ -135,7 +139,7 @@ export class GestionResolucionesComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
           id
-        ).subscribe(response => {
+        ).subscribe((response: Respuesta) => {
           if (response.Success) {
             this.popUp.success('La resolución ha sido anulada con éxito');
             this.ngOnInit();
