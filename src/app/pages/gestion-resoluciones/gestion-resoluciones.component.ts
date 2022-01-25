@@ -159,7 +159,7 @@ export class GestionResolucionesComponent implements OnInit {
   consultarVinculacionesResolución(id: number): void {}
 
   vincularDocentesResolución(id: number): void {
-    this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route })
+    this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route });
   }
 
   desvincularDocentesResolución(id: number): void {}
@@ -179,7 +179,7 @@ export class GestionResolucionesComponent implements OnInit {
           ResolucionId: Id,
           Estado: 'RAPR',
           Usuario: localStorage.getItem('user'),
-        }
+        };
         this.request.post(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones/actualizar_estado`,

@@ -37,4 +37,4 @@ export const TablaVinculaciones: any = {
         width: '11%',
         editable: false,
     },
-}
+};

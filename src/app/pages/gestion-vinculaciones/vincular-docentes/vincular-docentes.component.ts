@@ -33,13 +33,13 @@ export class VincularDocentesComponent implements OnInit {
   ) {
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
-    this.cargaAcademicaData = new LocalDataSource(); 
-    this.vinculacionesData = new LocalDataSource(); 
+    this.cargaAcademicaData = new LocalDataSource();
+    this.vinculacionesData = new LocalDataSource();
     this.initTables();
     this.preloadData();
   }
 
-  preloadData() {
+  preloadData(): void {
     this.route.paramMap.subscribe(params => {
       if (params.get('Id') !== null) {
         this.resolucionId = Number(params.get('Id'));
@@ -48,7 +48,7 @@ export class VincularDocentesComponent implements OnInit {
           `resolucion/${this.resolucionId}`
         ).subscribe((response: Respuesta) => {
           this.resolucion = response.Data as Resolucion;
-        })
+        });
         this.request.get(
           environment.RESOLUCIONES_V2_SERVICE,
           `resolucion_vinculacion_docente/${this.resolucionId}`
@@ -61,7 +61,7 @@ export class VincularDocentesComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`
+      const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_vinculaciones/docentes_carga_horaria${params}`
@@ -72,15 +72,15 @@ export class VincularDocentesComponent implements OnInit {
           this.popUp.error('No se encontraron datos de carga académica');
         }
       });
-  
+
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_vinculaciones/docentes_previnculados/${this.resolucionId}`
       ).subscribe((response: Respuesta) => {
         this.vinculacionesData.load(response.Data);
       });
-    }, 200)
-    
+    }, 200);
+
   }
 
   initTables(): void {
@@ -130,7 +130,7 @@ export class VincularDocentesComponent implements OnInit {
       actions: false,
       selectMode: 'multi',
       mode: 'external'
-    }
+    };
 
     this.vinculacionesSettings = {
       columns: TablaVinculaciones,
@@ -138,8 +138,9 @@ export class VincularDocentesComponent implements OnInit {
       selectMode: 'multi',
       mode: 'external',
       hideSubHeader: true,
-    }
+    };
   }
+
   abrirModalDisponibilidad(): void {
 
   }
