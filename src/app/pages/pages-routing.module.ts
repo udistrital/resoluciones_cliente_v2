@@ -5,6 +5,7 @@ import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docent
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-resoluciones.component';
+import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 
@@ -35,6 +36,10 @@ const routes: Routes = [{
     {
       path: 'consulta_docente',
       component: ConsultaDocenteComponent,
+    },
+    {
+      path: 'vincular_docentes',
+      component: VincularDocentesComponent,
     },
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',

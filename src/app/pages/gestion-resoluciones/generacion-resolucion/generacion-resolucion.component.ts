@@ -127,7 +127,7 @@ export class GeneracionResolucionComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
           this.contenidoResolucion
-        ).subscribe((response: any) => {
+        ).subscribe((response: Respuesta) => {
           if (response.Success) {
             if (response.Data !== 0) {
               this.popUp.success('La resolución se ha generado con éxito').then(() => {
@@ -158,7 +158,7 @@ export class GeneracionResolucionComponent implements OnInit {
             environment.RESOLUCIONES_MID_V2_SERVICE,
             `gestion_resoluciones`,
             this.contenidoResolucion
-          ).subscribe((response: any) => {
+          ).subscribe((response: Respuesta) => {
             if (response.Success) {
               if (response.Data !== 0) {
                 this.popUp.success('La resolución se ha generado con éxito').then(() => {

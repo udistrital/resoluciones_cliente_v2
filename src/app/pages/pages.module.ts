@@ -38,9 +38,11 @@ import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-res
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
+import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
 
 
 const pagesComponents = [
+  VincularDocentesComponent,
   GeneracionResolucionComponent,
   GestionResolucionesComponent,
   DetalleResolucionComponent,

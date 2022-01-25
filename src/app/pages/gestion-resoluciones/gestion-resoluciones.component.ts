@@ -20,7 +20,6 @@ export class GestionResolucionesComponent implements OnInit {
 
   resolucionesSettings: any;
   resolucionesData: ServerDataSource;
-  resolucionId = 0;
 
   constructor(
     private request: RequestManager,
@@ -78,6 +77,10 @@ export class GestionResolucionesComponent implements OnInit {
             title: '<em class="material-icons" title="Consultar">list</em>'
           },
           {
+            name: 'enviar',
+            title: '<em class="material-icons" title="Enviar a revisión">send</em>'
+          },
+          {
             name: 'editar',
             title: '<em class="material-icons" title="Editar contenido">edit</em>'
           },
@@ -113,6 +116,9 @@ export class GestionResolucionesComponent implements OnInit {
       case 'desvincular':
         this.desvincularDocentesResolución(event.data.Id);
         break;
+      case 'enviar':
+        this.enviarRevision(event.data.Id);
+        break;
       case 'adicionar':
         this.adicionarHorasDocentesResolución(event.data.Id);
         break;
@@ -141,8 +147,9 @@ export class GestionResolucionesComponent implements OnInit {
           id
         ).subscribe((response: Respuesta) => {
           if (response.Success) {
-            this.popUp.success('La resolución ha sido anulada con éxito');
-            this.ngOnInit();
+            this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
+              this.ngOnInit();
+            });
           }
         });
       }
@@ -151,13 +158,42 @@ export class GestionResolucionesComponent implements OnInit {
 
   consultarVinculacionesResolución(id: number): void {}
 
-  vincularDocentesResolución(id: number): void {}
+  vincularDocentesResolución(id: number): void {
+    this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route })
+  }
 
   desvincularDocentesResolución(id: number): void {}
 
   adicionarHorasDocentesResolución(id: number): void {}
 
   reducirHorasDocentesResolución(id: number): void {}
+
+  enviarRevision(Id: number): void {
+    this.popUp.confirm(
+      'Enviar a revisión',
+      '¿Está seguro de enviar esta resolución a revisión?',
+      'update'
+    ).then(result => {
+      if (result.isConfirmed) {
+        const estado = {
+          ResolucionId: Id,
+          Estado: 'RAPR',
+          Usuario: localStorage.getItem('user'),
+        }
+        this.request.post(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_resoluciones/actualizar_estado`,
+          estado
+        ).subscribe((response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
+              this.ngOnInit();
+            });
+          }
+        });
+      }
+    });
+  }
 
   crearResolucion(): void {
     this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route});
