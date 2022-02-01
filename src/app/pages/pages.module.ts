@@ -7,6 +7,7 @@ import { PagesComponent } from './pages.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestManager } from './services/requestManager';
 
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -39,9 +40,11 @@ import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resol
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
 import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
+import { ModalDisponibilidadComponent } from './gestion-vinculaciones/modal-disponibilidad/modal-disponibilidad.component';
 
 
 const pagesComponents = [
+  ModalDisponibilidadComponent,
   VincularDocentesComponent,
   GeneracionResolucionComponent,
   GestionResolucionesComponent,
@@ -54,6 +57,7 @@ const pagesComponents = [
 ];
 
 const materialModules = [
+  MatDialogModule,
   MatCardModule,
   MatTabsModule,
   MatListModule,

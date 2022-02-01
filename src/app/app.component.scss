@@ -2,6 +2,9 @@
     ng2-st-actions, ng2-st-tbody-edit-delete, ng2-st-tbody-create-cancel {
         display: flex;
         justify-content: space-evenly;
+        a {
+            color: var(--primary);
+        }
     }
 
     ng2-st-tbody-custom {

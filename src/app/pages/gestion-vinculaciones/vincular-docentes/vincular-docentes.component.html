@@ -14,7 +14,7 @@
                 [source]="cargaAcademicaData"
                 (userRowSelect)="seleccionarDocentes($event)"
             ></ng2-smart-table>
-            <button mat-button class="button button-submit" type="button" (click)="abrirModalDisponibilidad()">Seleccionar disponibilidad</button>
+            <button mat-button class="button button-submit" type="button" (click)="abrirModalDisponibilidad()" [disabled]="docentesSeleccionados.length === 0">Seleccionar disponibilidad</button>
         </fieldset>
         <fieldset class="form-container">
             <legend>
@@ -25,9 +25,9 @@
                 [source]="vinculacionesData"
                 (userRowSelect)="seleccionarVinculaciones($event)"
             ></ng2-smart-table>
-            <button mat-button class="button button-add" type="button" (click)="generarInformeCSV()">Generar informe Excel</button>
-            <button mat-button class="button button-add" type="button" (click)="generarInformePDF()">Generar informe PDF</button>
-            <button mat-button class="button button-remove" type="button" (click)="desvincular()">Desvincular docentes</button>
+            <button mat-button class="button button-add" type="button" (click)="generarInformeCSV()" [disabled]="vinculacionesData.count() === 0">Generar informe Excel</button>
+            <button mat-button class="button button-add" type="button" (click)="generarInformePDF()" [disabled]="vinculacionesData.count() === 0">Generar informe PDF</button>
+            <button mat-button class="button button-remove" type="button" (click)="desvincular()" [disabled]="vinculacionesSeleccionadas.length === 0">Desvincular docentes</button>
         </fieldset>
     </mat-card-content>
 </mat-card>

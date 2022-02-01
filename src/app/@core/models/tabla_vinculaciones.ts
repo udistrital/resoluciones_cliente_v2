@@ -37,4 +37,9 @@ export const TablaVinculaciones: any = {
         width: '11%',
         editable: false,
     },
+    ValorContratoFormato: {
+        title: 'Valor Reconocimiento',
+        width: '15%',
+        editable: false,
+    },
 };
