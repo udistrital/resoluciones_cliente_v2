@@ -177,7 +177,9 @@ export class GeneracionResolucionComponent implements OnInit {
   }
 
   seleccionarResolucion(event): void {
-    this.contenidoResolucion.ResolucionAnteriorId = event.data.Id;
+    (event.isSelected as boolean)
+    ? this.contenidoResolucion.ResolucionAnteriorId = event.data.Id
+    : this.contenidoResolucion.ResolucionAnteriorId = null;
   }
 
 }

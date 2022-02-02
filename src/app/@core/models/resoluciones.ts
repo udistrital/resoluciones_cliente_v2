@@ -5,4 +5,8 @@ export class Resoluciones {
     Periodo: number;
     Facultad: string;
     Dedicacion: string;
+    NivelAcademico: string;
+    Semanas: number;
+    Estado: string;
+    TipoResolucion: string;
 }

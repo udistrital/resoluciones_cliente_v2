@@ -61,8 +61,8 @@ export class GestionResolucionesComponent implements OnInit {
             title: '<em class="material-icons" title="Vincular">person_add</em>'
           },
           {
-            name: 'desvincular',
-            title: '<em class="material-icons" title="Desvincular">person_remove</em>'
+            name: 'cancelar',
+            title: '<em class="material-icons" title="Cancelar">person_remove</em>'
           },
           {
             name: 'adicionar',
@@ -113,8 +113,8 @@ export class GestionResolucionesComponent implements OnInit {
       case 'vincular':
         this.vincularDocentesResolución(event.data.Id);
         break;
-      case 'desvincular':
-        this.desvincularDocentesResolución(event.data.Id);
+      case 'cancelar':
+        this.cancelarDocentesResolución(event.data.Id);
         break;
       case 'enviar':
         this.enviarRevision(event.data.Id);
@@ -156,17 +156,23 @@ export class GestionResolucionesComponent implements OnInit {
     });
   }
 
-  consultarVinculacionesResolución(id: number): void {}
+  consultarVinculacionesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'vista'}], { relativeTo: this.route });
+  }
 
   vincularDocentesResolución(id: number): void {
     this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route });
   }
 
-  desvincularDocentesResolución(id: number): void {}
+  cancelarDocentesResolución(id: number): void {}
 
-  adicionarHorasDocentesResolución(id: number): void {}
+  adicionarHorasDocentesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'adicion'}], { relativeTo: this.route });
+  }
 
-  reducirHorasDocentesResolución(id: number): void {}
+  reducirHorasDocentesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'reduccion'}], { relativeTo: this.route });
+  }
 
   enviarRevision(Id: number): void {
     this.popUp.confirm(
