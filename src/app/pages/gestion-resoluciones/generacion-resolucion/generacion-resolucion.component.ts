@@ -10,9 +10,9 @@ import { ContenidoResolucion } from 'src/app/@core/models/contenido_resolucion';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { UtilService } from '../../services/utilService';
-import { Location } from '@angular/common';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-generacion-resolucion',
@@ -37,7 +37,7 @@ export class GeneracionResolucionComponent implements OnInit {
 
   constructor(
     private request: RequestManager,
-    private location: Location,
+    private router: Router,
     private popUp: UtilService,
     private http: HttpClient,
   ) { }
@@ -131,7 +131,7 @@ export class GeneracionResolucionComponent implements OnInit {
           if (response.Success) {
             if (response.Data !== 0) {
               this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                this.location.back();
+                this.router.navigateByUrl('pages/gestion_resoluciones');
               });
             } else {
               this.popUp.error('No hay plantillas para el tipo de resolución indicada');
@@ -162,7 +162,7 @@ export class GeneracionResolucionComponent implements OnInit {
             if (response.Success) {
               if (response.Data !== 0) {
                 this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                  this.location.back();
+                  this.router.navigateByUrl('pages/gestion_resoluciones');
                 });
               } else {
                 this.popUp.error('No hay plantillas para el tipo de resolución indicada');

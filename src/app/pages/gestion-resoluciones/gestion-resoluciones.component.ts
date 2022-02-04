@@ -164,7 +164,9 @@ export class GestionResolucionesComponent implements OnInit {
     this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route });
   }
 
-  cancelarDocentesResolución(id: number): void {}
+  cancelarDocentesResolución(id: number): void {
+    this.router.navigate(['../cancelar_vinculaciones', {Id: id}], { relativeTo: this.route });
+  }
 
   adicionarHorasDocentesResolución(id: number): void {
     this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'adicion'}], { relativeTo: this.route });

@@ -42,9 +42,11 @@ import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docent
 import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
 import { ModalDisponibilidadComponent } from './gestion-vinculaciones/modal-disponibilidad/modal-disponibilidad.component';
 import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
+import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
 
 
 const pagesComponents = [
+  CancelarVinculacionesComponent,
   ListarVinculacionesComponent,
   ModalDisponibilidadComponent,
   VincularDocentesComponent,

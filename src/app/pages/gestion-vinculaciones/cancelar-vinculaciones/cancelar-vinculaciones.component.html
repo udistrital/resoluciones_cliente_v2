@@ -1,0 +1,29 @@
+<mat-card class="card-oas">
+    <mat-card-title class="vinculacion-title">
+        <h1>Cancelación de vinculaciones</h1>
+        <h2>Resolución # {{ resolucion.NumeroResolucion }}</h2>
+        <h2>{{ resolucionVinculacion.Dedicacion }}</h2>
+    </mat-card-title>
+    <mat-card-content>
+        <fieldset class="form-container">
+            <legend>
+                <h3>Docentes vinculados</h3>
+            </legend>
+            <ng2-smart-table
+                [settings]="vinculacionesSettings"
+                [source]="vinculacionesData"
+                (userRowSelect)="seleccionarVinculaciones($event)"
+            ></ng2-smart-table>
+        </fieldset>
+        <fieldset class="form-container" *ngIf="vinculacionesSeleccionadas.length > 0">
+            <legend>
+                <h3>Docentes Seleccionados Para Reversar</h3>
+            </legend>
+            <mat-list>
+                <mat-list-item *ngFor="let v of vinculacionesSeleccionadas; let i=index">
+                    <p matLine>{{i + 1}}. {{v.PersonaId}} - {{v.Nombre}} - {{v.NumeroHorasSemanales}} Horas semanales</p>
+                </mat-list-item>
+            </mat-list>
+        </fieldset>
+    </mat-card-content>
+</mat-card>

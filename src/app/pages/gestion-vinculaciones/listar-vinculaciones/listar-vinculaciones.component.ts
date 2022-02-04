@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
@@ -9,6 +8,7 @@ import { TablaVinculaciones } from 'src/app/@core/models/tabla_vinculaciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
+import { ModificacionResolucion } from 'src/app/@core/models/modificacion_resolucion';
 
 @Component({
   selector: 'app-listar-vinculaciones',
@@ -27,7 +27,7 @@ export class ListarVinculacionesComponent implements OnInit {
   constructor(
     private request: RequestManager,
     private route: ActivatedRoute,
-    private location: Location,
+    private router: Router,
     private popUp: UtilService,
   ) {
     this.vinculacionesData = new LocalDataSource();
@@ -39,11 +39,11 @@ export class ListarVinculacionesComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       if (params.get('Id') !== null) {
         this.resolucionId = Number(params.get('Id'));
-        this.preloadData()
-        this.cargarVinculaciones();
+        this.preloadData();
       }
       if (params.get('tipo') !== null) {
         this.tipoVista = params.get('tipo');
+        this.cargarVinculaciones();
       }
       this.initTable();
     });
@@ -107,9 +107,26 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   cargarVinculaciones(): void {
+    console.log(this.tipoVista);
+    if (this.tipoVista === 'vista') {
+      this.cargarVinculacionesResolucion(this.resolucionId);
+    } else {
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
+      ).subscribe((response: Respuesta) => {
+        if (response.Success) {
+          const resolucionId = (response.Data as ModificacionResolucion[])[0].ResolucionAnteriorId.Id;
+          this.cargarVinculacionesResolucion(resolucionId);
+        }
+      });
+    }
+  }
+
+  cargarVinculacionesResolucion(resolucionId: number): void {
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_vinculaciones/${this.resolucionId}`
+      `gestion_vinculaciones/${resolucionId}`
     ).subscribe((response: Respuesta) => {
       if (response.Success) {
         this.vinculacionesData.load(response.Data);
@@ -149,6 +166,6 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   volver(): void {
-    this.location.back();
+    this.router.navigateByUrl('pages/gestion_resoluciones');
   }
 }
