@@ -18,4 +18,6 @@ export class ModalDisponibilidadComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  seleccionado(event): void { }
+
 }

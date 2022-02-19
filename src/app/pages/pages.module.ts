@@ -30,6 +30,7 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { OasGridColsDirective } from './directives/oas-grid-cols.directive';
 
 import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { UtilService } from './services/utilService';
 import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
@@ -43,11 +44,19 @@ import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-doce
 import { ModalDisponibilidadComponent } from './gestion-vinculaciones/modal-disponibilidad/modal-disponibilidad.component';
 import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
 import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
+import { ModalAdicionesComponent } from './gestion-vinculaciones/modal-adiciones/modal-adiciones.component';
+import { ModalReduccionesComponent } from './gestion-vinculaciones/modal-reducciones/modal-reducciones.component';
+import { TablasDisponibilidadesComponent } from './gestion-vinculaciones/tablas-disponibilidades/tablas-disponibilidades.component';
+import { ModalDocumentoViewerComponent } from './modal-documento-viewer/modal-documento-viewer.component';
 
 
 const pagesComponents = [
+  TablasDisponibilidadesComponent,
   CancelarVinculacionesComponent,
   ListarVinculacionesComponent,
+  ModalAdicionesComponent,
+  ModalReduccionesComponent,
+  ModalDocumentoViewerComponent,
   ModalDisponibilidadComponent,
   VincularDocentesComponent,
   GeneracionResolucionComponent,
@@ -92,6 +101,7 @@ const materialModules = [
     ReactiveFormsModule,
     PagesRoutingModule,
     Ng2SmartTableModule,
+    NgxExtendedPdfViewerModule,
     ...materialModules
   ],
   providers: [

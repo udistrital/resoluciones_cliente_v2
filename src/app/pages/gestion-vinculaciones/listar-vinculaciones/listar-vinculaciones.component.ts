@@ -9,6 +9,10 @@ import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
 import { ModificacionResolucion } from 'src/app/@core/models/modificacion_resolucion';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ModalAdicionesComponent } from '../modal-adiciones/modal-adiciones.component';
+import { ModalReduccionesComponent } from '../modal-reducciones/modal-reducciones.component';
+import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 
 @Component({
   selector: 'app-listar-vinculaciones',
@@ -17,6 +21,7 @@ import { ModificacionResolucion } from 'src/app/@core/models/modificacion_resolu
 })
 export class ListarVinculacionesComponent implements OnInit {
 
+  dialogConfig: MatDialogConfig;
   resolucionId: number;
   resolucion: Resolucion;
   resolucionVinculacion: ResolucionVinculacionDocente;
@@ -29,6 +34,7 @@ export class ListarVinculacionesComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private popUp: UtilService,
+    private dialog: MatDialog,
   ) {
     this.vinculacionesData = new LocalDataSource();
     this.resolucion = new Resolucion();
@@ -47,6 +53,10 @@ export class ListarVinculacionesComponent implements OnInit {
       }
       this.initTable();
     });
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '800px';
+    this.dialogConfig.height = '500px';
+    this.dialogConfig.data = {};
   }
 
   preloadData(): void {
@@ -157,10 +167,21 @@ export class ListarVinculacionesComponent implements OnInit {
           }
         });
         break;
+
       case 'adicionar':
+        this.dialogConfig.data = event.data as Vinculaciones;
+        const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+        dialogAdicion.afterClosed().subscribe((data: Vinculaciones) => {
+
+        });
         break;
 
       case 'reducir':
+        this.dialogConfig.data = event.data as Vinculaciones;
+        const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+        dialogReduccion.afterClosed().subscribe((data: Vinculaciones) => {
+
+        });
         break;
     }
   }

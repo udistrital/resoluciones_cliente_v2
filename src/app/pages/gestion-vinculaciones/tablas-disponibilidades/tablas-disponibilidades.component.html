@@ -1,0 +1,16 @@
+<mat-grid-list cols="2" rowHeight="500px">
+    <mat-grid-tile>
+        <ng2-smart-table
+            [settings]="disponibilidadesSettings"
+            [source]="disponibilidadesData"
+            (userRowSelect)="seleccionarDisponibilidad($event)"
+        ></ng2-smart-table>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <ng2-smart-table
+            [settings]="rubrosSettings"
+            [source]="rubrosData"
+            (userRowSelect)="seleccionarRubros($event)"
+        ></ng2-smart-table>
+    </mat-grid-tile>
+</mat-grid-list>

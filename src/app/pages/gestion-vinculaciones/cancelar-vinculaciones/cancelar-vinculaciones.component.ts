@@ -75,9 +75,9 @@ export class CancelarVinculacionesComponent implements OnInit {
             this.request.get(
               environment.RESOLUCIONES_MID_V2_SERVICE,
               `gestion_vinculaciones/${resolucionId}`
-            ).subscribe((response: Respuesta) => {
-              if (response.Success) {
-                this.vinculacionesData.load(response.Data);
+            ).subscribe((response2: Respuesta) => {
+              if (response2.Success) {
+                this.vinculacionesData.load(response2.Data);
               }
             });
           }

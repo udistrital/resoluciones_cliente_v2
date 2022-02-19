@@ -19,11 +19,11 @@
             <legend>
                 <h3>Docentes Seleccionados Para Reversar</h3>
             </legend>
-            <mat-list>
-                <mat-list-item *ngFor="let v of vinculacionesSeleccionadas; let i=index">
-                    <p matLine>{{i + 1}}. {{v.PersonaId}} - {{v.Nombre}} - {{v.NumeroHorasSemanales}} Horas semanales</p>
-                </mat-list-item>
-            </mat-list>
+            <mat-expansion-panel *ngFor="let v of vinculacionesSeleccionadas; let i=index">
+                <mat-expansion-panel-header>
+                    <mat-panel-title><strong>{{i + 1}}. {{v.PersonaId}} - {{v.Nombre}} - {{v.NumeroHorasSemanales}} Horas semanales</strong></mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
         </fieldset>
     </mat-card-content>
 </mat-card>
