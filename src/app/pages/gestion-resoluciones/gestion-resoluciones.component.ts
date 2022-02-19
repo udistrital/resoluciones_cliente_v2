@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ServerDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { environment } from 'src/environments/environment';
+import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
 
@@ -18,6 +20,7 @@ import { UtilService } from '../services/utilService';
 })
 export class GestionResolucionesComponent implements OnInit {
 
+  dialogConfig: MatDialogConfig;
   resolucionesSettings: any;
   resolucionesData: ServerDataSource;
 
@@ -27,6 +30,7 @@ export class GestionResolucionesComponent implements OnInit {
     private popUp: UtilService,
     private router: Router,
     private http: HttpClient,
+    private dialog: MatDialog,
   ) {
     this.initTable();
   }
@@ -39,6 +43,10 @@ export class GestionResolucionesComponent implements OnInit {
       pagerLimitKey: 'limit',
       totalKey: 'Total',
     });
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '1200px';
+    this.dialogConfig.height = '800px';
+    this.dialogConfig.data = '';
   }
 
   initTable(): void {
@@ -128,7 +136,17 @@ export class GestionResolucionesComponent implements OnInit {
     }
   }
 
-  cargarDocumento(id: number): void {}
+  cargarDocumento(id: number): void {
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones/generar_resolucion/${id}`
+    ).subscribe((response: Respuesta) => {
+      if (response.Success) {
+        this.dialogConfig.data = response.Data as string;
+        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+      }
+    });
+  }
 
   editarResolución(id: number): void {
     this.router.navigate(['../detalle_resolucion', {Id: id}], { relativeTo: this.route});

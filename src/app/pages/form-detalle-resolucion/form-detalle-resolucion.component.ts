@@ -12,6 +12,8 @@ import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vi
 import { CuadroResponsabilidades } from 'src/app/@core/models/cuadro_responsabilidades';
 import { UtilService } from '../services/utilService';
 import { Respuesta } from 'src/app/@core/models/respuesta';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 
 @Component({
   selector: 'app-form-detalle-resolucion',
@@ -20,6 +22,7 @@ import { Respuesta } from 'src/app/@core/models/respuesta';
 })
 export class FormDetalleResolucionComponent implements OnInit, OnChanges {
 
+  dialogConfig: MatDialogConfig;
   contenidoResolucion: ContenidoResolucion;
   responsabilidadesSettings: any;
   responsabilidadesData: LocalDataSource;
@@ -41,12 +44,17 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   constructor(
     private request: RequestManager,
     private popUp: UtilService,
+    private dialog: MatDialog,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '1200px';
+    this.dialogConfig.height = '800px';
+    this.dialogConfig.data = '';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -248,7 +256,17 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     });
   }
 
-  generarVistaPrevia(): void {}
+  generarVistaPrevia(): void {
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones/generar_resolucion/${this.contenidoResolucion.Resolucion.Id}`
+    ).subscribe((response: Respuesta) => {
+      if (response.Success) {
+        this.dialogConfig.data = response.Data as string;
+        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+      }
+    });
+  }
 
   limpiarFormulario(): void {
     this.contenidoResolucion = new ContenidoResolucion();

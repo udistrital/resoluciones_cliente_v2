@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
 import { ModalDisponibilidadComponent } from '../modal-disponibilidad/modal-disponibilidad.component';
+import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/modal-documento-viewer.component';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -132,7 +133,7 @@ export class VincularDocentesComponent implements OnInit {
             },
           },
           valuePrepareFunction: (value) => {
-            return value ? 'Si': 'No';
+            return value ? 'Si' : 'No';
           },
         },
         proyecto_nombre: {
@@ -182,12 +183,11 @@ export class VincularDocentesComponent implements OnInit {
       if (ok) {
 
       }
-    })
-
+    });
   }
 
   generarInformeCSV(): void {
-    var texto = '';
+    let texto = '';
     Object.keys(this.vinculacionesSettings.columns).forEach((col) => {
       texto += this.vinculacionesSettings.columns[col].title + ';';
     });
@@ -212,7 +212,18 @@ export class VincularDocentesComponent implements OnInit {
   }
 
   generarInformePDF(): void {
-
+    this.vinculacionesData.getAll().then((vinculaciones: Vinculaciones[]) => {
+      this.request.post(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_vinculaciones/informe_vinculaciones`,
+        vinculaciones
+      ).subscribe((response: Respuesta) => {
+        if (response.Success) {
+          this.dialogConfig.data = response.Data as string;
+          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+        }
+      });
+    });
   }
 
   desvincular(): void {
