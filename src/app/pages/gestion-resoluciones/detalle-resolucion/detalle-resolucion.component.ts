@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-detalle-resolucion',
@@ -13,7 +12,7 @@ export class DetalleResolucionComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -25,7 +24,7 @@ export class DetalleResolucionComponent implements OnInit {
   }
 
   volver(): void {
-    this.location.back();
+    this.router.navigateByUrl('pages/gestion_resoluciones');
   }
 
 }

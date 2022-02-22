@@ -1,0 +1,43 @@
+<form #rform="ngForm">
+    <h2 class="section-title">Reducción de horas</h2>
+    <mat-grid-list cols="2">
+        <mat-grid-tile>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas actuales</mat-label>
+                <input matInput type="text" [(ngModel)]="informacion.NumeroHorasSemanales" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas a adicionar</mat-label>
+                <input matInput type="tel" [(ngModel)]="horasReducir" (change)="sumarHoras()">
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas totales</mat-label>
+                <input matInput type="text" [(ngModel)]="horasTotales" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Registro presupuestal</mat-label>
+                <mat-select [(ngModel)]="rpSeleccionado">
+                    <mat-option>--Seleccionar--</mat-option>
+                    <mat-option *ngFor="let rp of registrosPresupuestales" [value]="rp.Id">
+                        {{ rp.Nombre }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field style="width: 100%">
+                <mat-label>Semanas actuales</mat-label>
+                <input matInput type="text" [(ngModel)]="informacion.NumeroSemanas" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Semanas a reducir</mat-label>
+                <input matInput type="text" [(ngModel)]="semanasReducir" >
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Fecha de inicio válida</mat-label>
+                <input matInput type="date" [(ngModel)]="fechaInicio" >
+            </mat-form-field>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!rform.valid" >Modificar</button>
+</form>

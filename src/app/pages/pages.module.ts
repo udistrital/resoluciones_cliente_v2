@@ -7,6 +7,7 @@ import { PagesComponent } from './pages.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestManager } from './services/requestManager';
 
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -29,6 +30,7 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { OasGridColsDirective } from './directives/oas-grid-cols.directive';
 
 import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { UtilService } from './services/utilService';
 import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
@@ -38,9 +40,25 @@ import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-res
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
+import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
+import { ModalDisponibilidadComponent } from './gestion-vinculaciones/modal-disponibilidad/modal-disponibilidad.component';
+import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
+import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
+import { ModalAdicionesComponent } from './gestion-vinculaciones/modal-adiciones/modal-adiciones.component';
+import { ModalReduccionesComponent } from './gestion-vinculaciones/modal-reducciones/modal-reducciones.component';
+import { TablasDisponibilidadesComponent } from './gestion-vinculaciones/tablas-disponibilidades/tablas-disponibilidades.component';
+import { ModalDocumentoViewerComponent } from './modal-documento-viewer/modal-documento-viewer.component';
 
 
 const pagesComponents = [
+  TablasDisponibilidadesComponent,
+  CancelarVinculacionesComponent,
+  ListarVinculacionesComponent,
+  ModalAdicionesComponent,
+  ModalReduccionesComponent,
+  ModalDocumentoViewerComponent,
+  ModalDisponibilidadComponent,
+  VincularDocentesComponent,
   GeneracionResolucionComponent,
   GestionResolucionesComponent,
   DetalleResolucionComponent,
@@ -52,6 +70,7 @@ const pagesComponents = [
 ];
 
 const materialModules = [
+  MatDialogModule,
   MatCardModule,
   MatTabsModule,
   MatListModule,
@@ -82,6 +101,7 @@ const materialModules = [
     ReactiveFormsModule,
     PagesRoutingModule,
     Ng2SmartTableModule,
+    NgxExtendedPdfViewerModule,
     ...materialModules
   ],
   providers: [

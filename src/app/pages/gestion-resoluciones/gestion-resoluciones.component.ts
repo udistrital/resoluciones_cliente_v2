@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ServerDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { environment } from 'src/environments/environment';
+import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
 
@@ -18,9 +20,9 @@ import { UtilService } from '../services/utilService';
 })
 export class GestionResolucionesComponent implements OnInit {
 
+  dialogConfig: MatDialogConfig;
   resolucionesSettings: any;
   resolucionesData: ServerDataSource;
-  resolucionId = 0;
 
   constructor(
     private request: RequestManager,
@@ -28,6 +30,7 @@ export class GestionResolucionesComponent implements OnInit {
     private popUp: UtilService,
     private router: Router,
     private http: HttpClient,
+    private dialog: MatDialog,
   ) {
     this.initTable();
   }
@@ -40,6 +43,10 @@ export class GestionResolucionesComponent implements OnInit {
       pagerLimitKey: 'limit',
       totalKey: 'Total',
     });
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '1200px';
+    this.dialogConfig.height = '800px';
+    this.dialogConfig.data = '';
   }
 
   initTable(): void {
@@ -62,8 +69,8 @@ export class GestionResolucionesComponent implements OnInit {
             title: '<em class="material-icons" title="Vincular">person_add</em>'
           },
           {
-            name: 'desvincular',
-            title: '<em class="material-icons" title="Desvincular">person_remove</em>'
+            name: 'cancelar',
+            title: '<em class="material-icons" title="Cancelar">person_remove</em>'
           },
           {
             name: 'adicionar',
@@ -76,6 +83,10 @@ export class GestionResolucionesComponent implements OnInit {
           {
             name: 'consultar',
             title: '<em class="material-icons" title="Consultar">list</em>'
+          },
+          {
+            name: 'enviar',
+            title: '<em class="material-icons" title="Enviar a revisión">send</em>'
           },
           {
             name: 'editar',
@@ -110,8 +121,11 @@ export class GestionResolucionesComponent implements OnInit {
       case 'vincular':
         this.vincularDocentesResolución(event.data.Id);
         break;
-      case 'desvincular':
-        this.desvincularDocentesResolución(event.data.Id);
+      case 'cancelar':
+        this.cancelarDocentesResolución(event.data.Id);
+        break;
+      case 'enviar':
+        this.enviarRevision(event.data.Id);
         break;
       case 'adicionar':
         this.adicionarHorasDocentesResolución(event.data.Id);
@@ -122,7 +136,17 @@ export class GestionResolucionesComponent implements OnInit {
     }
   }
 
-  cargarDocumento(id: number): void {}
+  cargarDocumento(id: number): void {
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_resoluciones/generar_resolucion/${id}`
+    ).subscribe((response: Respuesta) => {
+      if (response.Success) {
+        this.dialogConfig.data = response.Data as string;
+        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+      }
+    });
+  }
 
   editarResolución(id: number): void {
     this.router.navigate(['../detalle_resolucion', {Id: id}], { relativeTo: this.route});
@@ -141,23 +165,61 @@ export class GestionResolucionesComponent implements OnInit {
           id
         ).subscribe((response: Respuesta) => {
           if (response.Success) {
-            this.popUp.success('La resolución ha sido anulada con éxito');
-            this.ngOnInit();
+            this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
+              this.ngOnInit();
+            });
           }
         });
       }
     });
   }
 
-  consultarVinculacionesResolución(id: number): void {}
+  consultarVinculacionesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'vista'}], { relativeTo: this.route });
+  }
 
-  vincularDocentesResolución(id: number): void {}
+  vincularDocentesResolución(id: number): void {
+    this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route });
+  }
 
-  desvincularDocentesResolución(id: number): void {}
+  cancelarDocentesResolución(id: number): void {
+    this.router.navigate(['../cancelar_vinculaciones', {Id: id}], { relativeTo: this.route });
+  }
 
-  adicionarHorasDocentesResolución(id: number): void {}
+  adicionarHorasDocentesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'adicion'}], { relativeTo: this.route });
+  }
 
-  reducirHorasDocentesResolución(id: number): void {}
+  reducirHorasDocentesResolución(id: number): void {
+    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'reduccion'}], { relativeTo: this.route });
+  }
+
+  enviarRevision(Id: number): void {
+    this.popUp.confirm(
+      'Enviar a revisión',
+      '¿Está seguro de enviar esta resolución a revisión?',
+      'update'
+    ).then(result => {
+      if (result.isConfirmed) {
+        const estado = {
+          ResolucionId: Id,
+          Estado: 'RAPR',
+          Usuario: localStorage.getItem('user'),
+        };
+        this.request.post(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_resoluciones/actualizar_estado`,
+          estado
+        ).subscribe((response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
+              this.ngOnInit();
+            });
+          }
+        });
+      }
+    });
+  }
 
   crearResolucion(): void {
     this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route});
