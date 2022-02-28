@@ -38,6 +38,11 @@ import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-res
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
+import { AdminResolucionesComponent } from './admin-resoluciones/admin-resoluciones.component';
+import { ExpedirVinculacionComponent } from './admin-resoluciones/expedir-vinculacion/expedir-vinculacion.component';
+import { ExpedirCancelacionComponent } from './admin-resoluciones/expedir-cancelacion/expedir-cancelacion.component';
+import { ExpedirModificacionComponent } from './admin-resoluciones/expedir-modificacion/expedir-modificacion.component';
+import { AprobacionResolucionesComponent } from './aprobacion-resoluciones/aprobacion-resoluciones.component';
 
 
 const pagesComponents = [
@@ -46,6 +51,11 @@ const pagesComponents = [
   DetalleResolucionComponent,
   ConsultaDocenteComponent,
   FormDetalleResolucionComponent,
+  AdminResolucionesComponent,
+  ExpedirVinculacionComponent,
+  ExpedirCancelacionComponent,
+  ExpedirModificacionComponent,
+  AprobacionResolucionesComponent,
   PlantillasComponent,
   DashboardComponent,
   PagesComponent,
