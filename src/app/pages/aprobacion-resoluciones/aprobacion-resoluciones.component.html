@@ -1,0 +1,10 @@
+<mat-card class="card-oas">
+    <mat-card-title class="resoluciones-title"><h1>Aprobación de resoluciones</h1></mat-card-title>
+    <mat-card-content>
+        <ng2-smart-table
+            [settings]="aprobResolucionesSettings"
+            [source]="aprobResolucionesData"
+            (custom)=eventHandler($event)
+        ></ng2-smart-table>
+    </mat-card-content>
+</mat-card>
