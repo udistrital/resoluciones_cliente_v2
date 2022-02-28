@@ -1,0 +1,40 @@
+<form #aform="ngForm" novalidate>
+    <h2 class="section-title">Adición de horas</h2>
+    <mat-grid-list cols="2">
+        <mat-grid-tile>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas actuales</mat-label>
+                <input matInput type="text" [(ngModel)]="informacion.NumeroHorasSemanales" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas a adicionar</mat-label>
+                <input matInput type="text" [(ngModel)]="horasAdicionar">
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Horas totales</mat-label>
+                <input matInput type="text" [(ngModel)]="horasTotales" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Disponibilidad actual</mat-label>
+                <input matInput type="text" [(ngModel)]="disponibilidad" disabled>
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field style="width: 100%">
+                <mat-label>Semanas actuales</mat-label>
+                <input matInput type="text" [(ngModel)]="informacion.NumeroSemanas" disabled>
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>Semanas a adicionar</mat-label>
+                <input matInput type="text" [(ngModel)]="semanasAdicionar" >
+            </mat-form-field>
+            <mat-form-field style="width: 100%">
+                <mat-label>fecha de inicio válida</mat-label>
+                <input matInput type="date" [(ngModel)]="fechaInicio" disabled>
+            </mat-form-field>
+            <button mat-button class="button button-add" type="button" (click)="mostrarDisponibilidad()">Cambiar disponibilidad</button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <app-tablas-disponibilidades *ngIf="mostrar" (seleccion)="nuevaDisponibilidad($event)"></app-tablas-disponibilidades>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!aform.valid" >Modificar</button>
+</form>

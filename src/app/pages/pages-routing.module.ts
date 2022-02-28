@@ -7,6 +7,9 @@ import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docent
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
 import { GeneracionResolucionComponent } from './gestion-resoluciones/generacion-resolucion/generacion-resolucion.component';
 import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-resoluciones.component';
+import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
+import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
+import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 
@@ -45,6 +48,17 @@ const routes: Routes = [{
     {
       path: 'resolucion_aprobacion',
       component: AprobacionResolucionesComponent
+    },
+      path: 'vincular_docentes',
+      component: VincularDocentesComponent,
+    },
+    {
+      path: 'listar_vinculaciones',
+      component: ListarVinculacionesComponent,
+    },
+    {
+      path: 'cancelar_vinculaciones',
+      component: CancelarVinculacionesComponent,
     },
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',

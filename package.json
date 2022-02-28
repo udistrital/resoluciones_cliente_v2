@@ -29,6 +29,7 @@
     "moment": "^2.29.1",
     "ng2-completer": "^9.0.1",
     "ng2-smart-table": "^1.7.2",
+    "ngx-extended-pdf-viewer": "^11.1.2",
     "pdfmake": "^0.2.4",
     "pdfmake-wrapper": "^2.1.2",
     "rxjs": "~7.4.0",

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
@@ -20,6 +21,7 @@ export class ConsultaDocenteComponent {
   constructor(
     private request: RequestManager,
     private popUp: UtilService,
+    private router: Router,
   ) {
     this.initTable();
   }
@@ -62,6 +64,10 @@ export class ConsultaDocenteComponent {
   eventHandler(event): void {
     // Abrir doc nuxeo
     console.log(event.data.Id);
+  }
+
+  volver(): void {
+    this.router.navigateByUrl('pages/gestion_resoluciones');
   }
 
 }
