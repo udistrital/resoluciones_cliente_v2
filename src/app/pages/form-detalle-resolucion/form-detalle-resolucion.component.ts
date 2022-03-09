@@ -136,26 +136,30 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     });
   }
 
-  cargarContenidoResolucion(Id: number): void {
-    this.esPlantilla ?
-      this.request.get(
-        environment.RESOLUCIONES_MID_V2_SERVICE,
-        `gestion_plantillas/${Id}`
-      ).subscribe((response: Respuesta) => {
-        this.contenidoResolucion = response.Data as ContenidoResolucion;
-        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
-        this.responsabilidadesData = new LocalDataSource(responsabilidades);
-        this.edicion = true;
-      }) :
-      this.request.get(
-        environment.RESOLUCIONES_MID_V2_SERVICE,
-        `gestion_resoluciones/${Id}`
-      ).subscribe((response: Respuesta) => {
-        this.contenidoResolucion = response.Data as ContenidoResolucion;
-        const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
-        this.responsabilidadesData = new LocalDataSource(responsabilidades);
-        this.edicion = true;
-      });
+  async cargarContenidoResolucion(Id: number): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.esPlantilla ?
+        this.request.get(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_plantillas/${Id}`
+        ).subscribe((response: Respuesta) => {
+          this.contenidoResolucion = response.Data as ContenidoResolucion;
+          const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+          this.responsabilidadesData = new LocalDataSource(responsabilidades);
+          this.edicion = true;
+          resolve();
+        }) :
+        this.request.get(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_resoluciones/${Id}`
+        ).subscribe((response: Respuesta) => {
+          this.contenidoResolucion = response.Data as ContenidoResolucion;
+          const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades);
+          this.responsabilidadesData = new LocalDataSource(responsabilidades);
+          this.edicion = true;
+          resolve();
+        });
+    });
   }
 
   agregarArticulo(): void {
@@ -178,92 +182,110 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     this.contenidoResolucion.Articulos[i].Paragrafos.splice(j, 1);
   }
 
-  guardarCambios(): void {
-    this.esPlantilla ?
-      this.edicion ?
+  async guardarCambios(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.esPlantilla ?
+        this.edicion ?
+        this.popUp.confirm(
+          'Actualizar plantilla',
+          '¿Está seguro que desea actualizar la plantilla?',
+          'update',
+        ).then(result => {
+          if (result.isConfirmed) {
+            this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+              this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+              this.request.put(
+                environment.RESOLUCIONES_MID_V2_SERVICE,
+                `gestion_plantillas`,
+                this.contenidoResolucion,
+                this.contenidoResolucion.Resolucion.Id
+              ).subscribe((response: Respuesta) => {
+                if (response.Success) {
+                  this.popUp.success('La plantilla se ha actualizado con éxito').then(() => {
+                    this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                      resolve();
+                    });
+                  });
+                }
+              }, (error: any) => {
+                this.popUp.error('No se ha podido actualizar la plantilla');
+              });
+            });
+          }
+        }) :
+        this.popUp.confirm(
+          'Guardar plantilla',
+          '¿Está seguro que desea guardar la plantilla?',
+          'create',
+        ).then(result => {
+          if (result.isConfirmed) {
+            this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
+              this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+              this.request.post(
+                environment.RESOLUCIONES_MID_V2_SERVICE,
+                `gestion_plantillas`,
+                this.contenidoResolucion
+              ).subscribe((response: Respuesta) => {
+                if (response.Success) {
+                  this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
+                    this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                      resolve();
+                    });
+                  });
+                }
+              }, (error: any) => {
+                console.log(error);
+                this.popUp.error('No se ha podido guardar la plantilla');
+              });
+            });
+          }
+        }) :
       this.popUp.confirm(
-        'Actualizar plantilla',
-        '¿Está seguro que desea actualizar la plantilla?',
-        'update',
+        'Actualizar resolución',
+        '¿Está seguro que desea actualizar la resolución?',
+        'update'
       ).then(result => {
         if (result.isConfirmed) {
           this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
             this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
             this.request.put(
               environment.RESOLUCIONES_MID_V2_SERVICE,
-              `gestion_plantillas`,
+              `gestion_resoluciones`,
               this.contenidoResolucion,
               this.contenidoResolucion.Resolucion.Id
             ).subscribe((response: Respuesta) => {
               if (response.Success) {
-                this.popUp.success('La plantilla se ha actualizado con éxito').then(() => {
-                  this.salir();
+                this.popUp.success('La resolución se ha actualizado con éxito').then(() => {
+                  this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                    resolve();
+                  });
                 });
               }
-            }, (error: any) => {
-              this.popUp.error('No se ha podido actualizar la plantilla');
             });
           });
         }
-      }) :
-      this.popUp.confirm(
-        'Guardar plantilla',
-        '¿Está seguro que desea guardar la plantilla?',
-        'create',
-      ).then(result => {
-        if (result.isConfirmed) {
-          this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
-            this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
-            this.request.post(
-              environment.RESOLUCIONES_MID_V2_SERVICE,
-              `gestion_plantillas`,
-              this.contenidoResolucion
-            ).subscribe((response: Respuesta) => {
-              if (response.Success) {
-                this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
-                  this.salir();
-                });
-              }
-            }, (error: any) => {
-              console.log(error);
-              this.popUp.error('No se ha podido guardar la plantilla');
-            });
-          });
-        }
-      }) :
-    this.popUp.confirm(
-      'Actualizar resolución',
-      '¿Está seguro que desea actualizar la resolución?',
-      'update'
-    ).then(result => {
-      if (result.isConfirmed) {
-        this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
-          this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
-          this.request.put(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_resoluciones`,
-            this.contenidoResolucion,
-            this.contenidoResolucion.Resolucion.Id
-          ).subscribe((response: Respuesta) => {
-            if (response.Success) {
-              this.popUp.success('La resolución se ha actualizado con éxito').then(() => {
-                this.salir();
-              });
-            }
-          });
-        });
-      }
+      });
     });
   }
 
   generarVistaPrevia(): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_resoluciones/generar_resolucion/${this.contenidoResolucion.Resolucion.Id}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.dialogConfig.data = response.Data as string;
-        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+    this.popUp.confirm(
+      'Guardar cambios',
+      'Para mostrar el documento debe guardar los cambios realizados',
+      'update'
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.guardarCambios().then(() => {
+          this.request.get(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_resoluciones/generar_resolucion/${this.contenidoResolucion.Resolucion.Id}`
+          ).subscribe((response: Respuesta) => {
+            if (response.Success) {
+              this.dialogConfig.data = response.Data as string;
+              this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+            }
+          });
+        });
       }
     });
   }
