@@ -12,7 +12,8 @@
         </app-expedir-vinculacion>
     </div>
     <div *ngIf="this.tipoResVista === 'Cancelación' ">
-        <app-expedir-cancelacion [idResolucionC]="resolucionAprobadaId" (cancelarCancelacion)="tipoResVista=$event"></app-expedir-cancelacion>
+        <app-expedir-cancelacion [idResolucionC]="resolucionAprobadaId" (cancelarCancelacion)="tipoResVista=$event">
+        </app-expedir-cancelacion>
     </div>
     <div *ngIf="this.tipoResVista === 'Reducción' || this.tipoResVista === 'Adición' ">
         <app-expedir-modificacion (cancelarModificacion)="tipoResVista=$event"></app-expedir-modificacion>

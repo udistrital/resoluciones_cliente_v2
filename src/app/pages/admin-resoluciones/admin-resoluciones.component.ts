@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerDataSource } from 'ng2-smart-table';
+import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
@@ -35,7 +35,7 @@ export class AdminResolucionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.adminResolucionesData = new ServerDataSource(this.http, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/get_resoluciones_aprobadas`,
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_aprobadas`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
@@ -70,11 +70,11 @@ export class AdminResolucionesComponent implements OnInit {
     };
   }
 
-
   eventHandler(event: any): void {
     switch (event.action) {
       case 'documento':
         this.tipoResVista = '';
+        this.cargarDocumento(0);
         // this.cargarDocumento(event.data.Id);
         break;
       case 'expedicion':
@@ -92,15 +92,15 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   cargarDocumento(id: number): void {
-
-  } 
+    this.adminResolucionesData.refresh();
+  }
 
   expedirResolucion(id: number): void {
     console.info("Aquí entra en la función expedirResolucion");
   }
 
   expedirResolucion2(): void {
-    
+
   }
   expedirResolucion3(): void {
     this.tipoResVista = 'Cancelacion';

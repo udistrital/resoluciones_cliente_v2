@@ -49,6 +49,7 @@ const routes: Routes = [{
       path: 'resolucion_aprobacion',
       component: AprobacionResolucionesComponent
     },
+    {
       path: 'vincular_docentes',
       component: VincularDocentesComponent,
     },
