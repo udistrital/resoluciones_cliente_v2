@@ -16,6 +16,9 @@ export class ExpedirModificacionComponent implements OnInit {
 
   @Output() cancelarModificacion = new EventEmitter<string>();
 
+  vigencia: any;
+  fechaExpedicion: any;
+  
   resolucionActual: any;
   contenidoResolucion: any;
   contratadosPdf: any;
@@ -172,7 +175,7 @@ export class ExpedirModificacionComponent implements OnInit {
     });
 
     this.request.get(
-      environment.,
+      environment.OIKOS_SERVICE,
       ``
     ).subscribe((response: Respuesta) => {
 
@@ -280,9 +283,9 @@ export class ExpedirModificacionComponent implements OnInit {
           }
         };
         if (this.datosFiltro.NivelAcademico.toLowerCase() === "pregrado") {
-          contratoVinculacion.VinculacionDocente.IdPuntoSalarial = this.punto_salarial.Id;
+          //contratoVinculacion.VinculacionDocente.IdPuntoSalarial = this.punto_salarial.Id;
         } else if (this.datosFiltro.NivelAcademico.toLowerCase() === "posgrado") {
-          contratoVinculacion.VinculacionDocente.IdSalarioMinimo = this.salario_minimo.Id;
+          //contratoVinculacion.VinculacionDocente.IdSalarioMinimo = this.salario_minimo.Id;
         }
         conjuntoContratos.push(contratoVinculacion);
       });
