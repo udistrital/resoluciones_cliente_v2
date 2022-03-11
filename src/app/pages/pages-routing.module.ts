@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminResolucionesComponent } from './admin-resoluciones/admin-resoluciones.component';
+import { AprobacionResolucionesComponent } from './aprobacion-resoluciones/aprobacion-resoluciones.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ConsultaDocenteComponent } from './gestion-resoluciones/consulta-docente/consulta-docente.component';
 import { DetalleResolucionComponent } from './gestion-resoluciones/detalle-resolucion/detalle-resolucion.component';
@@ -40,6 +42,13 @@ const routes: Routes = [{
       component: ConsultaDocenteComponent,
     },
     {
+      path: 'resolucion_administracion',
+      component: AdminResolucionesComponent,
+    },
+    {
+      path: 'resolucion_aprobacion',
+      component: AprobacionResolucionesComponent
+    },
       path: 'vincular_docentes',
       component: VincularDocentesComponent,
     },
