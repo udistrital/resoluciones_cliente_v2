@@ -1,21 +1,30 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { RequestManager } from '../../services/requestManager';
+import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
+import { Rubro } from 'src/app/@core/models/rubro';
+import { environment } from 'src/environments/environment';
+import { MovimientoRubro } from 'src/app/@core/models/movimiento_rubro';
 
 @Component({
   selector: 'app-tablas-disponibilidades',
   templateUrl: './tablas-disponibilidades.component.html',
   styleUrls: ['./tablas-disponibilidades.component.scss']
 })
-export class TablasDisponibilidadesComponent implements OnInit {
+export class TablasDisponibilidadesComponent implements OnChanges {
 
   disponibilidadesSettings: any;
   disponibilidadesData: LocalDataSource;
   rubrosSettings: any;
   rubrosData: LocalDataSource;
+  disponibilidadSeleccionada: DocumentoPresupuestal;
+  rubrosSeleccionados: MovimientoRubro[];
+
+  @Input()
+  vigencia: number;
 
   @Output()
-  seleccion = new EventEmitter<void>();
+  seleccion = new EventEmitter<DocumentoPresupuestal>();
 
   constructor(
     private request: RequestManager,
@@ -25,14 +34,19 @@ export class TablasDisponibilidadesComponent implements OnInit {
     this.initTables();
   }
 
-  ngOnInit(): void {
-    // cargar datos
+  ngOnChanges(changes: SimpleChanges): void {
+    this.request.get(
+      environment.KRONOS_SERVICE,
+      `documento_presupuestal/get_doc_mov_rubro/${changes.vigencia.currentValue}/1/3-01-001-02`
+    ).subscribe((response: DocumentoPresupuestal[]) => {
+      this.disponibilidadesData.load(response);
+    });
   }
 
   initTables(): void {
     this.disponibilidadesSettings = {
       columns: {
-        Disponibilidad: {
+        Consecutivo: {
           title: 'Disponibilidad',
           width: '33%',
           editable: false,
@@ -46,6 +60,9 @@ export class TablasDisponibilidadesComponent implements OnInit {
           title: 'Fecha de registro',
           width: '33%',
           editable: false,
+          valuePrepareFunction: (value: string) => {
+            return new Date(value).toLocaleDateString();
+          },
         },
       },
       actions: false,
@@ -54,20 +71,31 @@ export class TablasDisponibilidadesComponent implements OnInit {
 
     this.rubrosSettings = {
       columns : {
-        Rubro: {
+        RubroDetalle: {
           title: 'Rubro',
-          width: '30%',
+          width: '33%',
           editable: false,
+          valuePrepareFunction: (value: Rubro) => {
+            return value.General.Nombre;
+          },
         },
-        Valor: {
+        ValorInicial: {
           title: 'Valor',
-          width: '30%',
+          width: '33%',
           editable: false,
+          valuePrepareFunction: (value: number) => {
+            const format = Intl.NumberFormat('es-CO', {style: 'currency', currency: 'COP'});
+            return format.format(value);
+          },
         },
-        Saldo: {
+        ValorActual: {
           title: 'Saldo',
-          width: '30%',
+          width: '33%',
           editable: false,
+          valuePrepareFunction: (value: number) => {
+            const format = Intl.NumberFormat('es-CO', {style: 'currency', currency: 'COP'});
+            return format.format(value);
+          },
         },
       },
       actions: false,
@@ -78,11 +106,14 @@ export class TablasDisponibilidadesComponent implements OnInit {
   }
 
   seleccionarDisponibilidad(event): void {
-
+    this.disponibilidadSeleccionada = event.data;
+    this.rubrosData.load(this.disponibilidadSeleccionada.Afectacion);
   }
 
   seleccionarRubros(event): void {
-    this.seleccion.emit(event);
+    this.rubrosSeleccionados = event.selected;
+    this.disponibilidadSeleccionada.Afectacion = this.rubrosSeleccionados;
+    this.seleccion.emit(this.disponibilidadSeleccionada);
   }
 
 }

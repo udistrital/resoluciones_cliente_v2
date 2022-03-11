@@ -16,6 +16,7 @@ export const environment = {
   RESOLUCIONES_MID_V2_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/resoluciones_docentes_mid/v2/',
   // RESOLUCIONES_MID_V2_SERVICE: 'http://localhost:8529/v1/',
   // RESOLUCIONES_MID_V2_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8521/v1/',
+  KRONOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_cuentas_mongo_crud/v1/',
   GESTOR_DOCUMENTAL_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/gestor_documental_mid/v1/',
   OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v1/',
   CORE_AMAZON_SERVICE: "https://autenticacion.portaloas.udistrital.edu.co/api/core_amazon_crud/v1/",
