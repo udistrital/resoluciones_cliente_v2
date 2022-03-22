@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ServerDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
+import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
 import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
@@ -50,54 +51,25 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   initTable(): void {
+    TablaResoluciones["Acciones"] = {
+      title: "Acciones",
+      editable: true,
+      filter: false,
+      width: '4%',
+      type: 'custom',
+      renderComponent: CheckboxAssistanceComponent,
+      onComponentInitFunction: (instance) => {
+        instance.modulo = "gestion";
+        instance.icon.subscribe(data => {
+          this.eventHandler(data);
+        });
+      },
+    }
+    
     this.resolucionesSettings = {
       columns: TablaResoluciones,
       mode: 'external',
-      actions: {
-        add: false,
-        edit: false,
-        delete: false,
-        position: 'right',
-        columnTitle: 'Acciones',
-        custom: [
-          {
-            name: 'documento',
-            title: '<em class="material-icons" title="Ver documento">description</em>'
-          },
-          {
-            name: 'vincular',
-            title: '<em class="material-icons" title="Vincular">person_add</em>'
-          },
-          {
-            name: 'cancelar',
-            title: '<em class="material-icons" title="Cancelar">person_remove</em>'
-          },
-          {
-            name: 'adicionar',
-            title: '<em class="material-icons" title="Adicionar">add_circle</em>'
-          },
-          {
-            name: 'reducir',
-            title: '<em class="material-icons" title="Reducir">remove_circle</em>'
-          },
-          {
-            name: 'consultar',
-            title: '<em class="material-icons" title="Consultar">list</em>'
-          },
-          {
-            name: 'enviar',
-            title: '<em class="material-icons" title="Enviar a revisión">send</em>'
-          },
-          {
-            name: 'editar',
-            title: '<em class="material-icons" title="Editar contenido">edit</em>'
-          },
-          {
-            name: 'anular',
-            title: '<em class="material-icons" title="Anular">cancel</em>'
-          },
-        ],
-      },
+      actions: false,
       rowClassFunction: (row: any) => {
       },
       noDataMessage: 'No hay resoluciones registradas en el sistema',
@@ -149,7 +121,7 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   editarResolución(id: number): void {
-    this.router.navigate(['../detalle_resolucion', {Id: id}], { relativeTo: this.route});
+    this.router.navigate(['../detalle_resolucion', { Id: id }], { relativeTo: this.route });
   }
 
   anularResolución(id: number): void {
@@ -175,23 +147,23 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   consultarVinculacionesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'vista'}], { relativeTo: this.route });
+    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'vista' }], { relativeTo: this.route });
   }
 
   vincularDocentesResolución(id: number): void {
-    this.router.navigate(['../vincular_docentes', {Id: id}], { relativeTo: this.route });
+    this.router.navigate(['../vincular_docentes', { Id: id }], { relativeTo: this.route });
   }
 
   cancelarDocentesResolución(id: number): void {
-    this.router.navigate(['../cancelar_vinculaciones', {Id: id}], { relativeTo: this.route });
+    this.router.navigate(['../cancelar_vinculaciones', { Id: id }], { relativeTo: this.route });
   }
 
   adicionarHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'adicion'}], { relativeTo: this.route });
+    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'adicion' }], { relativeTo: this.route });
   }
 
   reducirHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', {Id: id, tipo: 'reduccion'}], { relativeTo: this.route });
+    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'reduccion' }], { relativeTo: this.route });
   }
 
   enviarRevision(Id: number): void {
@@ -222,11 +194,11 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   crearResolucion(): void {
-    this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route});
+    this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route });
   }
 
   consultarDocente(): void {
-    this.router.navigate(['../consulta_docente'], { relativeTo: this.route});
+    this.router.navigate(['../consulta_docente'], { relativeTo: this.route });
   }
 
 }
