@@ -3,6 +3,29 @@
         <h1>Administración de resoluciones</h1>
     </mat-card-title>
     <mat-card-content>
+        <mat-form-field class="field" style="width: 8%;">
+            <input matInput type="text" name="numeroRes" placeholder="Número" [(ngModel)]="cadenaFiltro[0]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 8%;">
+            <input matInput type="text" name="vigencia" placeholder="Vigencia" [(ngModel)]="cadenaFiltro[1]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 18%;">
+            <input matInput type="text" name="sedeSol" placeholder="Facultad" [(ngModel)]="cadenaFiltro[2]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 19%;">
+            <input matInput type="text" name="sedeSol" placeholder="Tipo de resolución" [(ngModel)]="cadenaFiltro[3]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 13%;">
+            <input matInput type="text" name="sedeSol" placeholder="Nivel" [(ngModel)]="cadenaFiltro[4]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 9%;">
+            <input matInput type="text" name="sedeSol" placeholder="Dedicación" [(ngModel)]="cadenaFiltro[5]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 10%;">
+            <input matInput type="text" name="sedeSol" placeholder="Estado" [(ngModel)]="cadenaFiltro[6]">
+        </mat-form-field>
+        <button mat-button class="button button-add" type="button" (click)="filtroTabla()"
+            style="width: 7%;">Filtrar</button>
         <ng2-smart-table [settings]="adminResolucionesSettings" [source]="adminResolucionesData"
             (custom)=eventHandler($event)></ng2-smart-table>
     </mat-card-content>

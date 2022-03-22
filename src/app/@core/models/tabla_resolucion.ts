@@ -3,50 +3,26 @@ export const TablaResolucion: any = {
         hide: true,
     },
     NumeroResolucion: {
+        filter: true,
         title: 'Número',
-        width: '10%',
+        width: '9%',
         editable: false,
     },
     Vigencia: {
         title: 'Vigencia',
-        filter: {
-            type: 'checkbox',
-            config: {
-                true: 'Yes',
-                false: 'No',
-                resetText: 'clear',
-            },
-        },
-        width: '10%',
+        filter: true,
+        width: '9%',
         editable: false,
     },
     Facultad: {
         title: 'Facultad',
-        filter: {
-            type: 'completer',
-            config: {
-                completer: {
-                    searchFields: 'email',
-                    titleField: 'email',
-                },
-            },
-        },
-        width: '20%',
+        filter: true,
+        width: '22%',
         editable: false,
     },
     TipoResolucion: {
         title: 'Tipo de resolución',
-        filter: {
-            type: 'list',
-            config: {
-                selectText: 'Select...',
-                list: [
-                    { value: 'Glenna Reichert', title: 'Glenna Reichert' },
-                    { value: 'Kurtis Weissnat', title: 'Kurtis Weissnat' },
-                    { value: 'Chelsey Dietrich', title: 'Chelsey Dietrich' },
-                ],
-            },
-        },
+        filter: true,
         width: '20%',
         editable: false,
         passed: true,
@@ -55,15 +31,18 @@ export const TablaResolucion: any = {
         title: 'Nivel',
         width: '14%',
         editable: false,
+        filter: true,
     },
     Dedicacion: {
         title: 'Dedicación',
         width: '10%',
         editable: false,
+        filter: true,
     },
     Estado: {
         title: 'Estado',
         width: '14%',
         editable: false,
+        filter: true,
     },
 };
