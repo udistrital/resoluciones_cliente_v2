@@ -20,7 +20,6 @@ export const environment = {
   OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v1/',
   CORE_AMAZON_SERVICE: "https://autenticacion.portaloas.udistrital.edu.co/api/core_amazon_crud/v1/",
   ADMIN_AMAZON_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/administrativa_amazon_api/v1/',
-  TITAN_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/titan_api_mid/v1',
   PARAMETROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/parametros/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
   PROYECTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',
