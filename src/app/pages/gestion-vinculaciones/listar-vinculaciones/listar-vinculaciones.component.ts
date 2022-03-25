@@ -13,6 +13,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalAdicionesComponent } from '../modal-adiciones/modal-adiciones.component';
 import { ModalReduccionesComponent } from '../modal-reducciones/modal-reducciones.component';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
+import { CambioVinculacion } from 'src/app/@core/models/cambio_vinculacion';
 
 @Component({
   selector: 'app-listar-vinculaciones',
@@ -25,6 +26,7 @@ export class ListarVinculacionesComponent implements OnInit {
   resolucionId: number;
   resolucion: Resolucion;
   resolucionVinculacion: ResolucionVinculacionDocente;
+  modificacionResolucion: ModificacionResolucion;
   vinculacionesSettings: any;
   vinculacionesData: LocalDataSource;
   tipoVista: string;
@@ -86,6 +88,7 @@ export class ListarVinculacionesComponent implements OnInit {
         columnTitle: 'Opciones',
         custom: [],
       },
+      selectedRowIndex: -1,
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
     switch (this.tipoVista) {
@@ -117,7 +120,6 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   cargarVinculaciones(): void {
-    console.log(this.tipoVista);
     if (this.tipoVista === 'vista') {
       this.cargarVinculacionesResolucion(this.resolucionId);
     } else {
@@ -126,8 +128,8 @@ export class ListarVinculacionesComponent implements OnInit {
         `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
       ).subscribe((response: Respuesta) => {
         if (response.Success) {
-          const resolucionId = (response.Data as ModificacionResolucion[])[0].ResolucionAnteriorId.Id;
-          this.cargarVinculacionesResolucion(resolucionId);
+          this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
+          this.cargarVinculacionesResolucion(this.modificacionResolucion.ResolucionAnteriorId.Id);
         }
       });
     }
@@ -171,19 +173,40 @@ export class ListarVinculacionesComponent implements OnInit {
       case 'adicionar':
         this.dialogConfig.data = event.data as Vinculaciones;
         const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
-        dialogAdicion.afterClosed().subscribe((data: Vinculaciones) => {
-
+        dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+          if (data) {
+            this.registrarModificacion(data);
+          }
         });
         break;
 
       case 'reducir':
         this.dialogConfig.data = event.data as Vinculaciones;
         const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
-        dialogReduccion.afterClosed().subscribe((data: Vinculaciones) => {
-
+        dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+          if (data) {
+            this.registrarModificacion(data);
+          }
         });
         break;
     }
+  }
+
+  registrarModificacion(cambios: CambioVinculacion): void {
+    const objetoModificacion = {
+      CambiosVinculacion: cambios,
+      ResolucionNuevaId: this.resolucionVinculacion,
+      ModificacionResolucionId: this.modificacionResolucion.Id,
+    };
+    this.request.post(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      'gestion_vinculaciones/modificar_vinculacion',
+      objetoModificacion
+    ).subscribe((response: Respuesta) => {
+      if (response.Success) {
+        this.popUp.success(response.Message);
+      }
+    });
   }
 
   volver(): void {
