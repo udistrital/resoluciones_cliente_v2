@@ -152,7 +152,9 @@ export class VincularDocentesComponent implements OnInit {
         cancelButtonContent: '<em class="material-icons" title="Cancelar">close</em>'
       },
       selectMode: 'multi',
-      mode: 'internal'
+      switchPageToSelectedRowPage: true,
+      mode: 'internal',
+      noDataMessage: 'No se ha cargado la información de carga académica',
     };
 
     this.vinculacionesSettings = {
@@ -184,16 +186,24 @@ export class VincularDocentesComponent implements OnInit {
       };
       const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
       dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
-        previnculaciones.Disponibilidad = disponibilidad;
-        this.request.post(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          'gestion_vinculaciones',
-          previnculaciones
-        ).subscribe((response2: Respuesta) => {
-          if (response2.Success) {
-            this.popUp.success(response2.Message);
-          }
-        });
+        if (disponibilidad) {
+          previnculaciones.Disponibilidad = disponibilidad;
+          this.request.post(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            'gestion_vinculaciones',
+            previnculaciones
+          ).subscribe({
+            next: (response2: Respuesta) => {
+              if (response2.Success) {
+                this.popUp.success(response2.Message).then(() => {
+                  this.cargarVinculaciones();
+                });
+              }
+            }, error: () => {
+              this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
+            }
+          });
+        }
       });
     });
   }

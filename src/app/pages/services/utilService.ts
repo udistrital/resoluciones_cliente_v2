@@ -9,6 +9,21 @@ export class UtilService {
 
     constructor() { }
 
+    input(titulo: string, etiqueta: string): Promise<any> {
+        return Swal.fire({
+            title: titulo,
+            input: 'text',
+            inputLabel: etiqueta,
+            inputValue: '',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                  return 'Ingrese un valor válido';
+                }
+              }
+        });
+    }
+
     confirm(titulo: string, texto: string, option: string): Promise<any> {
         return Swal.fire({
             title: titulo,

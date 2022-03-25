@@ -5,6 +5,7 @@ import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuest
 import { Rubro } from 'src/app/@core/models/rubro';
 import { environment } from 'src/environments/environment';
 import { MovimientoRubro } from 'src/app/@core/models/movimiento_rubro';
+import { UtilService } from '../../services/utilService';
 
 @Component({
   selector: 'app-tablas-disponibilidades',
@@ -28,6 +29,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
 
   constructor(
     private request: RequestManager,
+    private popUp: UtilService,
   ) {
     this.disponibilidadesData = new LocalDataSource();
     this.rubrosData = new LocalDataSource();
@@ -35,11 +37,51 @@ export class TablasDisponibilidadesComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+   /*
+    * FUNCIONALIDAD DEFINITIVA QUE NO HA SALIDO A PROD
     this.request.get(
       environment.KRONOS_SERVICE,
       `documento_presupuestal/get_doc_mov_rubro/${changes.vigencia.currentValue}/1/3-01-001-02`
     ).subscribe((response: DocumentoPresupuestal[]) => {
       this.disponibilidadesData.load(response);
+    });
+    */
+
+    /**
+     * FUNCIONALIDAD TEMPORAL MIENTRAS kRONOS SALE A PROD
+     */
+    this.popUp.input(
+      'Ingrese el número de CPD asignado',
+      'Numero de disponibilidad'
+    ).then(value => {
+      if (value.isConfirmed) {
+        this.request.get(
+          environment.SICAPITAL_JBPM_SERVICE,
+          `rubros_disponibilidad/${changes.vigencia.currentValue}/1/${value.value}`
+        ).subscribe(response => {
+          if (Object.keys(response.Rubros).length > 0) {
+            const disponibilidades = new Array<DocumentoPresupuestal>();
+            const disponibilidad = new DocumentoPresupuestal();
+            disponibilidad.Consecutivo = parseInt(response.Rubros.Disponibilidad[0].numero_disponibilidad, 10);
+            disponibilidad.Vigencia = parseInt(response.Rubros.Disponibilidad[0].vigencia, 10);
+            const rubros = new Array<MovimientoRubro>();
+            response.Rubros.Disponibilidad.forEach(rubro => {
+              const r = new MovimientoRubro();
+              r.Padre = rubro.codigo;
+              r.ValorInicial = parseInt(rubro.valor, 10);
+              r.ValorActual = 0;
+              r.RubroDetalle = new Rubro();
+              r.RubroDetalle.General = {Nombre: rubro.codigo};
+              rubros.push(r);
+            });
+            disponibilidad.Afectacion = rubros;
+            disponibilidades.push(disponibilidad);
+            this.disponibilidadesData.load(disponibilidades);
+          } else {
+            this.popUp.error('El número de disponibilidad ingresado no es correcto');
+          }
+        });
+      }
     });
   }
 
@@ -66,7 +108,9 @@ export class TablasDisponibilidadesComponent implements OnChanges {
         },
       },
       actions: false,
-      mode: 'external'
+      hideSubHeader: true,
+      mode: 'external',
+      selectedRowIndex: -1,
     };
 
     this.rubrosSettings = {
@@ -101,13 +145,19 @@ export class TablasDisponibilidadesComponent implements OnChanges {
       actions: false,
       hideSubHeader: true,
       mode: 'external',
-      selectMode: 'multi'
+      selectMode: 'multi',
     };
   }
 
   seleccionarDisponibilidad(event): void {
-    this.disponibilidadSeleccionada = event.data;
-    this.rubrosData.load(this.disponibilidadSeleccionada.Afectacion);
+    if (event.isSelected) {
+      this.disponibilidadSeleccionada = event.data;
+      this.rubrosData.load(this.disponibilidadSeleccionada.Afectacion);
+    } else {
+      this.disponibilidadSeleccionada = null;
+      this.rubrosData = new LocalDataSource();
+      this.rubrosSeleccionados = null;
+    }
   }
 
   seleccionarRubros(event): void {
