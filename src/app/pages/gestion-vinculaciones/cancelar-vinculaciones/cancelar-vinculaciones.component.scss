@@ -1,0 +1,14 @@
+@import "../vincular-docentes/vincular-docentes.component.scss";
+
+.cancelacion-panel {
+    align-items: center;
+}
+
+.form-field-exp {
+    width: 30%;
+    padding: 0 5%;
+}
+
+.mat-expansion-panel-header[aria-disabled=true] {
+    color: black;
+}

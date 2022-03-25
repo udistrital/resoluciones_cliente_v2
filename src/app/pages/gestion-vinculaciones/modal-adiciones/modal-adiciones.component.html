@@ -1,0 +1,42 @@
+<form #aform="ngForm" novalidate class="centrado">
+    <h2 class="section-title">Adición de horas</h2>
+    <mat-grid-list cols="2" rowHeight="300px">
+        <mat-grid-tile>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Horas actuales</mat-label>
+                <input matInput type="tel" name="horasAct" #horasAct="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroHorasSemanales" disabled>
+            </mat-form-field>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Horas a adicionar</mat-label>
+                <input matInput type="tel" name="horasAdd" #horasAdd="ngModel" [(ngModel)]="cambioVinculacion.NumeroHorasSemanales" (change)="sumarHoras()" required>
+            </mat-form-field>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Horas totales</mat-label>
+                <input matInput type="text" name="horasTot" #horasTot="ngModel" [(ngModel)]="horasTotales" disabled>
+            </mat-form-field>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Disponibilidad actual</mat-label>
+                <input matInput type="text" name="cdp" #cdp="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.Disponibilidad" disabled>
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Semanas actuales</mat-label>
+                <input matInput type="text" name="semanas" #semanas="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroSemanas" disabled>
+            </mat-form-field>
+            <mat-form-field class="form-field-modal">
+                <mat-label>Semanas a adicionar</mat-label>
+                <input matInput type="text" name="semanasAdd" #semanasAdd="ngModel" [(ngModel)]="cambioVinculacion.NumeroSemanas" required>
+            </mat-form-field>
+            <mat-form-field class="form-field-modal">
+                <mat-label>fecha de inicio válida</mat-label>
+                <mat-datepicker #fechaPicker ></mat-datepicker>
+                <input matInput [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" required>
+                <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+            </mat-form-field>
+            <button mat-button class="button button-add" type="button" (click)="mostrarDisponibilidad()">Cambiar disponibilidad</button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <app-tablas-disponibilidades *ngIf="mostrar" [vigencia]="cambioVinculacion.VinculacionOriginal.Vigencia" (seleccion)="nuevaDisponibilidad($event)"></app-tablas-disponibilidades>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!aform.valid" >Modificar</button>
+</form>

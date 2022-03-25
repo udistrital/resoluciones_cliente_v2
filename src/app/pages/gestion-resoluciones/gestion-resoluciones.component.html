@@ -1,0 +1,43 @@
+<mat-card class="card-oas">
+    <mat-card-title class="resoluciones-title">
+        <h1>Gestión de resoluciones</h1>
+    </mat-card-title>
+    <mat-card-content>
+        <mat-form-field class="field" style="width: 7%;">
+            <input matInput type="text" name="numeroRes" placeholder="Número" [(ngModel)]="cadenaFiltro[0]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 7%;">
+            <input matInput type="text" name="vigencia" placeholder="Vigencia" [(ngModel)]="cadenaFiltro[1]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 6%;">
+            <input matInput type="text" name="periodo" placeholder="Periodo" [(ngModel)]="cadenaFiltro[2]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 18%;">
+            <input matInput type="text" name="facultad" placeholder="Facultad" [(ngModel)]="cadenaFiltro[3]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 10%;">
+            <input matInput type="text" name="nivelA" placeholder="Nivel" [(ngModel)]="cadenaFiltro[4]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 7%;">
+            <input matInput type="text" name="dedicacion" placeholder="Dedicación" [(ngModel)]="cadenaFiltro[5]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 6%;">
+            <input matInput type="text" name="semanas" placeholder="Semanas" [(ngModel)]="cadenaFiltro[6]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 7%;">
+            <input matInput type="text" name="estado" placeholder="Estado" [(ngModel)]="cadenaFiltro[7]">
+        </mat-form-field>
+        <mat-form-field class="field" style="width: 16%;">
+            <input matInput type="text" name="tipoRes" placeholder="Tipo de resolución" [(ngModel)]="cadenaFiltro[8]">
+        </mat-form-field>
+        <button mat-button class="button button-add" type="button" (click)="filtroTabla()"
+            style="width: 6%;">Filtrar</button>
+        <!-- <button mat-button class="button button-add" type="button" (click)="limpiarFiltro()"
+        style="width: 5%; float: right;">lim</button> -->
+        <ng2-smart-table [settings]="resolucionesSettings" [source]="resolucionesData" (custom)=eventHandler($event)>
+        </ng2-smart-table>
+    </mat-card-content>
+    <button mat-button class="button button-submit" type="button" (click)="crearResolucion()">Crear Resolución de
+        Vinculación Especial</button>
+    <button mat-button class="button button-add" type="button" (click)="consultarDocente()">Consultar docente</button>
+</mat-card>

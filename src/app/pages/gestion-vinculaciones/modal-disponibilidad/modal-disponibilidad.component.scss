@@ -1,0 +1,12 @@
+@import "../../gestion-resoluciones/generacion-resolucion/generacion-resolucion.component.scss";
+
+.valor-contratos {
+    text-align: center;
+}
+
+.quitar {
+    position: relative;
+    float: right;
+    cursor: pointer;
+    z-index: 5;
+}

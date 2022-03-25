@@ -1,0 +1,20 @@
+<mat-card class="card-oas">
+    <mat-card-title class="vinculacion-title">
+        <h1>Docentes vinculados</h1>
+        <h2>Resolución # {{ resolucion.NumeroResolucion }}</h2>
+        <h2>{{ resolucionVinculacion.Dedicacion }}</h2>
+    </mat-card-title>
+    <mat-card-content>
+        <fieldset class="form-container">
+            <legend>
+                <h3>Docentes vinculados</h3>
+            </legend>
+            <ng2-smart-table
+                [settings]="vinculacionesSettings"
+                [source]="vinculacionesData"
+                (custom)="eventHandler($event)"
+            ></ng2-smart-table>
+        </fieldset>
+        <button mat-button class="button button-remove" type="button" (click)="volver()">Volver</button>
+    </mat-card-content>
+</mat-card>

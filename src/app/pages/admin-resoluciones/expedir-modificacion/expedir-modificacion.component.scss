@@ -1,0 +1,63 @@
+.adminVinc-title, td {
+    text-align: center;
+    color: var(--primary);
+}
+
+.section-title {
+    text-align: left;
+    font-weight: normal;
+}
+
+.section-title2 {
+    text-align: left;
+}
+
+.section {
+    text-align: center;
+    width: 95%;
+}
+
+.button {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 45%;
+    color: #fff;
+
+    &.button-add {
+        background-color: var(--others-main);
+    }
+    &.button-remove {
+        background-color: var(--danger-main);
+    }
+    &.button-submit {
+        background-color: var(--success-base);
+    }
+    &.button-submit:disabled,
+    &.button-submit[disabled] {
+        background-color: var(--success-accent);
+        color: #999;
+    }
+
+}
+
+.paragrafo {
+    text-align: right;
+}
+
+.form-field-column {
+    width: 48%;
+    padding: 0 1%;
+}
+
+.form-field-date {
+    display: flex;
+    align-items: flex-start;
+}
+
+@media screen and (max-width: 1024px) {
+    .form-field-column {
+        width: 100%;
+        padding: 0;
+    }
+}

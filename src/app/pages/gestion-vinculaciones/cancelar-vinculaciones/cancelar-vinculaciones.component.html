@@ -1,0 +1,48 @@
+<mat-card class="card-oas">
+    <mat-card-title class="vinculacion-title">
+        <h1>Cancelación de vinculaciones</h1>
+        <h2>Resolución # {{ resolucion.NumeroResolucion }}</h2>
+        <h2>{{ resolucionVinculacion.Dedicacion }}</h2>
+    </mat-card-title>
+    <mat-card-content>
+        <fieldset class="form-container">
+            <legend>
+                <h3>Docentes vinculados</h3>
+            </legend>
+            <ng2-smart-table
+                [settings]="vinculacionesSettings"
+                [source]="vinculacionesData"
+                (userRowSelect)="seleccionarVinculaciones($event)"
+            ></ng2-smart-table>
+        </fieldset>
+        <fieldset class="form-container" *ngIf="cambioVinculacion.length > 0">
+            <legend>
+                <h3>Docentes Seleccionados Para Reversar</h3>
+            </legend>
+            <form #cform="ngForm" novalidate>
+                <mat-form-field class="form-field-column">
+                    <mat-label>Numero de semanas a reversar:</mat-label>
+                    <input matInput type="number" min="0" [(ngModel)]="numeroSemanas" name="semanas" #semanas="ngModel" required >
+                </mat-form-field>
+                <mat-expansion-panel *ngFor="let v of cambioVinculacion; let i=index" hideToggle disabled>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="cancelacion-panel">
+                            <strong>{{i + 1}}. {{v.VinculacionOriginal.PersonaId}} - {{v.VinculacionOriginal.Nombre}} - {{v.VinculacionOriginal.NumeroHorasSemanales}} Horas semanales</strong>
+                            <mat-form-field class="form-field-exp">
+                                <mat-label>Registro presupuestal</mat-label>
+                                <mat-select [(ngModel)]="v.DocPresupuestal" name="rp_{{i}}" #rp_{{i}}="ngModel" >
+                                    <mat-option>--Seleccionar--</mat-option>
+                                    <mat-option  *ngFor="let rp of registrosPresupuestales[v.VinculacionOriginal.PersonaId]" [value]="rp">
+                                        Registro presupuestal {{rp.Consecutivo}} - {{ rp.Vigencia }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                </mat-expansion-panel>
+                <button mat-button class="button button-submit" type="submit" (click)="cancelarVinculaciones()" [disabled]="!cform.valid">Cancelar vinculaciones</button>
+            </form>
+        </fieldset>
+        <button mat-button class="button button-remove" type="button" (click)="salir()">Salir</button>
+    </mat-card-content>
+</mat-card>

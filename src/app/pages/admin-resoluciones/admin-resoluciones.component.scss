@@ -1,0 +1,36 @@
+.inner-container {
+    padding: 3% 10%;
+}
+
+.button {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 45%;
+    color: #fff;
+
+    &.button-add {
+        background-color: var(--others-main);
+    }
+    &.button-remove {
+        background-color: var(--danger-main);
+    }
+    &.button-submit {
+        background-color: var(--success-base);
+    }
+    &.button-submit:disabled,
+    &.button-submit[disabled] {
+        background-color: var(--success-accent);
+        color: #999;
+    }
+
+}
+
+.boton {
+    float: right;
+}
+
+.field {
+    padding: 0 1% 0 0;
+    text-align: center;
+}
