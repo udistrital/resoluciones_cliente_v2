@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
+import { ServerDataSource } from 'ng2-smart-table';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
 import { environment } from 'src/environments/environment';
@@ -95,7 +95,6 @@ export class AdminResolucionesComponent implements OnInit {
 
     this.query = "query=Activo:true";
     this.parametros = "";
-    console.log(this.cadenaFiltro[0])
     if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== "") {
       this.query = this.query.concat(",ResolucionId.NumeroResolucion:" + this.cadenaFiltro[0]);
     }
@@ -118,6 +117,12 @@ export class AdminResolucionesComponent implements OnInit {
       this.parametros = this.parametros.concat("&estadoRes=" + this.cadenaFiltro[6]);
     }
     this.ngOnInit();
+  }
+
+  limpiarFiltro() {
+    for (let i in this.cadenaFiltro) {
+      i = "";
+    }
   }
 
   cargarDocumento(id: number): void {
