@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ServerDataSource } from 'ng2-smart-table';
+import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { environment } from 'src/environments/environment';
@@ -17,9 +18,11 @@ export class AprobacionResolucionesComponent implements OnInit {
   aprobResolucionesSettings: any;
   aprobResolucionesData: ServerDataSource;
 
+  cadenaFiltro: string[] = [];
+  parametros: string = "";
+  query = "query=Activo:true";
+
   CurrentDate = new Date();
-  offset = 0;
-  query = "";
 
   constructor(
     private http: HttpClient,
@@ -30,7 +33,7 @@ export class AprobacionResolucionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.aprobResolucionesData = new ServerDataSource(this.http, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/get_resoluciones_inscritas`,
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
@@ -39,49 +42,79 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   initTable(): void {
+    TablaResolucion["Acciones"] = {
+      title: "Acciones",
+      editable: true,
+      filter: false,
+      width: '4%',
+      type: 'custom',
+      renderComponent: CheckboxAssistanceComponent,
+      onComponentInitFunction: (instance) => {
+        instance.modulo = "aprob";
+        instance.icon.subscribe(data => {
+          this.eventHandler(data);
+        });
+      },
+    }
+
     this.aprobResolucionesSettings = {
       columns: TablaResolucion,
       mode: 'external',
-      actions: {
-        add: false,
-        edit: false,
-        delete: false,
-        position: 'right',
-        columnTitle: 'Acciones',
-        custom: [
-          {
-            name: 'documento',
-            title: '<em class="material-icons" title="Ver Documento">description</em>'
-
-          },
-          {
-            name: 'aprobacion',
-            title: '<em class="material-icons" title="Aprobar">done_outline</em>'
-          },
-          {
-            name: 'desaprobacion',
-            title: '<em class="material-icons" title="Desaprobar">block</em>'
-          }
-        ],
-      },
+      actions: false,
       rowClassFunction: (row: any) => {
       },
       noDataMessage: 'No hay resoluciones inscritas en el sistema',
     };
   }
 
-  eventHandler(event: any): void {
-    switch (event.action) {
+  eventHandler(event): void {
+    switch (event) {
       case 'documento':
-
         break;
       case 'aprobacion':
         this.verModificarEstado(event.data, "APROBADA", 5);
         break;
       case 'desaprobacion':
-        this.verModificarEstado(event.data, "DESAPROBADA", 5);
+        this.verModificarEstado(event.data, "DESAPROBADA", 1);
         break;
     }
+  }
+
+  filtroTabla() {
+    this.query = "query=Activo:true";
+    this.parametros = "";
+    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== "") {
+      this.query = this.query.concat(",NumeroResolucion:" + this.cadenaFiltro[0]);
+    }
+    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== "") {
+      this.query = this.query.concat(",Vigencia:" + this.cadenaFiltro[1]);
+    }
+    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== "") {
+      this.query = this.query.concat(",Periodo=" + this.cadenaFiltro[2]);
+    }
+    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== "") {
+      this.parametros = this.parametros.concat("&facultad=" + this.cadenaFiltro[3]);
+    }
+    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== "") {
+      this.parametros = this.parametros.concat("&nivelA=" + this.cadenaFiltro[4]);
+    }
+    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== "") {
+      this.parametros = this.parametros.concat("&dedicacion=" + this.cadenaFiltro[5]);
+    }
+    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== "") {
+      this.query = this.query.concat(",NumeroSemanas=" + this.cadenaFiltro[6]);
+    }
+    if (this.cadenaFiltro[7] !== undefined && this.cadenaFiltro[7] !== "") {
+      this.parametros = this.parametros.concat("&estadoRes=" + this.cadenaFiltro[7]);
+    }
+    if (this.cadenaFiltro[8] !== undefined && this.cadenaFiltro[8] !== "") {
+      this.parametros = this.parametros.concat("&tipoRes=" + this.cadenaFiltro[8]);
+    }
+    this.ngOnInit();
+  }
+
+  limpiarFiltro() {
+
   }
 
   verModificarEstado(row, nombreEstado, idEstado) {
