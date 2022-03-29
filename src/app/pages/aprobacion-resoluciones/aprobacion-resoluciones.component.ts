@@ -33,7 +33,7 @@ export class AprobacionResolucionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.aprobResolucionesData = new ServerDataSource(this.http, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones`,
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
@@ -146,57 +146,6 @@ export class AprobacionResolucionesComponent implements OnInit {
         allowOutsideClick: false
       }).then(function () {
         this.cambiarEstado(resolucion_estado, nombreEstado);
-      });
-    });
-  }
-
-  verRestaurarResolucion(row) {
-    Swal.fire({
-      title: "¿Restaurar la resolución?",
-      html: '<p><b>Número: </b>' + row.Numero.toString() + '</p>' +
-        '<p><b>Facultad: </b>' + row.Facultad + '</p>' +
-        '<p><b>Nivel académico: </b>' + row.NivelAcademico + '</p>' +
-        '<p><b>Dedicación: </b>' + row.Dedicacion + '</p>',
-      icon: 'success',
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      customClass: {
-        confirmButton: 'button-submit',
-        cancelButton: 'button-remove'
-      },
-      buttonsStyling: false,
-      allowOutsideClick: false
-    }).then(function () {
-      this.restaurarResolucion(row);
-    }, function (dismiss) {
-      if (dismiss) {
-        Swal.fire({
-          text: "No se ha realizado la restauración de la resolución",
-          icon: "error"
-        });
-      }
-    });
-  }
-
-  restaurarResolucion(row) {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      "resolucion/" + row.Id
-    ).subscribe((response: Respuesta) => {
-      var nuevaResolucion = response.Data;
-      //Cambio de estado y fecha de expedicion de la resolucion en caso de que ya hubiese sido expedida.
-      nuevaResolucion.Activo = true;
-      nuevaResolucion.FechaExpedicion = null;
-      //Se actualizan los datos de la resolución
-      this.request.put(
-        environment.RESOLUCIONES_V2_SERVICE,
-        "resolucion/RestaurarResolucion",
-        nuevaResolucion.Id,
-        nuevaResolucion
-      ).subscribe((response2: Respuesta) => {
-        if (response2.Data.Success) {
-          this.aprobResolucionesData.refresh();
-        }
       });
     });
   }
