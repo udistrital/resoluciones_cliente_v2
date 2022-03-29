@@ -108,6 +108,19 @@ export class CancelarVinculacionesComponent implements OnInit {
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
         this.registrosPresupuestales[nueva.PersonaId] = []
       }
+
+      /* TODO: FUNCIONALIDAD DEFINITIVA QUE NO HA SALIDO A PROD
+      this.request.get(
+        environment.KRONOS_SERVICE,
+        `documento_presupuestal/get_info_crp/${nueva.Vigencia}/${nueva.Disponibilidad}/${nueva.PersonaId}`,
+      ).subscribe((response: DocumentoPresupuestal[]) => {
+        (this.registrosPresupuestales[nueva.PersonaId] as Array<DocumentoPresupuestal>).push(...response);
+      });
+      */
+     
+      /**
+       * FUNCIONALIDAD TEMPORAL MIENTRAS kRONOS SALE A PROD
+       */
       this.request.get(
         environment.SICAPITAL_JBPM_SERVICE,
         `cdprpdocente/${nueva.Disponibilidad}/${nueva.Vigencia}/${nueva.PersonaId}`
