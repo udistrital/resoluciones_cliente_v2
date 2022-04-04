@@ -137,6 +137,7 @@ steps:
 
 - name: notify_telegram
   image: appleboy/drone-telegram
+  failure: ignore
   settings:
     token:
       from_secret: telegram_token

@@ -12,6 +12,8 @@ import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
 import { ModalDisponibilidadComponent } from '../modal-disponibilidad/modal-disponibilidad.component';
 import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/modal-documento-viewer.component';
+import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
+import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -28,7 +30,7 @@ export class VincularDocentesComponent implements OnInit {
   cargaAcademicaData: LocalDataSource;
   vinculacionesSettings: any;
   vinculacionesData: LocalDataSource;
-  docentesSeleccionados: any[];
+  docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
 
   constructor(
@@ -122,20 +124,6 @@ export class VincularDocentesComponent implements OnInit {
           width: '5%',
           editable: true,
         },
-        Emerito: {
-          title: 'Emérito',
-          width: '5%',
-          editor: {
-            type: 'checkbox',
-            config: {
-              true: true,
-              false: false,
-            },
-          },
-          valuePrepareFunction: (value) => {
-            return value ? 'Si' : 'No';
-          },
-        },
         proyecto_nombre: {
           title: 'Proyecto Curricular',
           width: '25%',
@@ -164,7 +152,9 @@ export class VincularDocentesComponent implements OnInit {
         cancelButtonContent: '<em class="material-icons" title="Cancelar">close</em>'
       },
       selectMode: 'multi',
-      mode: 'internal'
+      switchPageToSelectedRowPage: true,
+      mode: 'internal',
+      noDataMessage: 'No se ha cargado la información de carga académica',
     };
 
     this.vinculacionesSettings = {
@@ -178,11 +168,43 @@ export class VincularDocentesComponent implements OnInit {
   }
 
   abrirModalDisponibilidad(): void {
-    const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
-    dialog.afterClosed().subscribe((ok: boolean) => {
-      if (ok) {
-
-      }
+    const previnculaciones = {
+      Docentes: this.docentesSeleccionados,
+      ResolucionData: this.resolucionVinculacion,
+      NumeroSemanas: this.resolucion.NumeroSemanas,
+      Vigencia: this.resolucion.Vigencia,
+      Disponibilidad: [new DocumentoPresupuestal()]
+    };
+    this.request.post(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      'gestion_vinculaciones/calcular_valor_contratos_seleccionados',
+      previnculaciones
+    ).subscribe((response: Respuesta) => {
+      this.dialogConfig.data = {
+        vigencia: this.resolucion.Vigencia,
+        total: response.Data as string
+      };
+      const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
+      dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
+        if (disponibilidad) {
+          previnculaciones.Disponibilidad = disponibilidad;
+          this.request.post(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            'gestion_vinculaciones',
+            previnculaciones
+          ).subscribe({
+            next: (response2: Respuesta) => {
+              if (response2.Success) {
+                this.popUp.success(response2.Message).then(() => {
+                  this.cargarVinculaciones();
+                });
+              }
+            }, error: () => {
+              this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
+            }
+          });
+        }
+      });
     });
   }
 

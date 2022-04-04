@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
-import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaPrevinculacion } from 'src/app/@core/models/tabla_previnculacion';
 import { TablaVinculaciones } from 'src/app/@core/models/tabla_vinculaciones';
@@ -21,7 +21,7 @@ export class ExpedirCancelacionComponent implements OnInit {
 
   @Output() cancelarCancelacion = new EventEmitter<string>();
 
-  adminCancelacionData: LocalDataSource;
+  adminCancelacionData: ResolucionesDataSourceComponent;
   adminCancelacionsettings: any;
 
   contratoCanceladoBase: any = {};
@@ -55,16 +55,12 @@ export class ExpedirCancelacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_vinculaciones/${this.idResolucionC}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.adminCancelacionData = new LocalDataSource(response.Data);
-        if (response.Data.length === 0) {
-          this.popUp.error('No hay docentes por cancelar');
-        }
-      }
+    this.adminCancelacionData = new ResolucionesDataSourceComponent(this.http, this.request, {
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + ``,
+      dataKey: 'Data',
+      pagerPageKey: 'offset',
+      pagerLimitKey: 'limit',
+      totalKey: 'Total',
     });
     this.cargarDatos();
   }
