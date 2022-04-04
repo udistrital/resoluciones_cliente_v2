@@ -4,7 +4,6 @@ import { RequestManager } from '../../services/requestManager';
 import { environment } from 'src/environments/environment';
 import { NivelFormacion } from 'src/app/@core/models/nivel_formacion';
 import { Periodo } from 'src/app/@core/models/periodo';
-import { ServerDataSource } from 'ng2-smart-table';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { ContenidoResolucion } from 'src/app/@core/models/contenido_resolucion';
 import { Resolucion } from 'src/app/@core/models/resolucion';
@@ -13,6 +12,7 @@ import { UtilService } from '../../services/utilService';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 
 @Component({
   selector: 'app-generacion-resolucion',
@@ -27,7 +27,7 @@ export class GeneracionResolucionComponent implements OnInit {
   niveles: NivelFormacion[];
   facultades: any[];
   resolucionesExpedidasSettings: any;
-  resolucionesExpedidasData: ServerDataSource;
+  resolucionesExpedidasData: ResolucionesDataSourceComponent;
   contenidoResolucion: ContenidoResolucion;
 
   tipoResolucion = '';
@@ -98,7 +98,7 @@ export class GeneracionResolucionComponent implements OnInit {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
     });
 
-    this.resolucionesExpedidasData = new ServerDataSource(this.http, {
+    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas`,
       dataKey: 'Data',
       pagerPageKey: 'offset',

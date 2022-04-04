@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
-import { ServerDataSource } from 'ng2-smart-table';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { environment } from 'src/environments/environment';
@@ -19,7 +19,7 @@ export class ExpedirCancelacionComponent implements OnInit {
 
   @Output() cancelarCancelacion = new EventEmitter<string>();
 
-  adminCancelacionData: ServerDataSource;
+  adminCancelacionData: ResolucionesDataSourceComponent;
   adminCancelacionsettings: any;
 
   contratoCanceladoBase: any = {};
@@ -47,7 +47,7 @@ export class ExpedirCancelacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.adminCancelacionData = new ServerDataSource(this.http, {
+    this.adminCancelacionData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + ``,
       dataKey: 'Data',
       pagerPageKey: 'offset',
