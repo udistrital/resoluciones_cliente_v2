@@ -12,6 +12,7 @@ export class CheckboxAssistanceComponent implements OnInit {
   modulo: any;
 
   @Output() icon: EventEmitter<any> = new EventEmitter();
+  @Output() data: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
@@ -19,8 +20,9 @@ export class CheckboxAssistanceComponent implements OnInit {
 
   }
 
-  iconoSelect(event) {
+  iconoSelect(event, rowData) {
     this.icon.emit(event);
+    this.data.emit(rowData);
   }
 
 }

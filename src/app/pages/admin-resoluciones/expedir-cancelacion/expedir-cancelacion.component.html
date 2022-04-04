@@ -6,8 +6,8 @@
                     <h2>Información de Cancelación</h2>
                 </div>
                 <h2 class="section-title">Docentes a vincular</h2>
-                <!-- <ng2-smart-table [settings]="adminCancelacionsettings" [source]="adminCancelacionData"
-                    (custom)=eventHandler($event)></ng2-smart-table> -->
+                <ng2-smart-table [settings]="adminCancelacionsettings" [source]="adminCancelacionData">
+                </ng2-smart-table>
             </div>
             <div class="section">
                 <h2 class="section-title">Datos de la cancelación de la(s) vinculación(es)</h2>
@@ -27,20 +27,17 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Número de resolución</mat-label>
-                    <input matInput type="number" name="numRes" [(ngModel)]="resolucionActual.NumeroResolucion"
-                        disabled>
+                    <input matInput type="number" name="numRes" [(ngModel)]="numeroRes" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Tipo de resolución</mat-label>
-                    <input matInput type="number" name="tipoRes"
-                        [(ngModel)]="resolucionActual.resolucionActual.TipoResolucionId.NombreTipoResolucion" disabled>
+                    <input matInput type="text" name="tipoRes" [(ngModel)]="tipoResolucion" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Número de semanas</mat-label>
-                    <input matInput type="number" name="numSem" [(ngModel)]="resolucionActual.NumeroSemanas" disabled>
+                    <input matInput type="number" name="numSem" [(ngModel)]="maximoSemanas" disabled>
                 </mat-form-field>
-                <button mat-button class="button button-submit" type="button"
-                    (click)="cancelarContrato()">Realizar
+                <button mat-button class="button button-submit" type="button" (click)="cancelarContrato()">Realizar
                     expedición de la resolución</button>
                 <button mat-button class="button button-remove" type="button"
                     (click)="cancelarExpedicion()">Cancelar</button>

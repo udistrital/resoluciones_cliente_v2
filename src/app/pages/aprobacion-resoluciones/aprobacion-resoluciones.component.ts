@@ -18,6 +18,8 @@ export class AprobacionResolucionesComponent implements OnInit {
   aprobResolucionesSettings: any;
   aprobResolucionesData: ResolucionesDataSourceComponent;
 
+  icono: string;
+
   cadenaFiltro: string[] = [];
   parametros: string = "";
   query = "query=Activo:true";
@@ -51,8 +53,11 @@ export class AprobacionResolucionesComponent implements OnInit {
       renderComponent: CheckboxAssistanceComponent,
       onComponentInitFunction: (instance) => {
         instance.modulo = "aprob";
-        instance.icon.subscribe(data => {
-          this.eventHandler(data);
+        instance.icon.subscribe(res => {
+          this.icono = res;
+        });
+        instance.data.subscribe(data => {
+          this.eventHandler(this.icono, data);
         });
       },
     }
@@ -67,15 +72,15 @@ export class AprobacionResolucionesComponent implements OnInit {
     };
   }
 
-  eventHandler(event): void {
+  eventHandler(event, rowData): void {
     switch (event) {
       case 'documento':
         break;
       case 'aprobacion':
-        this.verModificarEstado(event.data, "APROBADA", 5);
+        this.verModificarEstado(rowData, "APROBADA", 5);
         break;
       case 'desaprobacion':
-        this.verModificarEstado(event.data, "DESAPROBADA", 1);
+        this.verModificarEstado(rowData, "DESAPROBADA", 1);
         break;
     }
   }
@@ -114,7 +119,10 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   limpiarFiltro() {
-
+    for (let i in this.cadenaFiltro) {
+      i = "";
+    }
+    this.ngOnInit();
   }
 
   verModificarEstado(row, nombreEstado, idEstado) {

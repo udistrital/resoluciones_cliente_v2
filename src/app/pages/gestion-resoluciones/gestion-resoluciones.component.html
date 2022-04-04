@@ -32,7 +32,7 @@
         </mat-form-field>
         <button mat-button class="button button-add" type="button" (click)="filtroTabla()"
             style="width: 6%;">Filtrar</button>
-        <ng2-smart-table [settings]="resolucionesSettings" [source]="resolucionesData" (custom)=eventHandler($event)>
+        <ng2-smart-table [settings]="resolucionesSettings" [source]="resolucionesData">
         </ng2-smart-table>
     </mat-card-content>
     <button mat-button class="button button-submit" type="button" (click)="crearResolucion()">Crear Resolución de
