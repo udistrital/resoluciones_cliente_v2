@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ServerDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
@@ -10,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -23,7 +23,7 @@ export class GestionResolucionesComponent implements OnInit {
 
   dialogConfig: MatDialogConfig;
   resolucionesSettings: any;
-  resolucionesData: ServerDataSource;
+  resolucionesData: ResolucionesDataSourceComponent;
 
   parametros: string = "";
   query: string = "query=Activo:true";
@@ -41,8 +41,8 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ServerDataSource(this.http, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',

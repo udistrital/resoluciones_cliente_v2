@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerDataSource } from 'ng2-smart-table';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 
 
 @Component({
@@ -22,7 +22,7 @@ export class AdminResolucionesComponent implements OnInit {
   cadenaFiltro: string[] = [];
 
   adminResolucionesSettings: any;
-  adminResolucionesData: ServerDataSource;
+  adminResolucionesData: ResolucionesDataSourceComponent;
   resolucionAprobada;
   resolucionAprobadaId: number;
   parametros: string = "";
@@ -39,7 +39,7 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.adminResolucionesData = new ServerDataSource(this.http, {
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_aprobadas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
