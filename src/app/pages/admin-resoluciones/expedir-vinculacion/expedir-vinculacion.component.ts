@@ -19,16 +19,16 @@ export class ExpedirVinculacionComponent implements OnInit {
   resolucionActual;
   contenidoResolucion: Respuesta;
   contratadosPdf = [];
-  datosFiltro;
-  sede_solicitante_defecto;
-  contratados;
-  proyectos;
-  ordenadorGasto;
-  punto_salarial;
-  salario_minimo;
-  vigencia_data;
-  forma_pago_defecto;
-  regimen_contratacion_defecto;
+  datosFiltro: any;
+  sede_solicitante_defecto: any;
+  contratados: any;
+  proyectos: any;
+  ordenadorGasto: any;
+  punto_salarial: any;
+  salario_minimo: any;
+  vigencia_data: any;
+  forma_pago_defecto: any;
+  regimen_contratacion_defecto: any;
 
   contratoGeneralBase;
   acta;
@@ -43,6 +43,12 @@ export class ExpedirVinculacionComponent implements OnInit {
   formaPago: string;
   sedeSol: string;
   fechaInicio = new Date();
+  justificacion: string;
+  observaciones: string;
+  descripcion: string;
+  numRes: number;
+  tipoRes: string;
+  numSemanas: number;
   fechaExpedicion = new Date();
 
   constructor(
@@ -54,8 +60,11 @@ export class ExpedirVinculacionComponent implements OnInit {
   }
 
   cargarDatos(): void {
+    console.log(this.resolucion);
 
-    console.log("idResolucion", this.idResolucionV);
+    this.vigencia = this.resolucion.Vigencia;
+    this.numRes =  this.resolucion.NumeroResolucion;
+    this.tipoRes =  this.resolucion.TipoResolucion;
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
@@ -340,10 +349,6 @@ export class ExpedirVinculacionComponent implements OnInit {
 
     // var documento = pdfMakerService.getDocumento(this.contenidoResolucion, this.resolucion, this.contratadosPdf, this.proyectos);
     // PdfMake.createDocument
-
-  }
-
-  olanda() {
 
   }
 

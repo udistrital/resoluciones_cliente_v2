@@ -25,6 +25,8 @@ export class GestionResolucionesComponent implements OnInit {
   resolucionesSettings: any;
   resolucionesData: ServerDataSource;
 
+  icono: string;
+
   parametros: string = "";
   query: string = "query=Activo:true";
   cadenaFiltro: string[] = [];
@@ -64,8 +66,11 @@ export class GestionResolucionesComponent implements OnInit {
       renderComponent: CheckboxAssistanceComponent,
       onComponentInitFunction: (instance) => {
         instance.modulo = "gestion";
-        instance.icon.subscribe(data => {
-          this.eventHandler(data);
+        instance.icon.subscribe(res => {
+          this.icono = res;
+        });
+        instance.data.subscribe(data => {
+          this.eventHandler(this.icono, data);
         });
       },
     }
@@ -80,34 +85,36 @@ export class GestionResolucionesComponent implements OnInit {
     };
   }
 
-  eventHandler(event): void {
+  eventHandler(event, rowData): void {
+    console.log(event);
+    console.log("Id", rowData);
     switch (event) {
       case 'documento':
-        this.cargarDocumento(event.data.Id);
+        this.cargarDocumento(rowData.Id);
         break;
       case 'editar':
-        this.editarResolución(event.data.Id);
+        this.editarResolución(rowData.Id);
         break;
       case 'anular':
-        this.anularResolución(event.data.Id);
+        this.anularResolución(rowData.Id);
         break;
       case 'consultar':
-        this.consultarVinculacionesResolución(event.data.Id);
+        this.consultarVinculacionesResolución(rowData.Id);
         break;
       case 'vincular':
-        this.vincularDocentesResolución(event.data.Id);
+        this.vincularDocentesResolución(rowData.Id);
         break;
       case 'cancelar':
-        this.cancelarDocentesResolución(event.data.Id);
+        this.cancelarDocentesResolución(rowData.Id);
         break;
       case 'enviar':
-        this.enviarRevision(event.data.Id);
+        this.enviarRevision(rowData.Id);
         break;
       case 'adicionar':
-        this.adicionarHorasDocentesResolución(event.data.Id);
+        this.adicionarHorasDocentesResolución(rowData.Id);
         break;
       case 'reducir':
-        this.reducirHorasDocentesResolución(event.data.Id);
+        this.reducirHorasDocentesResolución(rowData.Id);
         break;
     }
   }
@@ -149,6 +156,7 @@ export class GestionResolucionesComponent implements OnInit {
     for (let i in this.cadenaFiltro) {
       i = "";
     }
+    this.ngOnInit();
   }
 
   cargarDocumento(id: number): void {

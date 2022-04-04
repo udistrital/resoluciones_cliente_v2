@@ -27,20 +27,22 @@
         <button mat-button class="button button-add" type="button" (click)="filtroTabla()"
             style="width: 7%;">Filtrar</button>
         <button mat-button class="button button-add boton" type="button" (click)="limpiarFiltro()"
-            style="width: 7%;">lim</button>
-        <ng2-smart-table [settings]="adminResolucionesSettings" [source]="adminResolucionesData"
-            (custom)=eventHandler($event)></ng2-smart-table>
+            style="width: 7%;">limpiar</button>
+        <ng2-smart-table [settings]="adminResolucionesSettings" [source]="adminResolucionesData"></ng2-smart-table>
     </mat-card-content>
-    <div *ngIf="this.tipoResVista === 'Vinculación' ">
+    <div *ngIf="this.tipoResVista === 'Vinculacion' ">
         <app-expedir-vinculacion [idResolucionV]="resolucionAprobadaId" [resolucion]="resolucionAprobada"
             (cancelarVinculacion)="tipoResVista=$event">
         </app-expedir-vinculacion>
     </div>
-    <div *ngIf="this.tipoResVista === 'Cancelación' ">
-        <app-expedir-cancelacion [idResolucionC]="resolucionAprobadaId" (cancelarCancelacion)="tipoResVista=$event">
+    <div *ngIf="this.tipoResVista === 'Cancelacion' ">
+        <app-expedir-cancelacion [idResolucionC]="resolucionAprobadaId" [resolucion]="resolucionAprobada"
+            (cancelarCancelacion)="tipoResVista=$event">
         </app-expedir-cancelacion>
     </div>
-    <div *ngIf="this.tipoResVista === 'Reducción' || this.tipoResVista === 'Adición' ">
-        <app-expedir-modificacion (cancelarModificacion)="tipoResVista=$event"></app-expedir-modificacion>
+    <div *ngIf="this.tipoResVista === 'Reduccion' || this.tipoResVista === 'Adicion' ">
+        <app-expedir-modificacion (cancelarModificacion)="tipoResVista=$event" [resolucion]="resolucionAprobada"
+            (cancelarCancelacion)="tipoResVista=$event">
+        </app-expedir-modificacion>
     </div>
 </mat-card>
