@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
-import { ServerDataSource } from 'ng2-smart-table';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
-import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
+import { TablaPrevinculacion } from 'src/app/@core/models/tabla_previnculacion';
+import { TablaVinculaciones } from 'src/app/@core/models/tabla_vinculaciones';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import { RequestManager } from '../../services/requestManager';
+import { UtilService } from '../../services/utilService';
 
 @Component({
   selector: 'app-expedir-cancelacion',
@@ -19,7 +21,7 @@ export class ExpedirCancelacionComponent implements OnInit {
 
   @Output() cancelarCancelacion = new EventEmitter<string>();
 
-  adminCancelacionData: ServerDataSource;
+  adminCancelacionData: ResolucionesDataSourceComponent;
   adminCancelacionsettings: any;
 
   contratoCanceladoBase: any = {};
@@ -31,23 +33,29 @@ export class ExpedirCancelacionComponent implements OnInit {
   fecha_actual = new Date();
   fechaFinal = new Date();
   esconderBoton = false;
-  FechaExpedicion = null;
   contratados: any;
   ordenadorGasto: any;
+  sede_solicitante_defecto: any;
   resolucionActual: any;
+
+  FechaExpedicion = null;
+  numeroRes: number;
+  tipoResolucion: string;
+  numeroSemanas: number;
 
   vigencia: string;
   fechaExpedicion: Date;
 
   constructor(
     private http: HttpClient,
-    private request: RequestManager
+    private request: RequestManager,
+    private popUp: UtilService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.adminCancelacionData = new ServerDataSource(this.http, {
+    this.adminCancelacionData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + ``,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -59,41 +67,19 @@ export class ExpedirCancelacionComponent implements OnInit {
 
   initTable() {
     this.adminCancelacionsettings = {
-      columns: TablaResolucion,
+      columns: TablaPrevinculacion,
       mode: 'external',
-      actions: {
-        add: false,
-        edit: false,
-        delete: false,
-        position: 'right',
-        columnTitle: 'Acciones',
-        custom: [
-          {
-            name: 'documento',
-            title: '<em class="material-icons" title="Ver Documento">description</em>'
-          },
-          {
-            name: 'expedicion',
-            title: '<em class="material-icons" title="Expedir">note_add</em>'
-          },
-        ],
-      },
+      actions: false,
       rowClassFunction: (row: any) => {
       },
       noDataMessage: 'No hay resoluciones aprobadas en el sistema',
     };
   }
 
-  eventHandler(event: any): void {
-    switch (event.action) {
-      case 'documento':
-        break;
-      case 'expedicion':
-        break;
-    }
-  }
-
   cargarDatos() {
+
+    this.tipoResolucion = this.resolucion.TipoResolucion;
+    this.numeroRes = this.resolucion.NumeroResolucion;
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
@@ -106,16 +92,16 @@ export class ExpedirCancelacionComponent implements OnInit {
       this.maximoSemanas = this.resolucionActual.NumeroSemanas;
       this.request.get(
         environment.RESOLUCIONES_V2_SERVICE,
-        `tipo_resolucion` + this.resolucionActual.TipoResolucionId.Id
+        `tipo_resolucion/` + this.resolucionActual.TipoResolucionId.Id
       ).subscribe((responseTipoRes: Respuesta) => {
         this.resolucionActual.TipoResolucionId.NombreTipoResolucion = response.Data.NombreTipoResolucion;
         ///////////////////////////////////////////////////////////DOCUMENTO//////////////////////////////////////////////////////
-        this.request.get(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_documento_resolucion/get_contenido_resolucion?id_resolucion=` + this.resolucionActual.Id + `&id_facultad=` + this.resolucionActual.DependenciaFirmaId
-        ).subscribe((response2: Respuesta) => {
-          var contenidoResolucion = response2.Data;
-        });
+        // this.request.get(
+        //   environment.RESOLUCIONES_MID_V2_SERVICE,
+        //   `gestion_documento_resolucion/get_contenido_resolucion?id_resolucion=` + this.resolucionActual.Id + `&id_facultad=` + this.resolucionActual.DependenciaFirmaId
+        // ).subscribe((response2: Respuesta) => {
+        //   var contenidoResolucion = response2.Data;
+        // });
         ///////////////////////////////////////////////////////////DOCUMENTO//////////////////////////////////////////////////////
       });
     });
@@ -129,7 +115,7 @@ export class ExpedirCancelacionComponent implements OnInit {
         environment.OIKOS_SERVICE,
         `dependencia/` + datosFiltro.FacultadId.toString()
       ).subscribe((response2: Respuesta) => {
-        var sede_solicitante_defecto = response2.Data.Nombre;
+        this.sede_solicitante_defecto = response2.Data.Nombre;
       });
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ServerDataSource } from 'ng2-smart-table';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
@@ -10,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -23,7 +23,9 @@ export class GestionResolucionesComponent implements OnInit {
 
   dialogConfig: MatDialogConfig;
   resolucionesSettings: any;
-  resolucionesData: ServerDataSource;
+  resolucionesData: ResolucionesDataSourceComponent;
+
+  icono: string;
 
   parametros: string = "";
   query: string = "query=Activo:true";
@@ -41,8 +43,8 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ServerDataSource(this.http, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
@@ -64,8 +66,11 @@ export class GestionResolucionesComponent implements OnInit {
       renderComponent: CheckboxAssistanceComponent,
       onComponentInitFunction: (instance) => {
         instance.modulo = "gestion";
-        instance.icon.subscribe(data => {
-          this.eventHandler(data);
+        instance.icon.subscribe(res => {
+          this.icono = res;
+        });
+        instance.data.subscribe(data => {
+          this.eventHandler(this.icono, data);
         });
       },
     }
@@ -80,34 +85,36 @@ export class GestionResolucionesComponent implements OnInit {
     };
   }
 
-  eventHandler(event): void {
+  eventHandler(event, rowData): void {
+    console.log(event);
+    console.log("Id", rowData);
     switch (event) {
       case 'documento':
-        this.cargarDocumento(event.data.Id);
+        this.cargarDocumento(rowData.Id);
         break;
       case 'editar':
-        this.editarResolución(event.data.Id);
+        this.editarResolución(rowData.Id);
         break;
       case 'anular':
-        this.anularResolución(event.data.Id);
+        this.anularResolución(rowData.Id);
         break;
       case 'consultar':
-        this.consultarVinculacionesResolución(event.data.Id);
+        this.consultarVinculacionesResolución(rowData.Id);
         break;
       case 'vincular':
-        this.vincularDocentesResolución(event.data.Id);
+        this.vincularDocentesResolución(rowData.Id);
         break;
       case 'cancelar':
-        this.cancelarDocentesResolución(event.data.Id);
+        this.cancelarDocentesResolución(rowData.Id);
         break;
       case 'enviar':
-        this.enviarRevision(event.data.Id);
+        this.enviarRevision(rowData.Id);
         break;
       case 'adicionar':
-        this.adicionarHorasDocentesResolución(event.data.Id);
+        this.adicionarHorasDocentesResolución(rowData.Id);
         break;
       case 'reducir':
-        this.reducirHorasDocentesResolución(event.data.Id);
+        this.reducirHorasDocentesResolución(rowData.Id);
         break;
     }
   }
@@ -149,6 +156,7 @@ export class GestionResolucionesComponent implements OnInit {
     for (let i in this.cadenaFiltro) {
       i = "";
     }
+    this.ngOnInit();
   }
 
   cargarDocumento(id: number): void {

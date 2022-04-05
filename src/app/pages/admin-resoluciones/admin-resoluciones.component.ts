@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerDataSource } from 'ng2-smart-table';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 
 
 @Component({
@@ -17,13 +17,15 @@ import { UtilService } from '../services/utilService';
 export class AdminResolucionesComponent implements OnInit {
 
   tipoResVista = '';
-  Assistance = false;
+  rowData: any;
+  icono: string;
 
   cadenaFiltro: string[] = [];
 
   adminResolucionesSettings: any;
-  adminResolucionesData: ServerDataSource;
-  resolucionAprobada;
+  adminResolucionesData: ResolucionesDataSourceComponent;
+  resolucionAprobada: any;
+
   resolucionAprobadaId: number;
   parametros: string = "";
   query: string = "query=Activo:true";
@@ -39,7 +41,7 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.adminResolucionesData = new ServerDataSource(this.http, {
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_aprobadas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -57,9 +59,13 @@ export class AdminResolucionesComponent implements OnInit {
       type: 'custom',
       renderComponent: CheckboxAssistanceComponent,
       onComponentInitFunction: (instance) => {
+        console.log("...Component...");
         instance.modulo = "admin";
-        instance.icon.subscribe(data => {
-          this.eventHandler(data);
+        instance.icon.subscribe(res => {
+          this.icono = res;
+        });
+        instance.data.subscribe(data => {
+          this.eventHandler(this.icono, data);
         });
       },
     }
@@ -78,15 +84,23 @@ export class AdminResolucionesComponent implements OnInit {
     });
   }
 
-  eventHandler(event: any): void {
+  eventHandler(event: string, rowData: any): void {
+    console.log("...EventHandler...");
+    console.log("event: ", event);
     switch (event) {
       case 'documento':
-        this.tipoResVista = '';
-        // this.cargarDocumento(0);
         console.log("documento");
+        if (this.tipoResVista !== "") {
+          this.tipoResVista = "";
+        }
+        // this.cargarDocumento(0);
         break;
       case 'expedicion':
-        console.log("expedir");
+        if (this.tipoResVista === "") {
+          this.expedirVista(rowData);
+        } else {
+          this.tipoResVista = "";
+        }
         break;
     }
   }
@@ -123,6 +137,7 @@ export class AdminResolucionesComponent implements OnInit {
     for (let i in this.cadenaFiltro) {
       i = "";
     }
+    this.ngOnInit();
   }
 
   cargarDocumento(id: number): void {
@@ -133,14 +148,28 @@ export class AdminResolucionesComponent implements OnInit {
     console.info("Aquí entra en la función expedirResolucion");
   }
 
-  expedirResolucion2(): void {
+  expedirVista(rowData: any): void {
+    var cadena = (rowData.TipoResolucion).slice(0, -3);
+    console.log(cadena);
+    this.resolucionAprobada = rowData;
+    this.resolucionAprobadaId = rowData.Id;
+    switch (rowData.TipoResolucion) {
+      case 'Resolución de Vinculación':
+        this.tipoResVista = 'Vinculacion';
+        break;
+      case 'Resolución de Modificacion':
+        this.tipoResVista = 'Modificacion';
+        break;
+      case 'Resolución de Cancelación':
+        this.tipoResVista = 'Cancelación';
+        break;
+    }
 
   }
-  expedirResolucion3(): void {
-    this.tipoResVista = 'Cancelacion';
+  expedirCancelacion(): void {
+
   }
-  expedirResolucion4(): void {
-    this.tipoResVista = 'Modificacion';
+  expedirModificacion(): void {
   }
 
 }

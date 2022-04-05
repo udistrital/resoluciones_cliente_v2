@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ServerDataSource } from 'ng2-smart-table';
 import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
+import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { environment } from 'src/environments/environment';
@@ -16,7 +16,9 @@ import { RequestManager } from '../services/requestManager';
 export class AprobacionResolucionesComponent implements OnInit {
 
   aprobResolucionesSettings: any;
-  aprobResolucionesData: ServerDataSource;
+  aprobResolucionesData: ResolucionesDataSourceComponent;
+
+  icono: string;
 
   cadenaFiltro: string[] = [];
   parametros: string = "";
@@ -32,7 +34,7 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.aprobResolucionesData = new ServerDataSource(this.http, {
+    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -51,8 +53,11 @@ export class AprobacionResolucionesComponent implements OnInit {
       renderComponent: CheckboxAssistanceComponent,
       onComponentInitFunction: (instance) => {
         instance.modulo = "aprob";
-        instance.icon.subscribe(data => {
-          this.eventHandler(data);
+        instance.icon.subscribe(res => {
+          this.icono = res;
+        });
+        instance.data.subscribe(data => {
+          this.eventHandler(this.icono, data);
         });
       },
     }
@@ -67,15 +72,15 @@ export class AprobacionResolucionesComponent implements OnInit {
     };
   }
 
-  eventHandler(event): void {
+  eventHandler(event, rowData): void {
     switch (event) {
       case 'documento':
         break;
       case 'aprobacion':
-        this.verModificarEstado(event.data, "APROBADA", 5);
+        this.verModificarEstado(rowData, "APROBADA", 5);
         break;
       case 'desaprobacion':
-        this.verModificarEstado(event.data, "DESAPROBADA", 1);
+        this.verModificarEstado(rowData, "DESAPROBADA", 1);
         break;
     }
   }
@@ -114,7 +119,10 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   limpiarFiltro() {
-
+    for (let i in this.cadenaFiltro) {
+      i = "";
+    }
+    this.ngOnInit();
   }
 
   verModificarEstado(row, nombreEstado, idEstado) {
