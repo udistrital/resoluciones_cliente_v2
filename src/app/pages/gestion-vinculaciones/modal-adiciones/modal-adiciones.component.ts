@@ -48,7 +48,7 @@ export class ModalAdicionesComponent {
     ).then(value => {
       if (value.isConfirmed) {
         this.cambioVinculacion.NumeroHorasSemanales = parseInt(this.cambioVinculacion.NumeroHorasSemanales.toString(), 10);
-        this.cambioVinculacion.NumeroSemanas = parseInt(this.cambioVinculacion.NumeroSemanas.toString(), 10)
+        this.cambioVinculacion.NumeroSemanas = parseInt(this.cambioVinculacion.NumeroSemanas.toString(), 10);
         this.dialogRef.close(this.cambioVinculacion);
       }
     });

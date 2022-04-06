@@ -79,7 +79,7 @@ export class CancelarVinculacionesComponent implements OnInit {
           `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
         ).subscribe((response: Respuesta) => {
           if (response.Success) {
-            this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0]
+            this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
             this.request.get(
               environment.RESOLUCIONES_MID_V2_SERVICE,
               `gestion_vinculaciones/${this.modificacionResolucion.ResolucionAnteriorId.Id}`
@@ -106,7 +106,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       vinculacion.NumeroSemanas = 0;
       this.cambioVinculacion.push(vinculacion);
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
-        this.registrosPresupuestales[nueva.PersonaId] = []
+        this.registrosPresupuestales[nueva.PersonaId] = [];
       }
 
       /* TODO: FUNCIONALIDAD DEFINITIVA QUE NO HA SALIDO A PROD
@@ -117,7 +117,7 @@ export class CancelarVinculacionesComponent implements OnInit {
         (this.registrosPresupuestales[nueva.PersonaId] as Array<DocumentoPresupuestal>).push(...response);
       });
       */
-     
+
       /**
        * FUNCIONALIDAD TEMPORAL MIENTRAS kRONOS SALE A PROD
        */
@@ -133,7 +133,7 @@ export class CancelarVinculacionesComponent implements OnInit {
             this.registrosPresupuestales[nueva.PersonaId].push(reg);
           });
         }
-        console.log(this.cambioVinculacion)
+
       });
     } else {
       const i = this.cambioVinculacion.findIndex(v => v.VinculacionOriginal.Id === nueva.Id);
@@ -143,8 +143,8 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   cancelarVinculaciones(): void {
-    for (let i = 0; i < this.cambioVinculacion.length; i++) {
-      this.cambioVinculacion[i].NumeroSemanas = this.numeroSemanas;
+    for (const cambio of this.cambioVinculacion) {
+      cambio.NumeroSemanas = this.numeroSemanas;
     }
     const objetoCancelaciones = {
       CambiosVinculacion: this.cambioVinculacion,
@@ -157,7 +157,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       '¿Está seguro de realizar la desvinculación de los docentes seleccionados?',
       'create'
     ).then(value => {
-      if(value.isConfirmed) {
+      if (value.isConfirmed) {
         this.request.post(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           'gestion_resoluciones/desvincular',

@@ -3,7 +3,7 @@ export class Vinculaciones {
     Nombre: string;
     PersonaId: number;
     TipoDocumento: string;
-	ExpedicionDocumento: string;
+    ExpedicionDocumento: string;
     NumeroContrato: string;
     Vigencia: number;
     Categoria: string;
