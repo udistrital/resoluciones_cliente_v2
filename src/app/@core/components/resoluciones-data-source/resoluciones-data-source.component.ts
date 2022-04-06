@@ -18,6 +18,7 @@ export class ResolucionesDataSourceComponent extends ServerDataSource {
     const endpoint = `${this.conf.endPoint}&${this.createRequesParams().toString()}`;
     let request: Observable<any>;
     this.request.header$.subscribe(header => {
+      header['observe'] = 'response';
       request = this.http.get<any>(endpoint, header);
     });
     return request;
