@@ -50,4 +50,4 @@ export const TablaPrevinculacion: any = {
         editable: false,
         filter: false,
     },
-}
+};

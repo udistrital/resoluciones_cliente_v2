@@ -27,6 +27,9 @@ export class ConsultaDocenteComponent {
   }
 
   initTable(): void {
+    if (TablaResoluciones.Acciones !== undefined) {
+      delete TablaResoluciones.Acciones;
+    }
     this.resolucionesDocenteSettings = {
       columns: TablaResoluciones,
       mode: 'external',

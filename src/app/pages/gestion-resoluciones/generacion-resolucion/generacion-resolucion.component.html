@@ -32,7 +32,7 @@
                             <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" #niv="ngModel" required>
                                 <mat-option>--Seleccionar--</mat-option>
                                 <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
-                                    {{ nivel.Nombre }}
+                                    {{ nivel.Nombre.toUpperCase() }}
                                 </mat-option>
                             </mat-select>
                             <mat-error *ngIf="niv.errors?.['required'] && niv.touched">

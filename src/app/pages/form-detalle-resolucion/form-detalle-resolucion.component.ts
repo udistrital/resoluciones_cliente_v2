@@ -199,16 +199,19 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
                 `gestion_plantillas`,
                 this.contenidoResolucion,
                 this.contenidoResolucion.Resolucion.Id
-              ).subscribe((response: Respuesta) => {
-                if (response.Success) {
-                  this.popUp.success('La plantilla se ha actualizado con éxito').then(() => {
-                    this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
-                      resolve();
+              ).subscribe({
+                next: (response: Respuesta) => {
+                  if (response.Success) {
+                    this.popUp.success('La plantilla se ha actualizado con éxito').then(() => {
+                      this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                        resolve();
+                      });
                     });
-                  });
+                  }
+                },
+                error: (error: any) => {
+                  this.popUp.error('No se ha podido actualizar la plantilla');
                 }
-              }, (error: any) => {
-                this.popUp.error('No se ha podido actualizar la plantilla');
               });
             });
           }
@@ -225,17 +228,21 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
                 environment.RESOLUCIONES_MID_V2_SERVICE,
                 `gestion_plantillas`,
                 this.contenidoResolucion
-              ).subscribe((response: Respuesta) => {
-                if (response.Success) {
-                  this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
-                    this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
-                      resolve();
+              ).subscribe({
+                next: (response: Respuesta) => {
+                  if (response.Success) {
+                    this.contenidoResolucion.Resolucion.Id = response.Data;
+                    this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
+                      this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                        resolve();
+                      });
                     });
-                  });
+                  }
+                },
+                error: (error: any) => {
+                  console.log(error);
+                  this.popUp.error('No se ha podido guardar la plantilla');
                 }
-              }, (error: any) => {
-                console.log(error);
-                this.popUp.error('No se ha podido guardar la plantilla');
               });
             });
           }

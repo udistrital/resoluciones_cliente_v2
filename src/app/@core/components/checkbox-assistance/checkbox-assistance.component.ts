@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 
 @Component({
@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   templateUrl: './checkbox-assistance.component.html',
   styleUrls: ['./checkbox-assistance.component.scss']
 })
-export class CheckboxAssistanceComponent implements OnInit {
+export class CheckboxAssistanceComponent {
 
   @Input() rowData: any;
   modulo: any;
@@ -16,11 +16,7 @@ export class CheckboxAssistanceComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-
-  }
-
-  iconoSelect(event, rowData) {
+  iconoSelect(event, rowData): void {
     this.icon.emit(event);
     this.data.emit(rowData);
   }
