@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
+import { ActionsAssistanceComponent } from 'src/app/@core/components/actions-assistance/actions-assistance.component';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
@@ -50,7 +50,7 @@ export class AprobacionResolucionesComponent implements OnInit {
       filter: false,
       width: '4%',
       type: 'custom',
-      renderComponent: CheckboxAssistanceComponent,
+      renderComponent: ActionsAssistanceComponent,
       onComponentInitFunction: (instance) => {
         instance.modulo = "aprob";
         instance.icon.subscribe(res => {

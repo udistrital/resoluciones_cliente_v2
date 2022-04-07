@@ -4,12 +4,13 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
-import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
+import { ActionsAssistanceComponent } from 'src/app/@core/components/actions-assistance/actions-assistance.component';
 import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
+import { Resoluciones } from 'src/app/@core/models/resoluciones';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -63,13 +64,13 @@ export class GestionResolucionesComponent implements OnInit {
       filter: false,
       width: '4%',
       type: 'custom',
-      renderComponent: CheckboxAssistanceComponent,
-      onComponentInitFunction: (instance) => {
+      renderComponent: ActionsAssistanceComponent,
+      onComponentInitFunction: (instance: ActionsAssistanceComponent) => {
         instance.modulo = 'gestion';
-        instance.icon.subscribe(res => {
+        instance.icon.subscribe((res: string) => {
           this.icono = res;
         });
-        instance.data.subscribe(data => {
+        instance.data.subscribe((data: Resoluciones) => {
           this.eventHandler(this.icono, data);
         });
       },
@@ -85,12 +86,10 @@ export class GestionResolucionesComponent implements OnInit {
     };
   }
 
-  eventHandler(event, rowData): void {
-    console.log(event);
-    console.log('Id', rowData);
+  eventHandler(event: string, rowData: Resoluciones): void {
     switch (event) {
       case 'documento':
-        this.cargarDocumento(rowData.Id);
+        this.cargarDocumento(rowData);
         break;
       case 'editar':
         this.editarResolución(rowData.Id);
@@ -159,16 +158,20 @@ export class GestionResolucionesComponent implements OnInit {
     this.ngOnInit();
   }
 
-  cargarDocumento(id: number): void {
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `gestion_resoluciones/generar_resolucion/${id}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.dialogConfig.data = response.Data as string;
-        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
-      }
-    });
+  cargarDocumento(row: Resoluciones): void {
+    if (row.Estado !== 'Expedida') {
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_resoluciones/generar_resolucion/${row.Id}`
+      ).subscribe((response: Respuesta) => {
+        if (response.Success) {
+          this.dialogConfig.data = response.Data as string;
+          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+        }
+      });
+    } else {
+      // TODO cargar con gestor documental
+    }
   }
 
   editarResolución(id: number): void {
