@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CheckboxAssistanceComponent } from './checkbox-assistance.component';
+import { ActionsAssistanceComponent } from './actions-assistance.component';
 
-describe('CheckboxAssistanceComponent', () => {
-  let component: CheckboxAssistanceComponent;
-  let fixture: ComponentFixture<CheckboxAssistanceComponent>;
+describe('ActionsAssistanceComponent', () => {
+  let component: ActionsAssistanceComponent;
+  let fixture: ComponentFixture<ActionsAssistanceComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CheckboxAssistanceComponent ]
+      declarations: [ ActionsAssistanceComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CheckboxAssistanceComponent);
+    fixture = TestBed.createComponent(ActionsAssistanceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

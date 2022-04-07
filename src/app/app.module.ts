@@ -9,12 +9,12 @@ import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
-import { CheckboxAssistanceComponent } from './@core/components/checkbox-assistance/checkbox-assistance.component';
+import { ActionsAssistanceComponent } from './@core/components/actions-assistance/actions-assistance.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CheckboxAssistanceComponent,
+    ActionsAssistanceComponent,
   ],
   imports: [
     CommonModule,
