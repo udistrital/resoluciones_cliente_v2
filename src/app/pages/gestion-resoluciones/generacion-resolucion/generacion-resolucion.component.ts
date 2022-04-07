@@ -99,7 +99,7 @@ export class GeneracionResolucionComponent implements OnInit {
     });
 
     this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas`,
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas?`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
