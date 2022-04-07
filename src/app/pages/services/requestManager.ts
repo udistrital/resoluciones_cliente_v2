@@ -48,6 +48,7 @@ export class RequestManager {
   get(path, endpoint): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
+        header['observe'] = 'body';
         return this.http.get<any>(`${path}${endpoint}`, header).pipe(
           map(
             (res: any) => {
@@ -76,6 +77,7 @@ export class RequestManager {
   post(path, endpoint, element): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
+        header['observe'] = 'body';
         return this.http.post<any>(`${path}${endpoint}`, element, header).pipe(
           catchError(this.errManager.handleError)
         );
@@ -94,6 +96,7 @@ export class RequestManager {
   put(path, endpoint, element, id): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
+        header['observe'] = 'body';
         return this.http.put<any>(`${path}${endpoint}/${id}`, element, header).pipe(
           catchError(this.errManager.handleError),
         );
@@ -112,6 +115,7 @@ export class RequestManager {
   delete(path, endpoint, id): Observable<any> {
     return this.header$.pipe(
       mergeMap(header => {
+        header['observe'] = 'body';
         return this.http.delete<any>(`${path}${endpoint}/${id}`, header).pipe(
           catchError(this.errManager.handleError),
         );

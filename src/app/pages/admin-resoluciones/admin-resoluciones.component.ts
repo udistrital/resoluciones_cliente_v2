@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
-import { CheckboxAssistanceComponent } from 'src/app/@core/components/checkbox-assistance/checkbox-assistance.component';
+import { ActionsAssistanceComponent } from 'src/app/@core/components/actions-assistance/actions-assistance.component';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
@@ -57,7 +57,7 @@ export class AdminResolucionesComponent implements OnInit {
       filter: false,
       width: '4%',
       type: 'custom',
-      renderComponent: CheckboxAssistanceComponent,
+      renderComponent: ActionsAssistanceComponent,
       onComponentInitFunction: (instance) => {
         console.log("...Component...");
         instance.modulo = "admin";

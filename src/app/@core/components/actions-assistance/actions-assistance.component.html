@@ -1,0 +1,53 @@
+<div class="acciones">
+    <!-- Todas las resoluciones -->
+    <em class="material-icons icon" title="Ver Documento" name="documento"
+        *ngIf="rowData.Estado !== 'Anulada'"
+        (click)="iconoSelect('documento')">description</em>
+
+    <!-- Expedición de resoluciones -->
+    <em class="material-icons icon" title="Expedir" name="expedicion"
+        *ngIf="this.modulo === 'admin' && rowData.Estado === 'Aprobada'" 
+        (click)="iconoSelect('expedicion')">note_add</em>
+    
+    <!-- Gestión de resoluciones -->
+    <em class="material-icons icon" title="Vincular" name="vincular"
+        *ngIf="this.modulo === 'gestion' && rowData.TipoResolucion.includes('Vinculación') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        (click)="iconoSelect('vincular')">person_add</em>
+
+    <em class="material-icons icon" title="Cancelar" name="cancelar"
+        *ngIf="this.modulo === 'gestion' && rowData.TipoResolucion.includes('Cancelación') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        (click)="iconoSelect('cancelar')">person_remove</em>
+
+    <em class="material-icons icon" title="Adicionar" name="adicionar"
+        *ngIf="this.modulo === 'gestion' && rowData.TipoResolucion.includes('Adición') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        (click)="iconoSelect('adicionar')">add_circle</em>
+
+    <em class="material-icons icon" title="Reducir" name="reducir"
+        *ngIf="this.modulo === 'gestion' && rowData.TipoResolucion.includes('Reducción') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        (click)="iconoSelect('reducir')">remove_circle</em>
+
+    <em class="material-icons icon" title="Consultar" name="consultar"
+        *ngIf="this.modulo === 'gestion' && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        (click)="iconoSelect('consultar')">list</em>
+
+    <em class="material-icons icon" title="Enviar a revisión" name="enviar"
+        *ngIf="this.modulo === 'gestion' && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')" 
+        (click)="iconoSelect('enviar')">send</em>
+
+    <em class="material-icons icon" title="Editar contenido" name="editar"
+        *ngIf="this.modulo === 'gestion' && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')" 
+        (click)="iconoSelect('editar')">edit</em>
+
+    <em class="material-icons icon" title="Anular" name="anular"
+        *ngIf="this.modulo === 'gestion' && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')" 
+        (click)="iconoSelect('anular')">cancel</em>
+
+    <!-- Aprobación de resoluciones -->
+    <em class="material-icons icon" title="Aprobar" 
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Solicitada'"
+        (click)="iconoSelect('aprobacion')">done_outline</em>
+
+    <em class="material-icons icon" title="Desaprobar" 
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Aprobada'"
+        (click)="iconoSelect('desaprobacion')">block</em>
+</div>
