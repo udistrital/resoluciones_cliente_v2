@@ -1,4 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Resolucion } from 'src/app/@core/models/resolucion';
+import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
@@ -12,11 +15,9 @@ import { RequestManager } from '../../services/requestManager';
 export class ExpedirVinculacionComponent implements OnInit {
 
   @Input() idResolucionV: number;
-  @Input() resolucion;
+  resolucion: Resoluciones;
 
-  @Output() cancelarVinculacion = new EventEmitter<string>();
-
-  resolucionActual;
+  resolucionActual: Resolucion;
   contenidoResolucion: Respuesta;
   contratadosPdf = [];
   datosFiltro: any;
@@ -46,14 +47,19 @@ export class ExpedirVinculacionComponent implements OnInit {
   justificacion: string;
   observaciones: string;
   descripcion: string;
-  numRes: number;
+  numRes: string;
   tipoRes: string;
   numSemanas: number;
   fechaExpedicion = new Date();
 
   constructor(
     private request: RequestManager,
-  ) { }
+    public dialogRef: MatDialogRef<ExpedirVinculacionComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: Resoluciones,
+  ) {
+    this.resolucion = this.data;
+    this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close(false));
+  }
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -68,43 +74,23 @@ export class ExpedirVinculacionComponent implements OnInit {
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion/` + this.idResolucionV
+      `resolucion/${this.resolucion.Id}`
     ).subscribe((responseRes: Respuesta) => {
-      this.resolucionActual = responseRes.Data;
-      if (this.resolucionActual.FechaExpedicion !== undefined && this.resolucionActual.FechaExpedicion !== "0001-01-01T00:00:00Z") {
+      this.resolucionActual = responseRes.Data as Resolucion;
+      if (this.resolucionActual.FechaExpedicion !== undefined && this.resolucionActual.FechaExpedicion !== new Date('0001-01-01T00:00:00Z')) {
         this.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
       }
-      this.request.get(
-        environment.RESOLUCIONES_V2_SERVICE,
-        'tipo_resolucion/' + this.resolucionActual.TipoResolucionId.Id
-      ).subscribe((responseTipoRes: Respuesta) => {
-        this.resolucionActual.TipoResolucionId.NombreTipoResolucion = responseTipoRes.Data.NombreTipoResolucion;
-        this.request.get(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_documento_resolucion/get_contenido_resolucion?id_resolucion=` + this.resolucionActual.Id + "&id_facultad=" + this.resolucionActual.DependenciaFirmaId
-        ).subscribe((response3: Respuesta) => {
-          this.contenidoResolucion = response3.Data;
-          this.request.get(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_previnculacion/docentes_previnculados_all?id_resolucion=` + this.resolucionActual.Id
-          ).subscribe((response4: Respuesta) => {
-            this.contratadosPdf = response4.Data;
-          });
-        });
-      });
     });
-
     this.request.get(
-      environment.OIKOS_SERVICE,
-      `dependencia/` + this.resolucion.Facultad
-    ).subscribe((response: Respuesta) => {
-      this.resolucion.FacultadNombre = response.Data.Nombre;
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_previnculacion/docentes_previnculados_all?id_resolucion=` + this.resolucionActual.Id
+    ).subscribe((response4: Respuesta) => {
+      this.contratadosPdf = response4.Data;
     });
-
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion_vinculacion_docente/` + this.idResolucionV
+      `resolucion_vinculacion_docente/${this.resolucion.Id}`
     ).subscribe((response: Respuesta) => {
       this.datosFiltro = response.Data;
       this.request.get(
@@ -158,7 +144,7 @@ export class ExpedirVinculacionComponent implements OnInit {
     });
 
     this.request.get(environment.ADMIN_AMAZON_SERVICE, `vigencia_contrato?limit=-1`).subscribe((response: Respuesta) => {
-      console.log("dato de limite = -1 xd", response.Data);
+      console.log('dato de limite = -1 xd', response.Data);
       this.vigencia_data = response.Data;
     });
 
@@ -184,11 +170,11 @@ export class ExpedirVinculacionComponent implements OnInit {
 
     this.contratoGeneralBase.Contrato.Vigencia = new Date().getFullYear();
     this.contratoGeneralBase.Contrato.FormaPago = { Id: 240 };
-    this.contratoGeneralBase.Contrato.DescripcionFormaPago = "Abono a Cuenta Mensual de acuerdo a puntas y hotras laboradas";
-    this.contratoGeneralBase.Contrato.Justificacion = "Docente de Vinculacion Especial";
+    this.contratoGeneralBase.Contrato.DescripcionFormaPago = 'Abono a Cuenta Mensual de acuerdo a puntas y hotras laboradas';
+    this.contratoGeneralBase.Contrato.Justificacion = 'Docente de Vinculacion Especial';
     this.contratoGeneralBase.Contrato.UnidadEjecucion = { Id: 269 };
     this.contratoGeneralBase.Contrato.LugarEjecucion = { Id: 4 };
-    this.contratoGeneralBase.Contrato.Observaciones = "Contrato de Docente Vinculación Especial";
+    this.contratoGeneralBase.Contrato.Observaciones = 'Contrato de Docente Vinculación Especial';
     this.contratoGeneralBase.Contrato.TipoControl = 181;
     this.contratoGeneralBase.Contrato.ClaseContratista = 33;
     this.contratoGeneralBase.Contrato.TipoMoneda = 137;
@@ -203,21 +189,21 @@ export class ExpedirVinculacionComponent implements OnInit {
     this.contratoGeneralBase.Contrato.TipologiaContrato = 46;
     this.contratoGeneralBase.Contrato.FechaRegistro = new Date();
     this.contratoGeneralBase.Contrato.UnidadEjecutora = 1;
-    this.contratoGeneralBase.Contrato.Condiciones = "Sin condiciones";
-    this.acta.Descripcion = "Acta inicio resolución Docente Vinculación Especial";
+    this.contratoGeneralBase.Contrato.Condiciones = 'Sin condiciones';
+    this.acta.Descripcion = 'Acta inicio resolución Docente Vinculación Especial';
   }
 
   realizarContrato() {
 
-    if (this.datosFiltro.Dedicacion === "HCH") {
+    if (this.datosFiltro.Dedicacion === 'HCH') {
       this.contratoGeneralBase.Contrato.TipoContrato = { Id: 3 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = "Docente de Vinculación Especial - Honorarios";
-    } else if (this.datosFiltro.Dedicacion === "HCP") {
+      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Honorarios';
+    } else if (this.datosFiltro.Dedicacion === 'HCP') {
       this.contratoGeneralBase.Contrato.TipoContrato = { Id: 2 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = "Docente de Vinculación Especial - Salario";
+      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Salario';
     } else {
       this.contratoGeneralBase.Contrato.TipoContrato = { Id: 18 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = "Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)";
+      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
     if (this.FechaExpedicion && this.acta.FechaInicio) {
       Swal.fire({
@@ -225,8 +211,8 @@ export class ExpedirVinculacionComponent implements OnInit {
         icon: 'warning',
         iconColor: 'btn btn-danger',
         text: '¿Está seguro de que desea expedir la resolución?',
-        html: '<p><b>Número: </b>' + this.resolucion.Numero.toString() + '</p>' +
-          '<p><b>Facultad: </b>' + this.resolucion.FacultadNombre + '</p>' +
+        html: '<p><b>Número: </b>' + this.resolucion.NumeroResolucion.toString() + '</p>' +
+          '<p><b>Facultad: </b>' + this.resolucion.Facultad + '</p>' +
           '<p><b>Nivel académico: </b>' + this.resolucion.NivelAcademico + '</p>' +
           '<p><b>Dedicación: </b>' + this.resolucion.Dedicacion + '</p>',
         showCancelButton: true,
@@ -276,43 +262,43 @@ export class ExpedirVinculacionComponent implements OnInit {
           ActaInicio: actaI,
           VinculacionDocente: { Id: parseInt(contratado.Id), PuntoSalarialId: null, SalarioMinimoId: null }
         };
-        if (this.datosFiltro.NivelAcademico.toLowerCase() === "pregrado") {
+        if (this.datosFiltro.NivelAcademico.toLowerCase() === 'pregrado') {
           contratoVinculacion.VinculacionDocente.PuntoSalarialId = this.punto_salarial.Id;
-        } else if (this.datosFiltro.NivelAcademico.toLowerCase() === "posgrado") {
+        } else if (this.datosFiltro.NivelAcademico.toLowerCase() === 'posgrado') {
           contratoVinculacion.VinculacionDocente.SalarioMinimoId = this.salario_minimo.Id;
         }
         conjuntoContratos.push(contratoVinculacion);
       });
       var expedicionResolucion = {
         Vinculaciones: conjuntoContratos,
-        idResolucion: this.idResolucionV,
+        idResolucion: this.resolucion.Id,
         FechaExpedicion: this.FechaExpedicion
       };
-      this.resolucion.FechaExpedicion = this.FechaExpedicion;
+      //this.resolucion.FechaExpedicion = this.FechaExpedicion;
 
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `expedir_resolucion/validar_datos_expedicion`,
         expedicionResolucion
       ).subscribe((response: Respuesta) => {
-        if (response.Data === "OK") {
+        if (response.Data === 'OK') {
           this.request.post(
             environment.RESOLUCIONES_MID_V2_SERVICE,
             `expedir_resolucion/expedir`,
             expedicionResolucion
           ).subscribe((response2: Respuesta) => {
             this.estado = false;
-            if (response2.Data.Status !== "201") {
+            if (response2.Data.Status !== '201') {
               Swal.fire({
                 text: response.Data,
-                title: "Alerta",
-                icon: "error",
+                title: 'Alerta',
+                icon: 'error',
                 confirmButtonText: 'Aceptar',
                 showLoaderOnConfirm: true,
                 allowOutsideClick: false
               });
             } else {
-              this.guardarResolucionNuxeo();
+              //this.guardarResolucionNuxeo();
             }
           });
         } else {
@@ -328,10 +314,10 @@ export class ExpedirVinculacionComponent implements OnInit {
       });
     } else {
       Swal.fire({
-        text: "No hay docentes inscritos dentro de la resolución",
-        title: "Alerta",
-        icon: "warning",
-        confirmButtonText: "Aceptar",
+        text: 'No hay docentes inscritos dentro de la resolución',
+        title: 'Alerta',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
         showLoaderOnConfirm: true,
         allowOutsideClick: false
       });
@@ -339,21 +325,8 @@ export class ExpedirVinculacionComponent implements OnInit {
 
   }
 
-  guardarResolucionNuxeo() {
-
-    this.resolucion.NivelAcademico_nombre = this.resolucion.NivelAcademico;
-    this.generarResolucion();
-  }
-
-  generarResolucion() {
-
-    // var documento = pdfMakerService.getDocumento(this.contenidoResolucion, this.resolucion, this.contratadosPdf, this.proyectos);
-    // PdfMake.createDocument
-
-  }
-
   cancelarExpedicion() {
-    this.cancelarVinculacion.emit('');
+    this.dialogRef.close(false);
   }
 
 }

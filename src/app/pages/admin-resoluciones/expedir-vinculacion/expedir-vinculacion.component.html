@@ -8,7 +8,7 @@
                 <h2 class="section-title">Información básica</h2>
                 <mat-form-field class="form-field-column">
                     <mat-label>Vigencia</mat-label>
-                    <input matInput type="number" name="vigencia" [(ngModel)]="vigencia" disabled>
+                    <input matInput type="number" name="vigencia" [(ngModel)]="resolucion.Vigencia" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Forma de pago</mat-label>
@@ -55,15 +55,15 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Número de resolución</mat-label>
-                    <input matInput type="number" name="numRes" [(ngModel)]="numRes" disabled>
+                    <input matInput type="number" name="numRes" [(ngModel)]="resolucion.NumeroResolucion" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Tipo de resolución</mat-label>
-                    <input matInput type="number" name="tipoRes" [(ngModel)]="tipoRes" disabled>
+                    <input matInput type="number" name="tipoRes" [(ngModel)]="resolucion.TipoResolucion" disabled>
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Número de semanas</mat-label>
-                    <input matInput type="number" name="numSem" [(ngModel)]="numSemanas" disabled>
+                    <input matInput type="number" name="numSem" [(ngModel)]="resolucion.Semanas" disabled>
                 </mat-form-field>
                 <button mat-button class="button button-submit" type="button" (click)="realizarContrato()">Realizar
                     expedición de la resolución</button>
