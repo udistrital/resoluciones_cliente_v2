@@ -161,7 +161,7 @@ export class ListarVinculacionesComponent implements OnInit {
               [event.data]
             ).subscribe((response: Respuesta) => {
               if (response.Success) {
-                this.popUp.success('Las vinculacion ha sido anulada').then(() => {
+                this.popUp.success('La vinculacion ha sido anulada').then(() => {
                   this.cargarVinculaciones();
                 });
               }

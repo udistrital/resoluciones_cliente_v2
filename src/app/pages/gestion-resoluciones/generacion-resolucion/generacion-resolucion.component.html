@@ -31,7 +31,7 @@
                             <mat-label>Nivel académico</mat-label>
                             <mat-select name="niv" [(ngModel)]="contenidoResolucion.Vinculacion.NivelAcademico" #niv="ngModel" required>
                                 <mat-option>--Seleccionar--</mat-option>
-                                <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre">
+                                <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre.toUpperCase()">
                                     {{ nivel.Nombre.toUpperCase() }}
                                 </mat-option>
                             </mat-select>

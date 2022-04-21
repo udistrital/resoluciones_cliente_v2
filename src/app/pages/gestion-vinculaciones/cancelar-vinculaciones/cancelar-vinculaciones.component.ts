@@ -160,7 +160,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       if (value.isConfirmed) {
         this.request.post(
           environment.RESOLUCIONES_MID_V2_SERVICE,
-          'gestion_resoluciones/desvincular',
+          'gestion_vinculaciones/desvincular',
           objetoCancelaciones
         ).subscribe((response: Respuesta) => {
           if (response.Success) {

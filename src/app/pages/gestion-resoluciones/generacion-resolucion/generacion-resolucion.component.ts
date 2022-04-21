@@ -47,6 +47,7 @@ export class GeneracionResolucionComponent implements OnInit {
       columns: TablaResoluciones,
       mode: 'external',
       actions: false,
+      selectedRowIndex: -1,
     };
   }
 

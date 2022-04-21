@@ -83,7 +83,7 @@ export class VincularDocentesComponent implements OnInit {
         }
       });
       this.cargarVinculaciones();
-    }, 200);
+    }, 400);
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
@@ -173,7 +173,7 @@ export class VincularDocentesComponent implements OnInit {
       ResolucionData: this.resolucionVinculacion,
       NumeroSemanas: this.resolucion.NumeroSemanas,
       Vigencia: this.resolucion.Vigencia,
-      Disponibilidad: [new DocumentoPresupuestal()]
+      Disponibilidad: []
     };
     this.request.post(
       environment.RESOLUCIONES_MID_V2_SERVICE,
