@@ -11,6 +11,7 @@ import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
+import { Resolucion } from 'src/app/@core/models/resolucion';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -80,8 +81,7 @@ export class GestionResolucionesComponent implements OnInit {
       columns: TablaResoluciones,
       mode: 'external',
       actions: false,
-      rowClassFunction: (row: any) => {
-      },
+      selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones registradas en el sistema',
     };
   }
@@ -170,7 +170,21 @@ export class GestionResolucionesComponent implements OnInit {
         }
       });
     } else {
-      // TODO cargar con gestor documental
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion/${row.Id}`
+      ).subscribe((response2: Respuesta) => {
+        if (response2.Success) {
+          const resolucion = response2.Data as Resolucion;
+          this.request.get(
+            environment.GESTOR_DOCUMENTAL_SERVICE,
+            `document/${resolucion.NuxeoUid}`
+          ).subscribe(response => {
+            this.dialogConfig.data = response.file as string;
+            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+          });
+        }
+      });
     }
   }
 

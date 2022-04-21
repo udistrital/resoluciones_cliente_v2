@@ -44,10 +44,10 @@
 
     <!-- Aprobación de resoluciones -->
     <em class="material-icons icon" title="Aprobar" 
-        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Solicitada'"
-        (click)="iconoSelect('aprobacion')">done_outline</em>
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Por revisar'"
+        (click)="iconoSelect('aprobar')">done_outline</em>
 
-    <em class="material-icons icon" title="Desaprobar" 
-        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Aprobada'"
-        (click)="iconoSelect('desaprobacion')">block</em>
+    <em class="material-icons icon" title="Rechazar" 
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Por revisar'"
+        (click)="iconoSelect('rechazar')">block</em>
 </div>

@@ -1,12 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { ActionsAssistanceComponent } from 'src/app/@core/components/actions-assistance/actions-assistance.component';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
-import { UtilService } from '../services/utilService';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
+import { Resoluciones } from 'src/app/@core/models/resoluciones';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ExpedirVinculacionComponent } from './expedir-vinculacion/expedir-vinculacion.component';
+import { ExpedirModificacionComponent } from './expedir-modificacion/expedir-modificacion.component';
+import { ExpedirCancelacionComponent } from './expedir-cancelacion/expedir-cancelacion.component';
+import { Respuesta } from 'src/app/@core/models/respuesta';
+import { Resolucion } from 'src/app/@core/models/resolucion';
+import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 
 
 @Component({
@@ -16,25 +22,19 @@ import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resolu
 })
 export class AdminResolucionesComponent implements OnInit {
 
-  tipoResVista = '';
-  rowData: any;
+  dialogConfig: MatDialogConfig;
   icono: string;
 
   cadenaFiltro: string[] = [];
 
   adminResolucionesSettings: any;
   adminResolucionesData: ResolucionesDataSourceComponent;
-  resolucionAprobada: any;
-
-  resolucionAprobadaId: number;
-  parametros: string = "";
-  query: string = "query=Activo:true";
+  parametros: string = '';
+  query: string = 'query=Activo:true';
 
   constructor(
     private request: RequestManager,
-    private route: ActivatedRoute,
-    private popUp: UtilService,
-    private router: Router,
+    private dialog: MatDialog,
     private http: HttpClient,
   ) {
     this.initTable();
@@ -48,128 +48,141 @@ export class AdminResolucionesComponent implements OnInit {
       pagerLimitKey: 'limit',
       totalKey: 'Total',
     });
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '1200px';
+    this.dialogConfig.height = '800px';
+    this.dialogConfig.data = {};
   }
 
   initTable(): void {
-    TablaResolucion["Acciones"] = {
-      title: "Acciones",
+    TablaResolucion['Acciones'] = {
+      title: 'Acciones',
       editable: true,
       filter: false,
       width: '4%',
       type: 'custom',
       renderComponent: ActionsAssistanceComponent,
-      onComponentInitFunction: (instance) => {
-        console.log("...Component...");
-        instance.modulo = "admin";
-        instance.icon.subscribe(res => {
+      onComponentInitFunction: (instance: ActionsAssistanceComponent) => {
+        instance.modulo = 'admin';
+        instance.icon.subscribe((res: string) => {
           this.icono = res;
         });
-        instance.data.subscribe(data => {
+        instance.data.subscribe((data: Resoluciones) => {
           this.eventHandler(this.icono, data);
         });
       },
-    }
+    };
 
     this.adminResolucionesSettings = {
       columns: TablaResolucion,
       mode: 'external',
       actions: false,
-      rowClassFunction: (row: any) => {
-      },
+      selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones aprobadas en el sistema',
     };
 
-    this.cadenaFiltro.forEach(function (value) {
-      value = "";
+    this.cadenaFiltro.forEach(function (value: string) {
+      value = '';
     });
   }
 
-  eventHandler(event: string, rowData: any): void {
-    console.log("...EventHandler...");
-    console.log("event: ", event);
+  eventHandler(event: string, rowData: Resoluciones): void {
     switch (event) {
       case 'documento':
-        console.log("documento");
-        if (this.tipoResVista !== "") {
-          this.tipoResVista = "";
-        }
-        // this.cargarDocumento(0);
+        this.cargarDocumento(rowData);
         break;
       case 'expedicion':
-        if (this.tipoResVista === "") {
-          this.expedirVista(rowData);
-        } else {
-          this.tipoResVista = "";
-        }
+        this.expedirVista(rowData);
         break;
     }
   }
 
-  filtroTabla() {
-
-    this.query = "query=Activo:true";
-    this.parametros = "";
-    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== "") {
-      this.query = this.query.concat(",ResolucionId.NumeroResolucion:" + this.cadenaFiltro[0]);
+  filtroTabla(): void {
+    this.query = 'query=Activo:true';
+    this.parametros = '';
+    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
+      this.query = this.query.concat(',ResolucionId.NumeroResolucion:' + this.cadenaFiltro[0]);
     }
-    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== "") {
-      this.query = this.query.concat(",ResolucionId.Vigencia:" + this.cadenaFiltro[1]);
+    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== '') {
+      this.query = this.query.concat(',ResolucionId.Vigencia:' + this.cadenaFiltro[1]);
     }
-    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== "") {
-      this.parametros = this.parametros.concat("&facultad=" + this.cadenaFiltro[2]);
+    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== '') {
+      this.parametros = this.parametros.concat('&facultad=' + this.cadenaFiltro[2]);
     }
-    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== "") {
-      this.parametros = this.parametros.concat("&tipoRes=" + this.cadenaFiltro[3]);
+    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== '') {
+      this.parametros = this.parametros.concat('&tipoRes=' + this.cadenaFiltro[3]);
     }
-    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== "") {
-      this.parametros = this.parametros.concat("&nivelA=" + this.cadenaFiltro[4]);
+    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== '') {
+      this.parametros = this.parametros.concat('&nivelA=' + this.cadenaFiltro[4]);
     }
-    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== "") {
-      this.parametros = this.parametros.concat("&dedicacion=" + this.cadenaFiltro[5]);
+    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== '') {
+      this.parametros = this.parametros.concat('&dedicacion=' + this.cadenaFiltro[5]);
     }
-    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== "") {
-      this.parametros = this.parametros.concat("&estadoRes=" + this.cadenaFiltro[6]);
+    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== '') {
+      this.parametros = this.parametros.concat('&estadoRes=' + this.cadenaFiltro[6]);
     }
     this.ngOnInit();
   }
 
-  limpiarFiltro() {
+  limpiarFiltro(): void {
     for (let i in this.cadenaFiltro) {
-      i = "";
+      i = '';
     }
     this.ngOnInit();
   }
 
-  cargarDocumento(id: number): void {
-
+  cargarDocumento(rowData: Resoluciones): void {
+    if (rowData.Estado === 'Expedida') {
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion/${rowData.Id}`
+      ).subscribe((response: Respuesta) => {
+        if (response.Success) {
+          const resolucion = response.Data as Resolucion;
+          this.request.get(
+            environment.GESTOR_DOCUMENTAL_SERVICE,
+            `document/${resolucion.NuxeoUid}`
+          ).subscribe(response2 => {
+            this.dialogConfig.data = response2.file as string;
+            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+          });
+        }
+      });
+    } else {
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_resoluciones/generar_resolucion/${rowData.Id}`
+      ).subscribe((response: Respuesta) => {
+        if (response.Success) {
+          this.dialogConfig.data = response.Data as string;
+          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+        }
+      });
+    }
   }
 
-  expedirResolucion(id: number): void {
-    console.info("Aquí entra en la función expedirResolucion");
-  }
-
-  expedirVista(rowData: any): void {
-    var cadena = (rowData.TipoResolucion).slice(0, -3);
+  expedirVista(rowData: Resoluciones): void {
+    const cadena = rowData.TipoResolucion.replace('Resolución de ', '');
     console.log(cadena);
-    this.resolucionAprobada = rowData;
-    this.resolucionAprobadaId = rowData.Id;
-    switch (rowData.TipoResolucion) {
-      case 'Resolución de Vinculación':
-        this.tipoResVista = 'Vinculacion';
+    let dialogo: MatDialogRef<any>;
+    this.dialogConfig.data = rowData;
+    switch (cadena) {
+      case 'Vinculación':
+        dialogo = this.dialog.open(ExpedirVinculacionComponent, this.dialogConfig);
         break;
-      case 'Resolución de Modificacion':
-        this.tipoResVista = 'Modificacion';
+      case 'Adición':
+      case 'Reducción':
+        dialogo = this.dialog.open(ExpedirModificacionComponent, this.dialogConfig);
         break;
-      case 'Resolución de Cancelación':
-        this.tipoResVista = 'Cancelación';
+      case 'Cancelación':
+        dialogo = this.dialog.open(ExpedirCancelacionComponent, this.dialogConfig);
         break;
     }
-
-  }
-  expedirCancelacion(): void {
-
-  }
-  expedirModificacion(): void {
+    dialogo.afterClosed().subscribe((resp: boolean) => {
+      if (resp) {
+        this.ngOnInit();
+      }
+    });
   }
 
 }
