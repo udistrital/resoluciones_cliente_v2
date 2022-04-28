@@ -29,8 +29,8 @@ export class AdminResolucionesComponent implements OnInit {
 
   adminResolucionesSettings: any;
   adminResolucionesData: ResolucionesDataSourceComponent;
-  parametros: string = '';
-  query: string = 'query=Activo:true';
+  parametros = '';
+  query = 'query=Activo:true';
 
   constructor(
     private request: RequestManager,
@@ -81,7 +81,7 @@ export class AdminResolucionesComponent implements OnInit {
       noDataMessage: 'No hay resoluciones aprobadas en el sistema',
     };
 
-    this.cadenaFiltro.forEach(function (value: string) {
+    this.cadenaFiltro.forEach((value: string) => {
       value = '';
     });
   }

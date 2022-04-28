@@ -1,5 +1,5 @@
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import Swal from 'sweetalert2';
 
 @Injectable({
@@ -35,6 +35,24 @@ export class UtilService {
         });
     }
 
+    confirmarExpedicion(titulo: string, texto: string, resolucion: Resoluciones, cant?: number): Promise<any> {
+        return Swal.fire({
+            title: titulo,
+            icon: 'warning',
+            iconColor: 'btn btn-danger',
+            text: texto,
+            html: '<p><b>Número: </b>' + resolucion.NumeroResolucion.toString() + '</p>' +
+              '<p><b>Facultad: </b>' + resolucion.Facultad + '</p>' +
+              '<p><b>Nivel académico: </b>' + resolucion.NivelAcademico + '</p>' +
+              '<p><b>Dedicación: </b>' + resolucion.Dedicacion + '</p>' +
+              (cant ? '<p><b> Número de vinculaciones canceladas: </b>' + cant + '</p>' : ''),
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false
+        });
+    }
+
     success(texto: string): Promise<any> {
         return Swal.fire({
             title: 'Exito!',
@@ -48,6 +66,14 @@ export class UtilService {
             title: 'Error',
             text: texto,
             icon: 'error',
+        });
+    }
+
+    warning(texto: string): void {
+        Swal.fire({
+            title: 'Atención',
+            text: texto,
+            icon: 'warning',
         });
     }
 

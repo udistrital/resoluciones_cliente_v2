@@ -7,7 +7,6 @@ import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
@@ -26,10 +25,8 @@ export class AprobacionResolucionesComponent implements OnInit {
   icono: string;
 
   cadenaFiltro: string[] = [];
-  parametros: string = '';
+  parametros = '';
   query = 'query=Activo:true';
-
-  CurrentDate = new Date();
 
   constructor(
     private http: HttpClient,
@@ -71,7 +68,7 @@ export class AprobacionResolucionesComponent implements OnInit {
           this.eventHandler(this.icono, data);
         });
       },
-    }
+    };
 
     this.aprobResolucionesSettings = {
       columns: TablaResolucion,
@@ -96,7 +93,7 @@ export class AprobacionResolucionesComponent implements OnInit {
     }
   }
 
-  filtroTabla() {
+  filtroTabla(): void {
     this.query = 'query=Activo:true';
     this.parametros = '';
     if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
@@ -129,14 +126,14 @@ export class AprobacionResolucionesComponent implements OnInit {
     this.ngOnInit();
   }
 
-  limpiarFiltro() {
+  limpiarFiltro(): void {
     for (let i in this.cadenaFiltro) {
       i = '';
     }
     this.ngOnInit();
   }
 
-  modificarEstado(res: Resoluciones, CodigoEstado: string, nombreEstado: string) {
+  modificarEstado(res: Resoluciones, CodigoEstado: string, nombreEstado: string): void {
     this.popUp.confirm(
       `${nombreEstado} resolucion`,
       `¿Está seguro que desea ${nombreEstado} esta resolución?`,
@@ -160,7 +157,7 @@ export class AprobacionResolucionesComponent implements OnInit {
           }
         });
       }
-    })
+    });
   }
 
   cargarDocumento(rowData: Resoluciones): void {

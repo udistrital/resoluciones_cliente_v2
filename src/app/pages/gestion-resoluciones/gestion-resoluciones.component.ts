@@ -243,7 +243,7 @@ export class GestionResolucionesComponent implements OnInit {
       if (result.isConfirmed) {
         const estado = {
           ResolucionId: Id,
-          Estado: 'RAPR',
+          Estado: 'RREV',
           Usuario: localStorage.getItem('user'),
         };
         this.request.post(

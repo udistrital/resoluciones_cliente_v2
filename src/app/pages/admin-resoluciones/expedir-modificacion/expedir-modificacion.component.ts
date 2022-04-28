@@ -1,10 +1,15 @@
-import { Component, EventEmitter, OnInit, Input, Output, Inject } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
+import { ActaInicio } from 'src/app/@core/models/acta_inicio';
+import { ContratoGeneral } from 'src/app/@core/models/contrato_general';
+import { ModificacionResolucion } from 'src/app/@core/models/modificacion_resolucion';
+import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
+import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
+import { UtilService } from '../../services/utilService';
 import { RequestManager } from '../../services/requestManager';
 
 @Component({
@@ -14,275 +19,152 @@ import { RequestManager } from '../../services/requestManager';
 })
 export class ExpedirModificacionComponent implements OnInit {
 
-  @Input() idResolucionM: number;
-  resolucion: Resoluciones;
-
-  vigencia: any;
-  fechaExpedicion: any;
-  
   resolucionActual: Resolucion;
-  contenidoResolucion: any;
-  contratadosPdf: any;
-  numeroResolucionModificada: any;
-  datosFiltro: any;
-  sede_solicitante_defecto: any;
-  contratados: any;
-  proyectos: any;
-  ordenadorGasto: any;
-  punto_salarial: any;
-  salario_minimo: any;
-  vigencia_data: any;
-  forma_pago_defecto;
-  regimen_contratacion_defecto;
-
-  contratoGeneralBase: any;
-  acta: any;
-  estado = false;
-  CurrentDate = new Date();
+  resolucion: Resoluciones;
+  Contrato: ContratoGeneral;
+  resolucionVinculacion: ResolucionVinculacionDocente;
+  contratados: Vinculaciones[];
+  acta: ActaInicio;
+  modificacionResolucion: ModificacionResolucion;
   esconderBoton = false;
-  FechaExpedicion = null;
-  resolucionTest = JSON.parse(localStorage.getItem('resolucion'));
 
   constructor(
     private request: RequestManager,
+    private popUp: UtilService,
     public dialogRef: MatDialogRef<ExpedirModificacionComponent>,
     @Inject(MAT_DIALOG_DATA) private data: Resoluciones,
   ) {
     this.resolucion = this.data;
+    this.modificacionResolucion = new ModificacionResolucion();
+    this.modificacionResolucion.ResolucionAnteriorId = new Resolucion();
+    this.resolucionActual = new Resolucion();
+    this.Contrato = new ContratoGeneral();
+    this.acta = new ActaInicio();
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close(false));
   }
 
   ngOnInit(): void {
-    this.cargarDatos();
     this.asignarValoresDefecto();
+    this.cargarDatos();
   }
 
-  cargarDatos() {
-
+  cargarDatos(): void {
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
       `resolucion/${this.resolucion.Id}`
     ).subscribe((response: Respuesta) => {
-      this.resolucionActual = response.Data;
-      if (this.resolucionActual.FechaExpedicion !== undefined && this.resolucionActual.FechaExpedicion !== new Date('0001-01-01T00:00:00Z')) {
-        this.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
+      this.resolucionActual = response.Data as Resolucion;
+      if (this.resolucionActual.FechaExpedicion !== undefined
+          && this.resolucionActual.FechaExpedicion !== new Date('0001-01-01T00:00:00Z')) {
+        this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
       }
-    });
-    
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      'gestion_previnculacion/docentes_previnculados_all?id_resolucion=' + this.resolucionActual.Id
-    ).subscribe((response4: Respuesta) => {
-      this.contratadosPdf = response4.Data;
     });
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
       `modificacion_resolucion/?query=ResolucionNuevaId.Id:${this.resolucion.Id}`
     ).subscribe((response: Respuesta) => {
-      var resolucionModificada = response.Data[0].ResolucionAnteriorId.Id;
-      this.request.get(
-        environment.RESOLUCIONES_V2_SERVICE,
-        'resolucion/' + resolucionModificada
-      ).subscribe((response2: Respuesta) => {
-        this.numeroResolucionModificada = response2.Data.NumeroResolucion;
-      });
+      this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
     });
 
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
-      'resolucion_vinculacion_docente/' + this.idResolucionM
+      `resolucion_vinculacion_docente/${this.resolucion.Id}`
     ).subscribe((response: Respuesta) => {
-      this.datosFiltro = response.Data;
-      this.request.get(
-        environment.OIKOS_SERVICE,
-        'dependencia/' + this.datosFiltro.FacultadId.toString()
-      ).subscribe((response2: Respuesta) => {
-        this.contratoGeneralBase.Contrato.SedeSolicitante = response2.Data.Id.toString();
-        this.sede_solicitante_defecto = response2.Data.Nombre;
-      });
-      this.request.get(
-        environment.RESOLUCIONES_MID_V2_SERVICE,
-        'gestion_previnculacion/docentes_previnculados?id_resolucion=' + this.idResolucionM.toString()
-      ).subscribe((response2: Respuesta) => {
-        this.contratados = response2.Data;
-      });
-      this.request.get(
-        environment.OIKOS_SERVICE,
-        'dependencia/proyectosPorFacultad/' + this.resolucion.Facultad + '/' + this.datosFiltro.NivelAcademico
-      ).subscribe((response2: Respuesta) => {
-        this.proyectos = response2.Data;
-      });
-      this.request.get(
-        environment.CORE_AMAZON_SERVICE,
-        'ordenador_gasto?query=DependenciaId%3A' + this.datosFiltro.FacultadId.toString()
-      ).subscribe((response2: Respuesta) => {
-        if (response2.Data === null) {
-          this.request.get(
-            environment.CORE_AMAZON_SERVICE,
-            'ordenador_gasto/1'
-          ).subscribe((response3: Respuesta) => {
-            this.ordenadorGasto = response3.Data;
-          });
-        } else {
-          this.ordenadorGasto = response2.Data[0];
-        }
-      });
+      this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
+      this.Contrato.SedeSolicitante = this.resolucion.Facultad;
     });
 
     this.request.get(
-      environment.CORE_AMAZON_SERVICE,
-      'punto_salarial?sortby=Vigencia&order=desc&limit=1'
-    ).subscribe((response: Respuesta) => {
-      this.punto_salarial = response.Data[0];
-    });
-    this.request.get(
-      environment.CORE_AMAZON_SERVICE,
-      'salario_minimo?sortby=Vigencia&order=desc&limit=1'
-    ).subscribe((response: Respuesta) => {
-      this.salario_minimo = response.Data[0];
-    });
-    this.request.get(
-      environment.ADMIN_AMAZON_SERVICE,
-      'vigencia_contrato?limit=-1'
-    ).subscribe((response: Respuesta) => {
-      this.vigencia_data = response.Data;
-    });
-
-    this.request.get(
-      environment.ADMIN_AMAZON_SERVICE,
-      'parametros/240'
-    ).subscribe((response: Respuesta) => {
-      this.forma_pago_defecto = response.Data;
-    });
-    this.request.get(
-      environment.ADMIN_AMAZON_SERVICE,
-      'parametros/136'
-    ).subscribe((response: Respuesta) => {
-      this.regimen_contratacion_defecto = response.Data;
-    });
-
-    this.request.get(
-      environment.OIKOS_SERVICE,
-      ``
-    ).subscribe((response: Respuesta) => {
-
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_vinculaciones/${this.resolucion.Id}`
+    ).subscribe((response3: Respuesta) => {
+      this.contratados = response3.Data as Vinculaciones[];
     });
 
   }
 
-  asignarValoresDefecto() {
-    this.contratoGeneralBase.Contrato.Vigencia = new Date().getFullYear();
-    this.contratoGeneralBase.Contrato.FormaPago = { Id: 240 };
-    this.contratoGeneralBase.Contrato.DescripcionFormaPago = 'Abono a Cuenta Mensual de acuerdo a puntas y hotras laboradas';
-    this.contratoGeneralBase.Contrato.Justificacion = 'Docente de Vinculacion Especial';
-    this.contratoGeneralBase.Contrato.UnidadEjecucion = { Id: 269 };
-    this.contratoGeneralBase.Contrato.LugarEjecucion = { Id: 4 };
-    this.contratoGeneralBase.Contrato.Observaciones = 'Contrato de Docente Vinculación Especial';
-    this.contratoGeneralBase.Contrato.TipoControl = 181;
-    this.contratoGeneralBase.Contrato.ClaseContratista = 33;
-    this.contratoGeneralBase.Contrato.TipoMoneda = 137;
-    this.contratoGeneralBase.Contrato.OrigenRecursos = 149;
-    this.contratoGeneralBase.Contrato.OrigenPresupuesto = 156;
-    this.contratoGeneralBase.Contrato.TemaGastoInversion = 166;
-    this.contratoGeneralBase.Contrato.TipoGasto = 146;
-    this.contratoGeneralBase.Contrato.RegimenContratacion = 136;
-    this.contratoGeneralBase.Contrato.Procedimiento = 132;
-    this.contratoGeneralBase.Contrato.ModalidadSeleccion = 123;
-    this.contratoGeneralBase.Contrato.TipoCompromiso = 35;
-    this.contratoGeneralBase.Contrato.TipologiaContrato = 46;
-    this.contratoGeneralBase.Contrato.FechaRegistro = new Date();
-    this.contratoGeneralBase.Contrato.UnidadEjecutora = 1;
-    this.contratoGeneralBase.Contrato.Condiciones = 'Sin condiciones';
+  asignarValoresDefecto(): void {
+    this.Contrato.VigenciaContrato = new Date().getFullYear();
+    this.Contrato.FormaPago = { Id: 240 };
+    this.Contrato.DescripcionFormaPago = 'Abono a Cuenta Mensual de acuerdo a puntos y horas laboradas';
+    this.Contrato.Justificacion = 'Docente de Vinculación Especial';
+    this.Contrato.UnidadEjecucion = { Id: 269 };
+    this.Contrato.LugarEjecucion = { Id: 4 };
+    this.Contrato.Observaciones = 'Contrato de Docente Vinculación Especial';
+    this.Contrato.TipoControl = 181;
+    this.Contrato.ClaseContratista = 33;
+    this.Contrato.TipoMoneda = 137;
+    this.Contrato.OrigenRecursos = 149;
+    this.Contrato.OrigenPresupuesto = 156;
+    this.Contrato.TemaGastoInversion = 166;
+    this.Contrato.TipoGasto = 146;
+    this.Contrato.RegimenContratacion = 136;
+    this.Contrato.Procedimiento = 132;
+    this.Contrato.ModalidadSeleccion = 123;
+    this.Contrato.TipoCompromiso = 35;
+    this.Contrato.TipologiaContrato = 46;
+    this.Contrato.FechaRegistro = new Date();
+    this.Contrato.UnidadEjecutora = 1;
+    this.Contrato.Condiciones = 'Sin condiciones';
     this.acta.Descripcion = 'Acta inicio resolución Docente Vinculación Especial';
   }
 
-  realizarContrato() {
-    if (this.datosFiltro.Dedicacion === 'HCH') {
-      this.contratoGeneralBase.Contrato.TipoContrato = { Id: 3 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Honorarios';
-    } else if (this.datosFiltro.Dedicacion === 'HCP') {
-      this.contratoGeneralBase.Contrato.TipoContrato = { Id: 2 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Salario';
+  realizarContrato(): void {
+    if (this.resolucionVinculacion.Dedicacion === 'HCH') {
+      this.Contrato.TipoContrato = { Id: 3 };
+      this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Honorarios';
+    } else if (this.resolucionVinculacion.Dedicacion === 'HCP') {
+      this.Contrato.TipoContrato = { Id: 2 };
+      this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Salario';
     } else {
-      this.contratoGeneralBase.Contrato.TipoContrato = { Id: 18 };
-      this.contratoGeneralBase.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
+      this.Contrato.TipoContrato = { Id: 18 };
+      this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
-    if (this.FechaExpedicion) {
-      Swal.fire({
-        title: 'Expedir',
-        text: '¿Está seguro que desea expedir la resolución?',
-        html: '<p><b> Número: </b>' + this.resolucion.NumeroResolucion.toString() + '</p>' +
-          '<p><b> Facultad: </b>' + this.resolucion.Facultad + '</p>' +
-          '<p><b> Nivel académico: </b>' + this.resolucion.NivelAcademico + '</p>' +
-          '<p><b> Dedicación: </b>' + this.resolucion.Dedicacion + '</p>',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'button-submit',
-          cancelButton: 'button-remove'
-        },
-        buttonsStyling: false,
-        allowOutsideClick: false
-      }).then((result) => {
-        this.guardarContratos();
-      }, function (dismiss) {
-        if (dismiss === 'cancel') {
-          Swal.fire({
-            text: 'No se ha realizado la expedición de la resolución',
-            icon: 'error',
-            allowOutsideClick: false
-          });
+    if (this.resolucionActual.FechaExpedicion) {
+      this.popUp.confirmarExpedicion(
+        '¿Expedir la resolución?',
+        '¿Está seguro que desea expedir la resolución?',
+        this.resolucion,
+      ).then((result) => {
+        if (result.isConfirmed) {
+          this.guardarContratos();
         }
       });
     } else {
-      Swal.fire({
-        text: 'Complete todos Los campos',
-        icon: 'warning'
-      });
+      this.popUp.warning('Complete los campos');
     }
   }
 
-  guardarContratos() {
-    this.estado = true;
+  guardarContratos(): void {
     this.esconderBoton = true;
-    var conjuntoContratos = [];
-    if (this.contratados) {
-      this.contratados.forEach(function (contratado) {
-        var contratoGeneral = JSON.parse(JSON.stringify(this.contratoGeneralBase.Contrato));
-        var actaI = JSON.parse(JSON.stringify(this.acta));
-        actaI.FechaInicio = contratado.FechaInicio;
-        contratoGeneral.Contratista = parseInt(contratado.PersonaId);
+    const conjuntoContratos = [];
+    if (this.contratados.length > 0) {
+      this.contratados.forEach(contratado => {
+        const contratoGeneral = JSON.parse(JSON.stringify(this.Contrato));
+        const actaI = JSON.parse(JSON.stringify(this.acta));
+        contratoGeneral.Contratista = contratado.PersonaId;
         contratoGeneral.DependenciaSolicitante = contratado.ProyectoCurricularId.toString();
-        contratoGeneral.PlazoEjecucion = parseInt(contratado.NumeroHorasSemanales);
-        contratoGeneral.OrdenadorGasto = this.ordenadorGasto.Id;
-        contratoGeneral.ValorContrato = parseInt(contratado.ValorContrato);
-        var contratoVinculacion = {
+        contratoGeneral.PlazoEjecucion = contratado.NumeroHorasSemanales;
+        const contratoVinculacion = {
           ContratoGeneral: contratoGeneral,
           ActaInicio: actaI,
           VinculacionDocente: {
-            Id: parseInt(contratado.Id),
-            NumeroSemanasNuevas: contratado.NumeroSemanasNuevas,
-            NumeroHorasNuevas: contratado.NumeroHorasNuevas,
-            NivelAcademico: this.resolucionTest.NivelAcademico,
-            Dedicacion: this.resolucionTest.Dedicacion
+            Id: contratado.Id,
+            NumeroSemanasNuevas: contratado.NumeroSemanas,
+            NumeroHorasNuevas: contratado.NumeroHorasSemanales,
+            NivelAcademico: this.resolucion.NivelAcademico,
+            Dedicacion: this.resolucion.Dedicacion
           }
         };
-        if (this.datosFiltro.NivelAcademico.toLowerCase() === 'pregrado') {
-          //contratoVinculacion.VinculacionDocente.IdPuntoSalarial = this.punto_salarial.Id;
-        } else if (this.datosFiltro.NivelAcademico.toLowerCase() === 'posgrado') {
-          //contratoVinculacion.VinculacionDocente.IdSalarioMinimo = this.salario_minimo.Id;
-        }
         conjuntoContratos.push(contratoVinculacion);
       });
-      var expedicionResolucion = {
+      const expedicionResolucion = {
         Vinculaciones: conjuntoContratos,
         idResolucion: this.resolucion.Id,
-        FechaExpedicion: this.FechaExpedicion
+        FechaExpedicion: this.resolucionActual.FechaExpedicion
       };
-      //this.resolucion.FechaExpedicion = this.FechaExpedicion;
+
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         'expedir_resolucion/validar_datos_expedicion',
@@ -294,48 +176,25 @@ export class ExpedirModificacionComponent implements OnInit {
             'expedir_resolucion/expedirModificacion',
             expedicionResolucion
           ).subscribe((response2: Respuesta) => {
-            this.estado = false;
-            if (response2.Data.Status !== '201') {
-              Swal.fire({
-                text: response.Data,
-                title: 'Alerta',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-                showLoaderOnConfirm: true,
-                allowOutsideClick: false
+            if (response2.Success) {
+              this.esconderBoton = false;
+              this.popUp.success('La resolución ha sido expedida con éxito.').then(result => {
+                if (result.isConfirmed) {
+                  this.dialogRef.close(true);
+                }
               });
-            } else {
-              this.guardarResolucionNuxeo();
             }
           });
         } else {
-          Swal.fire({
-            text: response.Data,
-            title: 'Alerta',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-            showLoaderOnConfirm: true,
-            allowOutsideClick: false
-          });
+          this.popUp.warning('Datos invalidos. Por favor revise la información de la resolución y las vinculaciones.');
         }
       });
     } else {
-      Swal.fire({
-        text: 'No hay docentes inscritos dentro de la resolución',
-        title: 'Alerta',
-        icon: 'warning',
-        confirmButtonText: 'Aceptar',
-        showLoaderOnConfirm: true,
-        allowOutsideClick: false
-      });
+      this.popUp.warning('No hay docentes inscritos dentro de la resolución');
     }
   }
 
-  guardarResolucionNuxeo() {
-
-  }
-
-  cancelarExpedicion() {
+  cancelarExpedicion(): void {
     this.dialogRef.close(false);
   }
 
