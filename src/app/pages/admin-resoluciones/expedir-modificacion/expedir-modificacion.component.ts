@@ -162,7 +162,8 @@ export class ExpedirModificacionComponent implements OnInit {
       const expedicionResolucion = {
         Vinculaciones: conjuntoContratos,
         idResolucion: this.resolucion.Id,
-        FechaExpedicion: this.resolucionActual.FechaExpedicion
+        FechaExpedicion: this.resolucionActual.FechaExpedicion,
+        Usuario: localStorage.getItem('user'),
       };
 
       this.request.post(

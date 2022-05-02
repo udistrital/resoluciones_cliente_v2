@@ -83,7 +83,7 @@ export class ExpedirCancelacionComponent implements OnInit {
   }
 
   asignarValoresDefecto(): void {
-    this.contratoCanceladoBase.Usuario = '';
+    this.contratoCanceladoBase.Usuario = localStorage.getItem('user');
     this.contratoCanceladoBase.Estado = true;
   }
 
