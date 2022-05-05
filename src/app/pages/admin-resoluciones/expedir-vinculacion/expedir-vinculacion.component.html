@@ -34,7 +34,7 @@
         <h2 class="section-title">Periodo de Vinculación</h2>
         <mat-form-field class="form-field-date">
             <mat-label>Fecha de inicio válida</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="acta.FechaInicio">
+            <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="acta.FechaInicio">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
@@ -47,7 +47,7 @@
         <h2 class="section-title">Datos de expedición</h2>
         <mat-form-field class="form-field-column">
             <mat-label>Fecha de expedición válida</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="resolucionActual.FechaExpedicion">
+            <input matInput [matDatepicker]="picker" name="fechaExp" [(ngModel)]="resolucionActual.FechaExpedicion">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
