@@ -83,6 +83,8 @@ steps:
   - npm run build:test
   when:
     branch:
+    - feature/*
+    - develop
     - release/*
     event:
     - push

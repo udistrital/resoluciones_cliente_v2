@@ -27,7 +27,7 @@
         (click)="iconoSelect('reducir')">remove_circle</em>
 
     <em class="material-icons icon" title="Consultar" name="consultar"
-        *ngIf="this.modulo === 'gestion' && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
+        *ngIf="this.modulo === 'gestion' && !rowData.TipoResolucion.includes('Vinculación') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
         (click)="iconoSelect('consultar')">list</em>
 
     <em class="material-icons icon" title="Enviar a revisión" name="enviar"
@@ -44,10 +44,10 @@
 
     <!-- Aprobación de resoluciones -->
     <em class="material-icons icon" title="Aprobar" 
-        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Solicitada'"
-        (click)="iconoSelect('aprobacion')">done_outline</em>
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Por revisar'"
+        (click)="iconoSelect('aprobar')">done_outline</em>
 
-    <em class="material-icons icon" title="Desaprobar" 
-        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Aprobada'"
-        (click)="iconoSelect('desaprobacion')">block</em>
+    <em class="material-icons icon" title="Rechazar" 
+        *ngIf="this.modulo === 'aprob' && rowData.Estado === 'Por revisar'"
+        (click)="iconoSelect('rechazar')">block</em>
 </div>

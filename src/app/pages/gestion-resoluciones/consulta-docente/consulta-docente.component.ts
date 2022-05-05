@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
+import { Resolucion } from 'src/app/@core/models/resolucion';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResoluciones } from 'src/app/@core/models/tabla_resoluciones';
 import { environment } from 'src/environments/environment';
+import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
 
@@ -14,6 +17,7 @@ import { UtilService } from '../../services/utilService';
 })
 export class ConsultaDocenteComponent {
 
+  dialogConfig: MatDialogConfig;
   resolucionesDocenteSettings: any;
   resolucionesDocenteData: LocalDataSource;
   documentoDocente = '';
@@ -22,8 +26,13 @@ export class ConsultaDocenteComponent {
     private request: RequestManager,
     private popUp: UtilService,
     private router: Router,
+    private dialog: MatDialog,
   ) {
     this.initTable();
+    this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.width = '1200px';
+    this.dialogConfig.height = '800px';
+    this.dialogConfig.data = '';
   }
 
   initTable(): void {
@@ -46,27 +55,60 @@ export class ConsultaDocenteComponent {
           },
         ],
       },
+      selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones registradas en el sistema',
     };
   }
 
   consultarDocente(): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_resoluciones/consultar_docente/${this.documentoDocente}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.resolucionesDocenteData = new LocalDataSource(response.Data);
-        if (response.Data.length === 0) {
-          this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.popUp.close();
+          this.resolucionesDocenteData = new LocalDataSource(response.Data);
+          if (response.Data.length === 0) {
+            this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+          }
         }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se han podido consultar las resoluciones del docente indicado.');
       }
     });
   }
 
-  eventHandler(event): void {
-    // Abrir doc nuxeo
-    console.log(event.data.Id);
+  eventHandler(event: any): void {
+    this.popUp.loading();
+    this.request.get(
+      environment.RESOLUCIONES_V2_SERVICE,
+      `resolucion/${event.data.Id}`
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          const resolucion = response.Data as Resolucion;
+          this.request.get(
+            environment.GESTOR_DOCUMENTAL_SERVICE,
+            `document/${resolucion.NuxeoUid}`
+          ).subscribe({
+            next: response2 => {
+              this.popUp.close();
+              this.dialogConfig.data = response2.file as string;
+              this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+            }, error: () => {
+              this.popUp.close();
+              this.popUp.error('No se ha podido generar la resolución.');
+            }
+          });
+        }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se ha podido generar la resolución.');
+      }
+    });
   }
 
   volver(): void {

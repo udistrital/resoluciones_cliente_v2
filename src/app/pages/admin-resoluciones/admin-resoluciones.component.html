@@ -1,5 +1,5 @@
 <mat-card class="card-oas">
-    <mat-card-title class="resoluciones-title">
+    <mat-card-title class="admin-title">
         <h1>Administración de resoluciones</h1>
     </mat-card-title>
     <mat-card-content>
@@ -30,19 +30,4 @@
             style="width: 7%;">limpiar</button>
         <ng2-smart-table [settings]="adminResolucionesSettings" [source]="adminResolucionesData"></ng2-smart-table>
     </mat-card-content>
-    <div *ngIf="this.tipoResVista === 'Vinculacion' ">
-        <app-expedir-vinculacion [idResolucionV]="resolucionAprobadaId" [resolucion]="resolucionAprobada"
-            (cancelarVinculacion)="tipoResVista=$event">
-        </app-expedir-vinculacion>
-    </div>
-    <div *ngIf="this.tipoResVista === 'Cancelacion' ">
-        <app-expedir-cancelacion [idResolucionC]="resolucionAprobadaId" [resolucion]="resolucionAprobada"
-            (cancelarCancelacion)="tipoResVista=$event">
-        </app-expedir-cancelacion>
-    </div>
-    <div *ngIf="this.tipoResVista === 'Reduccion' || this.tipoResVista === 'Adicion' ">
-        <app-expedir-modificacion (cancelarModificacion)="tipoResVista=$event" [resolucion]="resolucionAprobada"
-            (cancelarCancelacion)="tipoResVista=$event">
-        </app-expedir-modificacion>
-    </div>
 </mat-card>
