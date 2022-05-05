@@ -1,74 +1,70 @@
 <form #fform="ngForm" novalidate>
-    <mat-grid-list cols="1">
-        <mat-grid-tile>
-            <div class="section">
-                <div class="adminVinc-title">
-                    <h2>Información de Vinculación</h2>
-                </div>
-                <h2 class="section-title">Información básica</h2>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Vigencia</mat-label>
-                    <input matInput type="number" name="vigencia" [(ngModel)]="vigencia" disabled>
-                </mat-form-field>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Forma de pago</mat-label>
-                    <input matInput type="number" name="formaPago" [(ngModel)]="formaPago" disabled>
-                </mat-form-field>
-                <mat-form-field style="width: 100%">
-                    <mat-label>Sede solicitante</mat-label>
-                    <input matInput type="text" name="sedeSol" [(ngModel)]="sedeSol" disabled>
-                </mat-form-field>
-            </div>
-            <div class="section">
-                <h2 class="section-title">Justificación y observaciones</h2>
-                <mat-form-field style="width: 100%">
-                    <mat-label>Justificación</mat-label>
-                    <textarea matInput cols="20" rows="5" name="justificacion" [(ngModel)]="justificacion"
-                        required></textarea>
-                </mat-form-field>
-                <mat-form-field style="width: 100%">
-                    <mat-label>observaciones</mat-label>
-                    <textarea matInput cols="20" rows="5" name="observaciones" [(ngModel)]="observaciones"
-                        required></textarea>
-                </mat-form-field>
-            </div>
-            <div class="section">
-                <h2 class="section-title">Periodo de Vinculación</h2>
-                <mat-form-field class="form-field-date">
-                    <mat-label>Fecha de inicio válida</mat-label>
-                    <input matInput [matDatepicker]="picker" [(ngModel)]="fechaInicio">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field style="width: 100%">
-                    <mat-label>Descripción</mat-label>
-                    <textarea matInput cols="20" rows="5" name="descripcion" [(ngModel)]="descripcion" required></textarea>
-                </mat-form-field>
-            </div>
-            <div class="section">
-                <h2 class="section-title">Datos de expedición</h2>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Fecha de expedición válida</mat-label>
-                    <input matInput [matDatepickerFilter]="validarFecha" [matDatepicker]="picker" [(ngModel)]="fechaExpedicion">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Número de resolución</mat-label>
-                    <input matInput type="number" name="numRes" [(ngModel)]="numRes" disabled>
-                </mat-form-field>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Tipo de resolución</mat-label>
-                    <input matInput type="number" name="tipoRes" [(ngModel)]="tipoRes" disabled>
-                </mat-form-field>
-                <mat-form-field class="form-field-column">
-                    <mat-label>Número de semanas</mat-label>
-                    <input matInput type="number" name="numSem" [(ngModel)]="numSemanas" disabled>
-                </mat-form-field>
-                <button mat-button class="button button-submit" type="button" (click)="realizarContrato()">Realizar
-                    expedición de la resolución</button>
-                <button mat-button class="button button-remove" type="button" (click)="cancelarExpedicion()">Cancelar</button>
-            </div>
-        </mat-grid-tile>
-    </mat-grid-list>
+    <div class="section">
+        <div class="adminVinc-title">
+            <h2>Información de Vinculación</h2>
+        </div>
+        <h2 class="section-title">Información básica</h2>
+        <mat-form-field class="form-field-column">
+            <mat-label>Vigencia</mat-label>
+            <input matInput type="number" name="vigencia" [(ngModel)]="resolucion.Vigencia" disabled>
+        </mat-form-field>
+        <mat-form-field class="form-field-column">
+            <mat-label>Forma de pago</mat-label>
+            <input matInput type="text" name="formaPago" [(ngModel)]="Contrato.DescripcionFormaPago" disabled>
+        </mat-form-field>
+        <mat-form-field style="width: 100%">
+            <mat-label>Sede solicitante</mat-label>
+            <input matInput type="text" name="sedeSol" [(ngModel)]="resolucion.Facultad" disabled>
+        </mat-form-field>
+    </div>
+    <div class="section">
+        <h2 class="section-title">Justificación y observaciones</h2>
+        <mat-form-field style="width: 100%">
+            <mat-label>Justificación</mat-label>
+            <textarea matInput cols="20" rows="5" name="justificacion" [(ngModel)]="Contrato.Justificacion"
+                required></textarea>
+        </mat-form-field>
+        <mat-form-field style="width: 100%">
+            <mat-label>observaciones</mat-label>
+            <textarea matInput cols="20" rows="5" name="observaciones" [(ngModel)]="Contrato.Observaciones"
+                required></textarea>
+        </mat-form-field>
+    </div>
+    <div class="section">
+        <h2 class="section-title">Periodo de Vinculación</h2>
+        <mat-form-field class="form-field-date">
+            <mat-label>Fecha de inicio válida</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="acta.FechaInicio">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field style="width: 100%">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput cols="20" rows="5" name="descripcion" [(ngModel)]="acta.Descripcion" required></textarea>
+        </mat-form-field>
+    </div>
+    <div class="section">
+        <h2 class="section-title">Datos de expedición</h2>
+        <mat-form-field class="form-field-column">
+            <mat-label>Fecha de expedición válida</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="resolucionActual.FechaExpedicion">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="form-field-column">
+            <mat-label>Número de resolución</mat-label>
+            <input matInput type="number" name="numRes" [(ngModel)]="resolucion.NumeroResolucion" disabled>
+        </mat-form-field>
+        <mat-form-field class="form-field-column">
+            <mat-label>Tipo de resolución</mat-label>
+            <input matInput type="text" name="tipoRes" [(ngModel)]="resolucion.TipoResolucion" disabled>
+        </mat-form-field>
+        <mat-form-field class="form-field-column">
+            <mat-label>Número de semanas</mat-label>
+            <input matInput type="number" name="numSem" [(ngModel)]="resolucion.Semanas" disabled>
+        </mat-form-field>
+        <button mat-button class="button button-submit" type="button" (click)="realizarContrato()" [disabled]="esconderBoton">Realizar
+            expedición de la resolución</button>
+        <button mat-button class="button button-remove" type="button" (click)="cancelarExpedicion()" [disabled]="esconderBoton">Cancelar</button>
+    </div>
 </form>

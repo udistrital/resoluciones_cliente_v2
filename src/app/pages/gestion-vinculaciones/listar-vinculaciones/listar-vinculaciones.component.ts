@@ -136,12 +136,19 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   cargarVinculacionesResolucion(resolucionId: number): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_vinculaciones/${resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.vinculacionesData.load(response.Data);
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.vinculacionesData.load(response.Data);
+          this.popUp.close();
+        }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
       }
     });
   }
@@ -161,7 +168,7 @@ export class ListarVinculacionesComponent implements OnInit {
               [event.data]
             ).subscribe((response: Respuesta) => {
               if (response.Success) {
-                this.popUp.success('Las vinculacion ha sido anulada').then(() => {
+                this.popUp.success('La vinculacion ha sido anulada').then(() => {
                   this.cargarVinculaciones();
                 });
               }
@@ -198,13 +205,20 @@ export class ListarVinculacionesComponent implements OnInit {
       ResolucionNuevaId: this.resolucionVinculacion,
       ModificacionResolucionId: this.modificacionResolucion.Id,
     };
+    this.popUp.loading();
     this.request.post(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       'gestion_vinculaciones/modificar_vinculacion',
       objetoModificacion
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.popUp.success(response.Message);
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.popUp.close();
+          this.popUp.success(response.Message);
+        }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se ha podido registrar la modificación de la vinculacion.');
       }
     });
   }

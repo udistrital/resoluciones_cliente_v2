@@ -31,8 +31,6 @@ import { OasGridColsDirective } from './directives/oas-grid-cols.directive';
 
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-import { UtilService } from './services/utilService';
-import { UserService } from './services/userService';
 import { InterceptorService } from '../loader/interceptor.service';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { FormDetalleResolucionComponent } from './form-detalle-resolucion/form-detalle-resolucion.component';

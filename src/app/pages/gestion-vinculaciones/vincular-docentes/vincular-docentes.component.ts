@@ -70,20 +70,28 @@ export class VincularDocentesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.popUp.loading();
     setTimeout(() => {
       const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_vinculaciones/docentes_carga_horaria${params}`
-      ).subscribe((response: Respuesta) => {
-        if (response.Data !== null) {
-          this.cargaAcademicaData.load(response.Data);
-        } else {
-          this.popUp.error('No se encontraron datos de carga académica');
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Data !== null) {
+            this.cargaAcademicaData.load(response.Data);
+            this.popUp.close();
+          } else {
+            this.popUp.close();
+            this.popUp.error('No se encontraron datos de carga académica');
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
         }
       });
       this.cargarVinculaciones();
-    }, 200);
+    }, 400);
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
@@ -94,9 +102,13 @@ export class VincularDocentesComponent implements OnInit {
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_vinculaciones/${this.resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.vinculacionesData.load(response.Data);
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.vinculacionesData.load(response.Data);
+        }
+      }, error: () => {
+        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
       }
     });
   }
@@ -173,7 +185,7 @@ export class VincularDocentesComponent implements OnInit {
       ResolucionData: this.resolucionVinculacion,
       NumeroSemanas: this.resolucion.NumeroSemanas,
       Vigencia: this.resolucion.Vigencia,
-      Disponibilidad: [new DocumentoPresupuestal()]
+      Disponibilidad: []
     };
     this.request.post(
       environment.RESOLUCIONES_MID_V2_SERVICE,
@@ -188,6 +200,7 @@ export class VincularDocentesComponent implements OnInit {
       dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
         if (disponibilidad) {
           previnculaciones.Disponibilidad = disponibilidad;
+          this.popUp.loading();
           this.request.post(
             environment.RESOLUCIONES_MID_V2_SERVICE,
             'gestion_vinculaciones',
@@ -195,11 +208,13 @@ export class VincularDocentesComponent implements OnInit {
           ).subscribe({
             next: (response2: Respuesta) => {
               if (response2.Success) {
+                this.popUp.close();
                 this.popUp.success(response2.Message).then(() => {
                   this.cargarVinculaciones();
                 });
               }
             }, error: () => {
+              this.popUp.close();
               this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
             }
           });
