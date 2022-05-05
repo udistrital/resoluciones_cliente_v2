@@ -77,6 +77,20 @@ export class UtilService {
         });
     }
 
+    loading(): void{
+        Swal.fire({
+            title: 'Cargando...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+        });
+        Swal.showLoading();
+    }
+
+    close(): void {
+        Swal.close();
+    }
+
     submitAlert({ option, type, fn, data, info, fnReturn }): void {
         Swal.fire({
             title: `Se ${option === 'update' ? 'actualizará' : 'creará'} ${type}`,

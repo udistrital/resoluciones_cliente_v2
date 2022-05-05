@@ -99,7 +99,7 @@ export class GeneracionResolucionComponent implements OnInit {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
     });
 
-    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.request, {
+    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas?`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -124,19 +124,27 @@ export class GeneracionResolucionComponent implements OnInit {
           this.contenidoResolucion.Resolucion.PeriodoCarga = null;
           this.contenidoResolucion.Resolucion.VigenciaCarga = null;
         }
+        this.popUp.loading();
         this.request.post(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
           this.contenidoResolucion
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            if (response.Data !== 0) {
-              this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                this.router.navigateByUrl('pages/gestion_resoluciones');
-              });
-            } else {
-              this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              if (response.Data !== 0) {
+                this.popUp.close();
+                this.popUp.success('La resolución se ha generado con éxito').then(() => {
+                  this.router.navigateByUrl('pages/gestion_resoluciones');
+                });
+              } else {
+                this.popUp.close();
+                this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+              }
             }
+          }, error: () => {
+            this.popUp.close();
+            this.popUp.error('No se ha podido generar la resolución.');
           }
         });
       }
@@ -155,19 +163,27 @@ export class GeneracionResolucionComponent implements OnInit {
           this.contenidoResolucion.Resolucion.NumeroResolucion = this.NumeroResolucion;
           this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
             (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
+          this.popUp.loading();
           this.request.post(
             environment.RESOLUCIONES_MID_V2_SERVICE,
             `gestion_resoluciones`,
             this.contenidoResolucion
-          ).subscribe((response: Respuesta) => {
-            if (response.Success) {
-              if (response.Data !== 0) {
-                this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                  this.router.navigateByUrl('pages/gestion_resoluciones');
-                });
-              } else {
-                this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+          ).subscribe({
+            next: (response: Respuesta) => {
+              if (response.Success) {
+                if (response.Data !== 0) {
+                  this.popUp.close();
+                  this.popUp.success('La resolución se ha generado con éxito').then(() => {
+                    this.router.navigateByUrl('pages/gestion_resoluciones');
+                  });
+                } else {
+                  this.popUp.close();
+                  this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+                }
               }
+            }, error: () => {
+              this.popUp.close();
+              this.popUp.error('No se ha podido generar la resolución.');
             }
           });
         }

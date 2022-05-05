@@ -73,21 +73,32 @@ export class CancelarVinculacionesComponent implements OnInit {
         ).subscribe((response: Respuesta) => {
           this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
         });
-
+        this.popUp.loading();
         this.request.get(
           environment.RESOLUCIONES_V2_SERVICE,
           `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
-            this.request.get(
-              environment.RESOLUCIONES_MID_V2_SERVICE,
-              `gestion_vinculaciones/${this.modificacionResolucion.ResolucionAnteriorId.Id}`
-            ).subscribe((response2: Respuesta) => {
-              if (response2.Success) {
-                this.vinculacionesData.load(response2.Data);
-              }
-            });
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
+              this.request.get(
+                environment.RESOLUCIONES_MID_V2_SERVICE,
+                `gestion_vinculaciones/${this.modificacionResolucion.ResolucionAnteriorId.Id}`
+              ).subscribe({
+                next: (response2: Respuesta) => {
+                  if (response2.Success) {
+                    this.vinculacionesData.load(response2.Data);
+                    this.popUp.close();
+                  }
+                }, error: () => {
+                  this.popUp.close();
+                  this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+                }
+              });
+            }
+          }, error: () => {
+            this.popUp.close();
+            this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
           }
         });
       }
@@ -104,6 +115,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       const vinculacion = new CambioVinculacion();
       vinculacion.VinculacionOriginal = nueva;
       vinculacion.NumeroSemanas = 0;
+      vinculacion.NumeroHorasSemanales = nueva.NumeroHorasSemanales;
       this.cambioVinculacion.push(vinculacion);
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
         this.registrosPresupuestales[nueva.PersonaId] = [];
@@ -158,13 +170,20 @@ export class CancelarVinculacionesComponent implements OnInit {
       'create'
     ).then(value => {
       if (value.isConfirmed) {
+        this.popUp.loading();
         this.request.post(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           'gestion_vinculaciones/desvincular',
           objetoCancelaciones
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            this.popUp.success(response.Message);
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              this.popUp.close();
+              this.popUp.success(response.Message);
+            }
+          }, error: () => {
+            this.popUp.close();
+            this.popUp.error('No se han podido registrar las cancelaciones.');
           }
         });
       }

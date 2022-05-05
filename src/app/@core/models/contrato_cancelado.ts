@@ -4,4 +4,5 @@ export class ContratoCancelado {
     NumeroContrato: string;
     Vigencia: number;
     MotivoCancelacion: string;
+    FechaCancelacion: Date;
 }

@@ -113,6 +113,7 @@ export class ExpedirCancelacionComponent implements OnInit {
         const contratoCancelado: ContratoCancelado = JSON.parse(JSON.stringify(this.contratoCanceladoBase));
         contratoCancelado.NumeroContrato = contratado.NumeroContrato;
         contratoCancelado.Vigencia = contratado.Vigencia;
+        contratoCancelado.FechaCancelacion = new Date();
         const CancelacionContrato = {
           ContratoCancelado: contratoCancelado,
           VinculacionDocente: {
@@ -127,18 +128,26 @@ export class ExpedirCancelacionComponent implements OnInit {
         idResolucion: this.resolucion.Id,
         FechaExpedicion: this.resolucionActual.FechaExpedicion
       };
+      this.popUp.loading();
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `expedir_resolucion/cancelar`,
         expedicionResolucion
-      ).subscribe((response: Respuesta) => {
-        if (response.Success) {
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            this.esconderBoton = false;
+            this.popUp.close();
+            this.popUp.success('La resolución ha sido expedida con éxito.').then(result => {
+              if (result.isConfirmed) {
+                this.dialogRef.close(true);
+              }
+            });
+          }
+        }, error: () => {
           this.esconderBoton = false;
-          this.popUp.success('La resolución ha sido expedida con éxito.').then(result => {
-            if (result.isConfirmed) {
-              this.dialogRef.close(true);
-            }
-          });
+          this.popUp.close();
+          this.popUp.error('No se ha podido expedir la resolución.');
         }
       });
     } else {

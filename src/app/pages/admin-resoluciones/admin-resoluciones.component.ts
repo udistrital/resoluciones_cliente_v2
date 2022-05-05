@@ -13,6 +13,7 @@ import { ExpedirCancelacionComponent } from './expedir-cancelacion/expedir-cance
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
+import { UtilService } from '../services/utilService';
 
 
 @Component({
@@ -36,12 +37,13 @@ export class AdminResolucionesComponent implements OnInit {
     private request: RequestManager,
     private dialog: MatDialog,
     private http: HttpClient,
+    private popUp: UtilService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_aprobadas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -132,30 +134,48 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   cargarDocumento(rowData: Resoluciones): void {
+    this.popUp.loading();
     if (rowData.Estado === 'Expedida') {
       this.request.get(
         environment.RESOLUCIONES_V2_SERVICE,
         `resolucion/${rowData.Id}`
-      ).subscribe((response: Respuesta) => {
-        if (response.Success) {
-          const resolucion = response.Data as Resolucion;
-          this.request.get(
-            environment.GESTOR_DOCUMENTAL_SERVICE,
-            `document/${resolucion.NuxeoUid}`
-          ).subscribe(response2 => {
-            this.dialogConfig.data = response2.file as string;
-            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
-          });
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            const resolucion = response.Data as Resolucion;
+            this.request.get(
+              environment.GESTOR_DOCUMENTAL_SERVICE,
+              `document/${resolucion.NuxeoUid}`
+            ).subscribe({
+              next: response2 => {
+                this.popUp.close();
+                this.dialogConfig.data = response2.file as string;
+                this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+              }, error: () => {
+                this.popUp.close();
+                this.popUp.error('No se ha podido generar la resolución.');
+              } 
+            });
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('No se ha podido generar la resolución.');
         }
       });
     } else {
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_resoluciones/generar_resolucion/${rowData.Id}`
-      ).subscribe((response: Respuesta) => {
-        if (response.Success) {
-          this.dialogConfig.data = response.Data as string;
-          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.close();
+            this.dialogConfig.data = response.Data as string;
+            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('No se ha podido generar la resolución.');
         }
       });
     }

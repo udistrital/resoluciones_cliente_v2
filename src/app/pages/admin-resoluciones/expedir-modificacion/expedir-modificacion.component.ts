@@ -165,28 +165,40 @@ export class ExpedirModificacionComponent implements OnInit {
         FechaExpedicion: this.resolucionActual.FechaExpedicion,
         Usuario: localStorage.getItem('user'),
       };
-
+      this.popUp.loading();
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         'expedir_resolucion/validar_datos_expedicion',
         expedicionResolucion
-      ).subscribe((response: Respuesta) => {
-        if (response.Data === 'OK') {
-          this.request.post(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            'expedir_resolucion/expedirModificacion',
-            expedicionResolucion
-          ).subscribe((response2: Respuesta) => {
-            if (response2.Success) {
-              this.esconderBoton = false;
-              this.popUp.success('La resolución ha sido expedida con éxito.').then(result => {
-                if (result.isConfirmed) {
-                  this.dialogRef.close(true);
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Data === 'OK') {
+            this.request.post(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              'expedir_resolucion/expedirModificacion',
+              expedicionResolucion
+            ).subscribe({
+              next: (response2: Respuesta) => {
+                if (response2.Success) {
+                  this.esconderBoton = false;
+                  this.popUp.close();
+                  this.popUp.success('La resolución ha sido expedida con éxito.').then(result => {
+                    if (result.isConfirmed) {
+                      this.dialogRef.close(true);
+                    }
+                  });
                 }
-              });
-            }
-          });
-        } else {
+              }, error: () => {
+                this.popUp.close();
+                this.popUp.error('No se ha podido expedir la resolución.');
+              }
+            });
+          } else {
+            this.popUp.close();
+            this.popUp.warning('Datos invalidos. Por favor revise la información de la resolución y las vinculaciones.');
+          }
+        }, error: () => {
+          this.popUp.close();
           this.popUp.warning('Datos invalidos. Por favor revise la información de la resolución y las vinculaciones.');
         }
       });

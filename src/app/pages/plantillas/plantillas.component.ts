@@ -24,11 +24,18 @@ export class PlantillasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_plantillas`
-    ).subscribe((response: any) => {
-      this.plantillasData = new LocalDataSource(response.Data);
+    ).subscribe({
+      next: (response: any) => {
+        this.plantillasData = new LocalDataSource(response.Data);
+        this.popUp.close();
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se han podido cargar las plantillas');
+      }
     });
   }
 
@@ -79,7 +86,7 @@ export class PlantillasComponent implements OnInit {
 
   createPlantilla(): void {
     this.setSelectedTab(1, false);
-    this.resolucionId = 0;
+    this.resolucionId = this.resolucionId === 0 ? undefined : 0;
   }
 
   editPlantilla(event: any): void {

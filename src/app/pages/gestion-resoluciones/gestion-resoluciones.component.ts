@@ -45,7 +45,7 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -159,30 +159,48 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   cargarDocumento(row: Resoluciones): void {
+    this.popUp.loading();
     if (row.Estado !== 'Expedida') {
       this.request.get(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         `gestion_resoluciones/generar_resolucion/${row.Id}`
-      ).subscribe((response: Respuesta) => {
-        if (response.Success) {
-          this.dialogConfig.data = response.Data as string;
-          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.close();
+            this.dialogConfig.data = response.Data as string;
+            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('No se ha podido generar la resolución.');
         }
       });
     } else {
       this.request.get(
         environment.RESOLUCIONES_V2_SERVICE,
         `resolucion/${row.Id}`
-      ).subscribe((response2: Respuesta) => {
-        if (response2.Success) {
-          const resolucion = response2.Data as Resolucion;
-          this.request.get(
-            environment.GESTOR_DOCUMENTAL_SERVICE,
-            `document/${resolucion.NuxeoUid}`
-          ).subscribe(response => {
-            this.dialogConfig.data = response.file as string;
-            this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
-          });
+      ).subscribe({
+        next: (response2: Respuesta) => {
+          if (response2.Success) {
+            const resolucion = response2.Data as Resolucion;
+            this.request.get(
+              environment.GESTOR_DOCUMENTAL_SERVICE,
+              `document/${resolucion.NuxeoUid}`
+            ).subscribe({
+              next: response => {
+                this.popUp.close();
+                this.dialogConfig.data = response.file as string;
+                this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+              }, error: () => {
+                this.popUp.close();
+                this.popUp.error('No se ha podido generar la resolución.');
+              }
+            });
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('No se ha podido generar la resolución.');
         }
       });
     }
@@ -203,11 +221,15 @@ export class GestionResolucionesComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
           id
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
-              this.ngOnInit();
-            });
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
+                this.ngOnInit();
+              });
+            }
+          }, error: () => {
+            this.popUp.error('No se ha podido anular la resolución.');
           }
         });
       }
@@ -250,11 +272,15 @@ export class GestionResolucionesComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones/actualizar_estado`,
           estado
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
-              this.ngOnInit();
-            });
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
+                this.ngOnInit();
+              });
+            }
+          }, error: () => {
+            this.popUp.error('No se ha podido enviar la resolución a revisión.');
           }
         });
       }

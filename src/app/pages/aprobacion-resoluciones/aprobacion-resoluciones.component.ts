@@ -38,7 +38,7 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.request, {
+    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
       endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -149,11 +149,15 @@ export class AprobacionResolucionesComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones/actualizar_estado`,
           estado
-        ).subscribe((response: Respuesta) => {
-          if (response.Success) {
-            this.popUp.success('El estado de la resolución ha sido modificado con éxito.').then(() => {
-              this.ngOnInit();
-            });
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              this.popUp.success('El estado de la resolución ha sido modificado con éxito.').then(() => {
+                this.ngOnInit();
+              });
+            }
+          }, error: () => {
+            this.popUp.error('No se ha podido actualizar el estado de la resolución.');
           }
         });
       }
@@ -161,13 +165,19 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   cargarDocumento(rowData: Resoluciones): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_resoluciones/generar_resolucion/${rowData.Id}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.dialogConfig.data = response.Data as string;
-        this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.popUp.close();
+          this.dialogConfig.data = response.Data as string;
+          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+        }
+      }, error: () => {
+        this.popUp.error('No se ha podido generar la resolución.');
       }
     });
   }

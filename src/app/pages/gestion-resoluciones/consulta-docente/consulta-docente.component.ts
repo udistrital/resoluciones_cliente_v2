@@ -61,33 +61,52 @@ export class ConsultaDocenteComponent {
   }
 
   consultarDocente(): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_resoluciones/consultar_docente/${this.documentoDocente}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        this.resolucionesDocenteData = new LocalDataSource(response.Data);
-        if (response.Data.length === 0) {
-          this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.popUp.close();
+          this.resolucionesDocenteData = new LocalDataSource(response.Data);
+          if (response.Data.length === 0) {
+            this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+          }
         }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se han podido consultar las resoluciones del docente indicado.');
       }
     });
   }
 
   eventHandler(event: any): void {
+    this.popUp.loading();
     this.request.get(
       environment.RESOLUCIONES_V2_SERVICE,
       `resolucion/${event.data.Id}`
-    ).subscribe((response: Respuesta) => {
-      if (response.Success) {
-        const resolucion = response.Data as Resolucion;
-        this.request.get(
-          environment.GESTOR_DOCUMENTAL_SERVICE,
-          `document/${resolucion.NuxeoUid}`
-        ).subscribe(response2 => {
-          this.dialogConfig.data = response2.file as string;
-          this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
-        });
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          const resolucion = response.Data as Resolucion;
+          this.request.get(
+            environment.GESTOR_DOCUMENTAL_SERVICE,
+            `document/${resolucion.NuxeoUid}`
+          ).subscribe({
+            next: response2 => {
+              this.popUp.close();
+              this.dialogConfig.data = response2.file as string;
+              this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
+            }, error: () => {
+              this.popUp.close();
+              this.popUp.error('No se ha podido generar la resolución.');
+            }
+          });
+        }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('No se ha podido generar la resolución.');
       }
     });
   }
