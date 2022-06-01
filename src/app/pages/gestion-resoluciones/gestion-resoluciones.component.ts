@@ -46,7 +46,7 @@ export class GestionResolucionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones?` + this.query + this.parametros,
+      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
