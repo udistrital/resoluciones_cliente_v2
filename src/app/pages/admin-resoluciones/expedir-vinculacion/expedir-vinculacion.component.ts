@@ -50,9 +50,12 @@ export class ExpedirVinculacionComponent implements OnInit {
       `resolucion/${this.resolucion.Id}`
     ).subscribe((responseRes: Respuesta) => {
       this.resolucionActual = responseRes.Data as Resolucion;
+      console.log(this.resolucionActual.FechaExpedicion)
       if (this.resolucionActual.FechaExpedicion !== undefined
-          && this.resolucionActual.FechaExpedicion !== new Date('0001-01-01T00:00:00Z')) {
+          && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:00Z') {
         this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
+      } else {
+        this.resolucionActual.FechaExpedicion = null;
       }
     });
 

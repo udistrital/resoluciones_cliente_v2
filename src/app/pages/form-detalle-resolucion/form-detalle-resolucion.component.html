@@ -57,14 +57,14 @@
                 </mat-form-field>
                 <div class="form-field-column"></div>
                 <mat-form-field style="width: 100%">
-                    <mat-label>Titulo de la resolución:</mat-label>
+                    <mat-label>Título de la resolución:</mat-label>
                     <input matInput type="text" name="Titulo" [(ngModel)]="contenidoResolucion.Resolucion.Titulo" required #titulo="ngModel">
                     <mat-error *ngIf="titulo.errors?.['required'] && titulo.touched">
                         Indique el título de la resolución
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field style="width: 100%">
-                    <mat-label>Preambulo:</mat-label>
+                    <mat-label>Preámbulo:</mat-label>
                     <textarea matInput cols="20" rows="5" name="Preambulo" [(ngModel)]="contenidoResolucion.Resolucion.PreambuloResolucion" required #preambulo="ngModel"></textarea>
                     <mat-error *ngIf="preambulo.errors?.['required'] && preambulo.touched">
                         Indique el preambulo de la resolución
@@ -96,7 +96,7 @@
                     </mat-form-field>
                     <div class="paragrafo" *ngFor="let paragrafo of articulo.Paragrafos; let j=index" >
                         <mat-form-field style="width: 90%">
-                            <mat-label>Paragrafo {{j + 1}}:</mat-label>
+                            <mat-label>Parágrafo {{j + 1}}:</mat-label>
                             <textarea matInput name="Paragrafo{{i + 1}}-{{j + 1}}" [(ngModel)]="paragrafo.Texto" cols="20" rows="3" required></textarea>
                             <mat-error>
                                 No se admiten parágrafos vacíos

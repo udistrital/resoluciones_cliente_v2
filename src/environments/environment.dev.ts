@@ -22,7 +22,7 @@ export const environment = {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
     CLIENTE_ID: 'P4QbKSCNEK1TTB2BmGDMV6iPzNAa',
     RESPONSE_TYPE: 'id_token token',
-    SCOPE: 'openid email',
+    SCOPE: 'openid email role documento',
     REDIRECT_URL: 'http://localhost',
     SIGN_OUT_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oidc/logout',
     SIGN_OUT_REDIRECT_URL: 'http://localhost',

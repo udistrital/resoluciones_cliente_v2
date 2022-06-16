@@ -14,6 +14,7 @@ import { ModalDisponibilidadComponent } from '../modal-disponibilidad/modal-disp
 import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/modal-documento-viewer.component';
 import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
 import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
+import { first, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -53,49 +54,57 @@ export class VincularDocentesComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       if (params.get('Id') !== null) {
         this.resolucionId = Number(params.get('Id'));
-        this.request.get(
-          environment.RESOLUCIONES_V2_SERVICE,
-          `resolucion/${this.resolucionId}`
-        ).subscribe((response: Respuesta) => {
-          this.resolucion = response.Data as Resolucion;
-        });
-        this.request.get(
-          environment.RESOLUCIONES_V2_SERVICE,
-          `resolucion_vinculacion_docente/${this.resolucionId}`
-        ).subscribe((response: Respuesta) => {
-          this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
+        forkJoin<[Respuesta, Respuesta]>([
+          this.request.get(
+            environment.RESOLUCIONES_V2_SERVICE,
+            `resolucion/${this.resolucionId}`
+          ).pipe(first()),
+          this.request.get(
+            environment.RESOLUCIONES_V2_SERVICE,
+            `resolucion_vinculacion_docente/${this.resolucionId}`
+          ).pipe(first())
+        ]).pipe().subscribe({
+          next: ([res, vinc]: [Respuesta, Respuesta]) => {
+            this.resolucion = res.Data as Resolucion;
+            this.resolucionVinculacion = vinc.Data as ResolucionVinculacionDocente;
+            this.obtenerCargaAcademica();
+          },
+          error: () => {
+            this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+          }
         });
       }
     });
   }
 
   ngOnInit(): void {
-    this.popUp.loading();
-    setTimeout(() => {
-      const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
-      this.request.get(
-        environment.RESOLUCIONES_MID_V2_SERVICE,
-        `gestion_vinculaciones/docentes_carga_horaria${params}`
-      ).subscribe({
-        next: (response: Respuesta) => {
-          if (response.Data !== null) {
-            this.cargaAcademicaData.load(response.Data);
-            this.popUp.close();
-          } else {
-            this.popUp.close();
-            this.popUp.error('No se encontraron datos de carga académica');
-          }
-        }, error: () => {
-          this.popUp.close();
-          this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
-        }
-      });
-      this.cargarVinculaciones();
-    }, 400);
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
+  }
+
+  obtenerCargaAcademica(): void {
+    this.popUp.loading();
+    const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_vinculaciones/docentes_carga_horaria${params}`
+    ).subscribe({
+      next: (response: Respuesta) => {
+        if (response.Data !== null) {
+          this.cargaAcademicaData.load(response.Data);
+          this.popUp.close();
+          this.cargarVinculaciones();
+        } else {
+          this.popUp.close();
+          this.popUp.warning('No se encontraron datos de carga académica');
+        }
+      }, error: () => {
+        this.popUp.close();
+        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+      }
+    });
   }
 
   cargarVinculaciones(): void {

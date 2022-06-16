@@ -52,4 +52,10 @@
     .ng2-smart-page-item a:hover {
         text-decoration: none !important;
     }
+
+    .ng2-smart-filters {
+        input.form-control {
+            color: black !important;
+        }
+    }
 }
