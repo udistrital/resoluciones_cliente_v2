@@ -79,7 +79,7 @@ steps:
   image: node:16.15.1
   commands:
   - node --version
-  - npm i
+  - npm i --legacy-peer-deps
   - npm run build:test
   when:
     branch:
@@ -93,7 +93,7 @@ steps:
   image: node:16.15.1
   commands:
   - node --version
-  - npm i
+  - npm i --legacy-peer-deps
   - npm run build:prod
   when:
     branch:
