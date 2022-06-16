@@ -2,6 +2,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { UtilService } from '../pages/services/utilService';
 import { LoaderService } from './loader.service';
 
 @Injectable({
@@ -9,7 +10,7 @@ import { LoaderService } from './loader.service';
 })
 export class InterceptorService implements HttpInterceptor {
 
-  constructor(public loaderService: LoaderService) { }
+  constructor(public loaderService: LoaderService, private popUp: UtilService) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this.loaderService.isLoading.next(true);
 
@@ -17,6 +18,7 @@ export class InterceptorService implements HttpInterceptor {
       finalize(
         () => {
           this.loaderService.isLoading.next(false);
+          this.popUp.close();
         }
       )
     );

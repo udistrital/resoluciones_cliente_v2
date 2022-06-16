@@ -51,7 +51,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
      * FUNCIONALIDAD TEMPORAL MIENTRAS kRONOS SALE A PROD
      */
     this.popUp.input(
-      'Ingrese el número de CPD asignado',
+      'Ingrese el número de CDP asignado',
       'Numero de disponibilidad'
     ).then(value => {
       if (value.isConfirmed) {
@@ -64,6 +64,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
             const disponibilidad = new DocumentoPresupuestal();
             disponibilidad.Consecutivo = parseInt(response.Rubros.Disponibilidad[0].numero_disponibilidad, 10);
             disponibilidad.Vigencia = parseInt(response.Rubros.Disponibilidad[0].vigencia, 10);
+            disponibilidad.FechaRegistro = 'No disponible'
             const rubros = new Array<MovimientoRubro>();
             response.Rubros.Disponibilidad.forEach(rubro => {
               const r = new MovimientoRubro();

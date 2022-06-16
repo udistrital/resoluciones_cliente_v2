@@ -162,6 +162,7 @@ export class ListarVinculacionesComponent implements OnInit {
           'delete'
         ).then(result => {
           if (result.isConfirmed) {
+            this.popUp.loading();
             this.request.post(
               environment.RESOLUCIONES_MID_V2_SERVICE,
               'gestion_vinculaciones/desvincular_docentes',

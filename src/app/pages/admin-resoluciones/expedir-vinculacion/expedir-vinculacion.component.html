@@ -47,9 +47,9 @@
         <h2 class="section-title">Datos de expedición</h2>
         <mat-form-field class="form-field-column">
             <mat-label>Fecha de expedición válida</mat-label>
-            <input matInput [matDatepicker]="picker" name="fechaExp" [(ngModel)]="resolucionActual.FechaExpedicion">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <input matInput [matDatepicker]="pickerExp" name="fechaExp" [(ngModel)]="resolucionActual.FechaExpedicion">
+            <mat-datepicker-toggle matSuffix [for]="pickerExp"></mat-datepicker-toggle>
+            <mat-datepicker #pickerExp></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="form-field-column">
             <mat-label>Número de resolución</mat-label>
@@ -61,7 +61,7 @@
         </mat-form-field>
         <mat-form-field class="form-field-column">
             <mat-label>Número de semanas</mat-label>
-            <input matInput type="number" name="numSem" [(ngModel)]="resolucion.Semanas" disabled>
+            <input matInput type="number" name="numSem" [(ngModel)]="resolucionActual.NumeroSemanas" disabled>
         </mat-form-field>
         <button mat-button class="button button-submit" type="button" (click)="realizarContrato()" [disabled]="esconderBoton">Realizar
             expedición de la resolución</button>
