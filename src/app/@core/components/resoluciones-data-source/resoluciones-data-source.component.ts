@@ -23,14 +23,6 @@ export class ResolucionesDataSourceComponent extends ServerDataSource {
       header['observe'] = 'response';
       this.popUp.loading();
       request = this.http.get<any>(endpoint, header);
-      request.subscribe({
-        next: () => {
-          this.popUp.close();
-        }, error: () => {
-          this.popUp.close();
-          this.popUp.error('Ha ocurrido un error. Comuniquese con el área de soporte.');
-        }
-      });
     });
     return request;
   }

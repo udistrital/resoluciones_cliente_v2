@@ -138,6 +138,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   }
 
   async cargarContenidoResolucion(Id: number): Promise<void> {
+    this.popUp.loading();
     return new Promise<void>(resolve => {
       this.esPlantilla ?
         this.request.get(
