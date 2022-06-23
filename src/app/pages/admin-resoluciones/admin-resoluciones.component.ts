@@ -154,7 +154,7 @@ export class AdminResolucionesComponent implements OnInit {
               }, error: () => {
                 this.popUp.close();
                 this.popUp.error('No se ha podido generar la resolución.');
-              } 
+              }
             });
           }
         }, error: () => {

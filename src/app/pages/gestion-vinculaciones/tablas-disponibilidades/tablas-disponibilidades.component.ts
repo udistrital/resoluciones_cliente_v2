@@ -64,7 +64,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
             const disponibilidad = new DocumentoPresupuestal();
             disponibilidad.Consecutivo = parseInt(response.Rubros.Disponibilidad[0].numero_disponibilidad, 10);
             disponibilidad.Vigencia = parseInt(response.Rubros.Disponibilidad[0].vigencia, 10);
-            disponibilidad.FechaRegistro = 'No disponible'
+            disponibilidad.FechaRegistro = "";
             const rubros = new Array<MovimientoRubro>();
             response.Rubros.Disponibilidad.forEach(rubro => {
               const r = new MovimientoRubro();
@@ -104,7 +104,11 @@ export class TablasDisponibilidadesComponent implements OnChanges {
           width: '33%',
           editable: false,
           valuePrepareFunction: (value: string) => {
-            return new Date(value).toLocaleDateString();
+            if (value === "") {
+              return 'No disponible';
+            } else {
+              return new Date(value).toLocaleDateString();
+            }
           },
         },
       },

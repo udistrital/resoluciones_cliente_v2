@@ -121,8 +121,8 @@ export class GeneracionResolucionComponent implements OnInit {
           (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
         this.contenidoResolucion.Resolucion.DependenciaFirmaId = this.firmaRector ? 7 : this.contenidoResolucion.Resolucion.DependenciaId;
         if (!this.periodoAnterior) {
-          this.contenidoResolucion.Resolucion.PeriodoCarga = null;
-          this.contenidoResolucion.Resolucion.VigenciaCarga = null;
+          this.contenidoResolucion.Resolucion.PeriodoCarga = 0;
+          this.contenidoResolucion.Resolucion.VigenciaCarga = 0;
         }
         this.popUp.loading();
         this.request.post(

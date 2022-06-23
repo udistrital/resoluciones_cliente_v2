@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ServerDataSource } from 'ng2-smart-table';
 import { ServerSourceConf } from 'ng2-smart-table/lib/lib/data-source/server/server-source.conf';
 import { Observable } from 'rxjs';
+import { finalize } from 'rxjs';
 import { RequestManager } from 'src/app/pages/services/requestManager';
 import { UtilService } from 'src/app/pages/services/utilService';
 
@@ -22,7 +23,9 @@ export class ResolucionesDataSourceComponent extends ServerDataSource {
     this.request.header$.subscribe(header => {
       header['observe'] = 'response';
       this.popUp.loading();
-      request = this.http.get<any>(endpoint, header);
+      request = this.http.get<any>(endpoint, header).pipe(
+        finalize(() => this.popUp.close()),
+      );
     });
     return request;
   }

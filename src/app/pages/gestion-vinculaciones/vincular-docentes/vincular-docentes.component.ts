@@ -86,7 +86,7 @@ export class VincularDocentesComponent implements OnInit {
 
   obtenerCargaAcademica(): void {
     this.popUp.loading();
-    const params = `/${this.resolucion.Vigencia}/${this.resolucion.Periodo}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
+    const params = `/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${this.resolucionVinculacion.Dedicacion}/${this.resolucionVinculacion.FacultadId}/${this.resolucionVinculacion.NivelAcademico}`;
     this.request.get(
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_vinculaciones/docentes_carga_horaria${params}`
