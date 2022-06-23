@@ -149,6 +149,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
           this.edicion = true;
+          this.popUp.close();
           resolve();
         }) :
         this.request.get(
@@ -159,6 +160,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
           this.edicion = true;
+          this.popUp.close();
           resolve();
         });
     });

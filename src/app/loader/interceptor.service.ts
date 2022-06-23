@@ -18,7 +18,6 @@ export class InterceptorService implements HttpInterceptor {
       finalize(
         () => {
           this.loaderService.isLoading.next(false);
-          this.popUp.close();
         }
       )
     );
