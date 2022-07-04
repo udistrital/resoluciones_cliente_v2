@@ -16,7 +16,7 @@
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Registro presupuestal</mat-label>
-                <mat-select [(ngModel)]="cambioVinculacion.DocPresupuestal" name="rp" #rp="ngModel" required>
+                <mat-select [(ngModel)]="cambioVinculacion.DocPresupuestal" name="rp" #rp="ngModel">
                     <mat-option>--Seleccionar--</mat-option>
                     <mat-option *ngFor="let rp of registrosPresupuestales" [value]="rp">
                         Registro presupuestal {{rp.Consecutivo}} - {{ rp.Vigencia }}
