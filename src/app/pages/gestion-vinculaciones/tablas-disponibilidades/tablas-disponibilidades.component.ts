@@ -62,6 +62,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
           if (Object.keys(response.Rubros).length > 0) {
             const disponibilidades = new Array<DocumentoPresupuestal>();
             const disponibilidad = new DocumentoPresupuestal();
+            disponibilidad.Tipo = "cdp";
             disponibilidad.Consecutivo = parseInt(response.Rubros.Disponibilidad[0].numero_disponibilidad, 10);
             disponibilidad.Vigencia = parseInt(response.Rubros.Disponibilidad[0].vigencia, 10);
             disponibilidad.FechaRegistro = "";
