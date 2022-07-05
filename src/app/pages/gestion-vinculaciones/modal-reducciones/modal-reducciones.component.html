@@ -35,7 +35,9 @@
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Fecha de inicio válida</mat-label>
-                <input matInput type="date" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" required >
+                <mat-datepicker #fechaPicker></mat-datepicker>
+                <input matInput [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" required >
+                <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
             </mat-form-field>
         </mat-grid-tile>
     </mat-grid-list>
