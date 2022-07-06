@@ -73,6 +73,7 @@ export class ModalReduccionesComponent implements OnInit {
       'create'
     ).then(value => {
       if (value.isConfirmed) {
+        this.cambioVinculacion.NumeroSemanas = parseInt(this.cambioVinculacion.NumeroSemanas.toString(), 10);
         this.dialogRef.close(this.cambioVinculacion);
       }
     });
