@@ -27,6 +27,7 @@ export class ModalReduccionesComponent implements OnInit {
   ) {
     this.cambioVinculacion = new CambioVinculacion();
     this.cambioVinculacion.VinculacionOriginal = this.data;
+    this.cambioVinculacion.DocPresupuestal = null;
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
   }
 
