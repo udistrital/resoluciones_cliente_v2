@@ -215,7 +215,9 @@ export class ListarVinculacionesComponent implements OnInit {
       next: (response: Respuesta) => {
         if (response.Success) {
           this.popUp.close();
-          this.popUp.success(response.Message);
+          this.popUp.success(response.Message).then(() => {
+            this.cargarVinculaciones();
+          });
         }
       }, error: () => {
         this.popUp.close();
