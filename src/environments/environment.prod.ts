@@ -20,7 +20,7 @@ export const environment = {
   NOTIFICACION_SERVICE: 'wss://pruebasapi.portaloas.udistrital.edu.co:8116/ws',
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
-    CLIENTE_ID: 'uNb7k8hXSICJqmZzPqrKE6sDM6Ea',
+    CLIENTE_ID: '1xk9Vb3QZK8P7Ls6nlwwDctIqpMa',
     RESPONSE_TYPE: 'id_token token',
     SCOPE: 'openid email role documento',
     REDIRECT_URL: 'https://resoluciones.portaloas.udistrital.edu.co',
