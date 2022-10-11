@@ -217,6 +217,7 @@ export class GestionResolucionesComponent implements OnInit {
       'delete'
     ).then(result => {
       if (result.isConfirmed) {
+        this.popUp.loading();
         this.request.delete(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
@@ -224,11 +225,13 @@ export class GestionResolucionesComponent implements OnInit {
         ).subscribe({
           next: (response: Respuesta) => {
             if (response.Success) {
+              this.popUp.close();
               this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
                 this.ngOnInit();
               });
             }
           }, error: () => {
+            this.popUp.close();
             this.popUp.error('No se ha podido anular la resolución.');
           }
         });
