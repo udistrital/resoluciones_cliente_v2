@@ -58,8 +58,10 @@ export class ModalDisponibilidadComponent implements OnInit {
       'Vincular docentes',
       '¿Está seguro de vincular los docentes seleccionados con la disponibiilidad elegida?',
       'create'
-    ).then(() => {
-      this.dialogRef.close(this.disponibilidades);
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.dialogRef.close(this.disponibilidades);
+      }
     });
   }
 
