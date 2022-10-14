@@ -154,6 +154,7 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   eventHandler(event: any): void {
+    const vinculacion = event.data as Vinculaciones;
     switch (event.action) {
       case 'anular':
         this.popUp.confirm(
@@ -166,7 +167,7 @@ export class ListarVinculacionesComponent implements OnInit {
             this.request.post(
               environment.RESOLUCIONES_MID_V2_SERVICE,
               'gestion_vinculaciones/desvincular_docentes',
-              [event.data]
+              [vinculacion]
             ).subscribe((response: Respuesta) => {
               if (response.Success) {
                 this.popUp.success('La vinculacion ha sido anulada').then(() => {
@@ -179,21 +180,53 @@ export class ListarVinculacionesComponent implements OnInit {
         break;
 
       case 'adicionar':
-        this.dialogConfig.data = event.data as Vinculaciones;
-        const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
-        dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
-          if (data) {
-            this.registrarModificacion(data);
+        this.request.get(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              if ((response.Data as string) == '') {
+                this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
+              } else {
+                this.dialogConfig.data = vinculacion;
+                const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+                dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+                  if (data) {
+                    this.registrarModificacion(data);
+                  }
+                });
+              }
+            }
+          },
+          error: () => {
+            this.popUp.error("No se ha podido realizar la consulta del semaforo.")
           }
         });
         break;
 
       case 'reducir':
-        this.dialogConfig.data = event.data as Vinculaciones;
-        const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
-        dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
-          if (data) {
-            this.registrarModificacion(data);
+        this.request.get(
+          environment.RESOLUCIONES_MID_V2_SERVICE,
+          `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+        ).subscribe({
+          next: (response: Respuesta) => {
+            if (response.Success) {
+              if ((response.Data as string) == '') {
+                this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
+              } else {
+                this.dialogConfig.data = vinculacion;
+                const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+                dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+                  if (data) {
+                    this.registrarModificacion(data);
+                  }
+                });
+              }
+            }
+          },
+          error: () => {
+            this.popUp.error("No se ha podido realizar la consulta del semaforo.")
           }
         });
         break;
