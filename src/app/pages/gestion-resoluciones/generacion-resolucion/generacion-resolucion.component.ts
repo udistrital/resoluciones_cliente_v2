@@ -43,6 +43,10 @@ export class GeneracionResolucionComponent implements OnInit {
   ) { }
 
   initTable(): void {
+    if (TablaResoluciones.Acciones !== undefined) {
+      delete TablaResoluciones.Acciones;
+    }
+    TablaResoluciones.Estado.filter = false;
     this.resolucionesExpedidasSettings = {
       columns: TablaResoluciones,
       mode: 'external',
@@ -66,7 +70,7 @@ export class GeneracionResolucionComponent implements OnInit {
   cargarDatos(): void {
     this.request.get(
       environment.PARAMETROS_SERVICE,
-      `parametro?limit=0&query=ParametroPadreid.CodigoAbreviacion:DVE`
+      `parametro?limit=0&query=ParametroPadreId.CodigoAbreviacion:DVE`
     ).subscribe((response: Respuesta) => {
       this.dedicaciones = response.Data as Parametro[];
     });
@@ -99,11 +103,12 @@ export class GeneracionResolucionComponent implements OnInit {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
     });
 
-    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_expedidas?`,
+    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, 'Estado=Expedida&ExcluirTipo=RCAN', {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
       totalKey: 'Total',
     });
   }

@@ -3,14 +3,12 @@ export const TablaResolucion: any = {
         hide: true,
     },
     NumeroResolucion: {
-        filter: false,
         title: 'Número',
         width: '9%',
         editable: false,
     },
     Vigencia: {
         title: 'Vigencia',
-        filter: false,
         width: '9%',
         editable: false,
     },
@@ -22,7 +20,6 @@ export const TablaResolucion: any = {
     },
     TipoResolucion: {
         title: 'Tipo de resolución',
-        filter: false,
         width: '20%',
         editable: false,
         passed: true,
@@ -31,13 +28,11 @@ export const TablaResolucion: any = {
         title: 'Nivel',
         width: '14%',
         editable: false,
-        filter: false,
     },
     Dedicacion: {
         title: 'Dedicación',
         width: '10%',
         editable: false,
-        filter: false,
     },
     Estado: {
         title: 'Estado',

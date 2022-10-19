@@ -29,10 +29,6 @@ export class GestionResolucionesComponent implements OnInit {
 
   icono: string;
 
-  parametros = '';
-  query = 'query=Activo:true';
-  cadenaFiltro: string[] = [];
-
   constructor(
     private request: RequestManager,
     private route: ActivatedRoute,
@@ -45,11 +41,12 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, '', {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
       totalKey: 'Total',
     });
     this.dialogConfig = new MatDialogConfig();
@@ -76,7 +73,7 @@ export class GestionResolucionesComponent implements OnInit {
         });
       },
     };
-
+    TablaResoluciones.Estado.filter = true;
     this.resolucionesSettings = {
       columns: TablaResoluciones,
       mode: 'external',
@@ -116,46 +113,6 @@ export class GestionResolucionesComponent implements OnInit {
         this.reducirHorasDocentesResolución(rowData.Id);
         break;
     }
-  }
-
-  filtroTabla(): void {
-    this.query = 'query=Activo:true';
-    this.parametros = '';
-    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
-      this.query = this.query.concat(',NumeroResolucion:' + this.cadenaFiltro[0]);
-    }
-    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== '') {
-      this.query = this.query.concat(',Vigencia:' + this.cadenaFiltro[1]);
-    }
-    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== '') {
-      this.query = this.query.concat(',Periodo=' + this.cadenaFiltro[2]);
-    }
-    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== '') {
-      this.parametros = this.parametros.concat('&facultad=' + this.cadenaFiltro[3]);
-    }
-    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== '') {
-      this.parametros = this.parametros.concat('&nivelA=' + this.cadenaFiltro[4]);
-    }
-    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== '') {
-      this.parametros = this.parametros.concat('&dedicacion=' + this.cadenaFiltro[5]);
-    }
-    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== '') {
-      this.query = this.query.concat(',NumeroSemanas=' + this.cadenaFiltro[6]);
-    }
-    if (this.cadenaFiltro[7] !== undefined && this.cadenaFiltro[7] !== '') {
-      this.parametros = this.parametros.concat('&estadoRes=' + this.cadenaFiltro[7]);
-    }
-    if (this.cadenaFiltro[8] !== undefined && this.cadenaFiltro[8] !== '') {
-      this.parametros = this.parametros.concat('&tipoRes=' + this.cadenaFiltro[8]);
-    }
-    this.ngOnInit();
-  }
-
-  limpiarFiltro(): void {
-    for (let i of this.cadenaFiltro) {
-      i = '';
-    }
-    this.ngOnInit();
   }
 
   cargarDocumento(row: Resoluciones): void {
