@@ -22,7 +22,6 @@ export const TablaResolucion: any = {
         title: 'Tipo de resolución',
         width: '20%',
         editable: false,
-        passed: true,
     },
     NivelAcademico: {
         title: 'Nivel',

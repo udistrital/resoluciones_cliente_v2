@@ -13,6 +13,8 @@ import { Respuesta } from 'src/app/@core/models/respuesta';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
+import { UserService } from '../../services/userService';
 
 @Component({
   selector: 'app-generacion-resolucion',
@@ -34,12 +36,15 @@ export class GeneracionResolucionComponent implements OnInit {
   NumeroResolucion = '';
   firmaRector = false;
   periodoAnterior = false;
+  filtrarFacultad = false;
+  dependenciaUsuario = 0;
 
   constructor(
     private request: RequestManager,
     private router: Router,
     private popUp: UtilService,
     private http: HttpClient,
+    private userService: UserService,
   ) { }
 
   initTable(): void {
@@ -47,18 +52,32 @@ export class GeneracionResolucionComponent implements OnInit {
       delete TablaResoluciones.Acciones;
     }
     TablaResoluciones.Estado.filter = false;
+    TablaResoluciones.TipoResolucion.filter = false;
     this.resolucionesExpedidasSettings = {
       columns: TablaResoluciones,
       mode: 'external',
       actions: false,
       selectedRowIndex: -1,
     };
+
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida&ExcluirTipo=RCAN`
+    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
+      dataKey: 'Data',
+      pagerPageKey: 'offset',
+      pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
+      totalKey: 'Total',
+    });
   }
 
   ngOnInit(): void {
     this.cargarDatos();
     this.limpiarFormulario();
     this.initTable();
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   limpiarFormulario(): void {
@@ -101,15 +120,6 @@ export class GeneracionResolucionComponent implements OnInit {
       `nivel_formacion?limit=0`
     ).subscribe((response: NivelFormacion[]) => {
       this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
-    });
-
-    this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, 'Estado=Expedida&ExcluirTipo=RCAN', {
-      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
-      dataKey: 'Data',
-      pagerPageKey: 'offset',
-      pagerLimitKey: 'limit',
-      filterFieldKey: '#field#',
-      totalKey: 'Total',
     });
   }
 

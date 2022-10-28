@@ -3,6 +3,14 @@
         <h1>Aprobación de resoluciones</h1>
     </mat-card-title>
     <mat-card-content>
+        <div class="toggler">
+            <mat-slide-toggle 
+                [(ngModel)]="filtrarFacultad"
+                labelPosition="before"
+                [disabled]="dependenciaUsuario == 0"
+                (change)="ngOnInit()"
+            >Filtrar según mi facultad:</mat-slide-toggle>
+        </div>
         <ng2-smart-table [settings]="aprobResolucionesSettings" [source]="aprobResolucionesData"></ng2-smart-table>
     </mat-card-content>
 </mat-card>

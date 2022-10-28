@@ -12,6 +12,8 @@ import { UtilService } from '../services/utilService';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Resolucion } from 'src/app/@core/models/resolucion';
+import { UserService } from '../services/userService';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -28,6 +30,8 @@ export class GestionResolucionesComponent implements OnInit {
   resolucionesData: ResolucionesDataSourceComponent;
 
   icono: string;
+  dependenciaUsuario = 0;
+  filtrarFacultad: boolean;
 
   constructor(
     private request: RequestManager,
@@ -36,12 +40,13 @@ export class GestionResolucionesComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private dialog: MatDialog,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, '', {
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}`:'', {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -53,6 +58,9 @@ export class GestionResolucionesComponent implements OnInit {
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = '';
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {
@@ -74,6 +82,7 @@ export class GestionResolucionesComponent implements OnInit {
       },
     };
     TablaResoluciones.Estado.filter = true;
+    TablaResoluciones.TipoResolucion.filter = true;
     this.resolucionesSettings = {
       columns: TablaResoluciones,
       mode: 'external',

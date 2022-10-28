@@ -14,6 +14,8 @@ import { Respuesta } from 'src/app/@core/models/respuesta';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { UtilService } from '../services/utilService';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
+import { UserService } from '../services/userService';
 
 
 @Component({
@@ -28,18 +30,22 @@ export class AdminResolucionesComponent implements OnInit {
 
   adminResolucionesSettings: any;
   adminResolucionesData: ResolucionesDataSourceComponent;
+  filtrarFacultad = false;
+  dependenciaUsuario = 0;
 
   constructor(
     private request: RequestManager,
     private dialog: MatDialog,
     private http: HttpClient,
     private popUp: UtilService,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, 'Estado=Expedida|Aprobada', {
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida|Aprobada`
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -51,6 +57,9 @@ export class AdminResolucionesComponent implements OnInit {
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {

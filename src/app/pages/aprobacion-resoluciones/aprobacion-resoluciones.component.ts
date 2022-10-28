@@ -6,9 +6,11 @@ import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resolu
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
+import { UserService } from '../services/userService';
 import { UtilService } from '../services/utilService';
 
 @Component({
@@ -23,18 +25,22 @@ export class AprobacionResolucionesComponent implements OnInit {
 
   dialogConfig: MatDialogConfig;
   icono: string;
+  filtrarFacultad = false;
+  dependenciaUsuario = 0;
 
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
     private request: RequestManager,
     private popUp: UtilService,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, 'Estado=Aprobada|Por revisar', {
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Aprobada|Por revisar`
+    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
@@ -46,6 +52,9 @@ export class AprobacionResolucionesComponent implements OnInit {
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {
