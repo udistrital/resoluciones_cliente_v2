@@ -183,7 +183,6 @@ export class VincularDocentesComponent implements OnInit {
       actions: false,
       selectMode: 'multi',
       mode: 'external',
-      hideSubHeader: true,
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
   }
