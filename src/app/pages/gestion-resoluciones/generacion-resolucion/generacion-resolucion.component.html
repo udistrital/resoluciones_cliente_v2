@@ -131,6 +131,14 @@
                         Indique el número de la resolución 
                     </mat-error>
                 </mat-form-field>
+                <div class="toggler">
+                    <mat-slide-toggle 
+                        [(ngModel)]="filtrarFacultad"
+                        labelPosition="before"
+                        [disabled]="dependenciaUsuario == 0"
+                        (change)="initTable()"
+                    >Filtrar según mi facultad:</mat-slide-toggle>
+                </div>
                 <ng2-smart-table
                     [settings]="resolucionesExpedidasSettings"
                     [source]="resolucionesExpedidasData"

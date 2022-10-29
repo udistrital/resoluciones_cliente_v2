@@ -6,9 +6,11 @@ import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resolu
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { TablaResolucion } from 'src/app/@core/models/tabla_resolucion';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { environment } from 'src/environments/environment';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { RequestManager } from '../services/requestManager';
+import { UserService } from '../services/userService';
 import { UtilService } from '../services/utilService';
 
 @Component({
@@ -23,32 +25,36 @@ export class AprobacionResolucionesComponent implements OnInit {
 
   dialogConfig: MatDialogConfig;
   icono: string;
-
-  cadenaFiltro: string[] = [];
-  parametros = '';
-  query = 'query=Activo:true';
+  filtrarFacultad = false;
+  dependenciaUsuario = 0;
 
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
     private request: RequestManager,
     private popUp: UtilService,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Aprobada|Por revisar`
+    this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
       totalKey: 'Total',
     });
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {
@@ -91,46 +97,6 @@ export class AprobacionResolucionesComponent implements OnInit {
         this.modificarEstado(rowData, 'RECH', 'Rechazar');
         break;
     }
-  }
-
-  filtroTabla(): void {
-    this.query = 'query=Activo:true';
-    this.parametros = '';
-    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
-      this.query = this.query.concat(',NumeroResolucion:' + this.cadenaFiltro[0]);
-    }
-    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== '') {
-      this.query = this.query.concat(',Vigencia:' + this.cadenaFiltro[1]);
-    }
-    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== '') {
-      this.query = this.query.concat(',Periodo=' + this.cadenaFiltro[2]);
-    }
-    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== '') {
-      this.parametros = this.parametros.concat('&facultad=' + this.cadenaFiltro[3]);
-    }
-    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== '') {
-      this.parametros = this.parametros.concat('&nivelA=' + this.cadenaFiltro[4]);
-    }
-    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== '') {
-      this.parametros = this.parametros.concat('&dedicacion=' + this.cadenaFiltro[5]);
-    }
-    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== '') {
-      this.query = this.query.concat(',NumeroSemanas=' + this.cadenaFiltro[6]);
-    }
-    if (this.cadenaFiltro[7] !== undefined && this.cadenaFiltro[7] !== '') {
-      this.parametros = this.parametros.concat('&estadoRes=' + this.cadenaFiltro[7]);
-    }
-    if (this.cadenaFiltro[8] !== undefined && this.cadenaFiltro[8] !== '') {
-      this.parametros = this.parametros.concat('&tipoRes=' + this.cadenaFiltro[8]);
-    }
-    this.ngOnInit();
-  }
-
-  limpiarFiltro(): void {
-    for (let i in this.cadenaFiltro) {
-      i = '';
-    }
-    this.ngOnInit();
   }
 
   modificarEstado(res: Resoluciones, CodigoEstado: string, nombreEstado: string): void {

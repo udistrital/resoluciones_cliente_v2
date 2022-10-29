@@ -3,35 +3,14 @@
         <h1>Gestión de resoluciones</h1>
     </mat-card-title>
     <mat-card-content>
-        <mat-form-field class="field" style="width: 7%;">
-            <input matInput type="text" name="numeroRes" placeholder="Número" [(ngModel)]="cadenaFiltro[0]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 7%;">
-            <input matInput type="text" name="vigencia" placeholder="Vigencia" [(ngModel)]="cadenaFiltro[1]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 6%;">
-            <input matInput type="text" name="periodo" placeholder="Periodo" [(ngModel)]="cadenaFiltro[2]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 18%;">
-            <input matInput type="text" name="facultad" placeholder="Facultad" [(ngModel)]="cadenaFiltro[3]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 10%;">
-            <input matInput type="text" name="nivelA" placeholder="Nivel" [(ngModel)]="cadenaFiltro[4]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 7%;">
-            <input matInput type="text" name="dedicacion" placeholder="Dedicación" [(ngModel)]="cadenaFiltro[5]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 6%;">
-            <input matInput type="text" name="semanas" placeholder="Semanas" [(ngModel)]="cadenaFiltro[6]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 7%;">
-            <input matInput type="text" name="estado" placeholder="Estado" [(ngModel)]="cadenaFiltro[7]">
-        </mat-form-field>
-        <mat-form-field class="field" style="width: 16%;">
-            <input matInput type="text" name="tipoRes" placeholder="Tipo de resolución" [(ngModel)]="cadenaFiltro[8]">
-        </mat-form-field>
-        <button mat-button class="button button-add" type="button" (click)="filtroTabla()"
-            style="width: 6%;">Filtrar</button>
+        <div class="toggler">
+            <mat-slide-toggle 
+                [(ngModel)]="filtrarFacultad"
+                labelPosition="before"
+                [disabled]="dependenciaUsuario == 0"
+                (change)="ngOnInit()"
+            >Filtrar según mi facultad:</mat-slide-toggle>
+        </div>
         <ng2-smart-table [settings]="resolucionesSettings" [source]="resolucionesData">
         </ng2-smart-table>
     </mat-card-content>

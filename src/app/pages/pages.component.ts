@@ -4,6 +4,8 @@ import { environment } from 'src/environments/environment';
 import { RequestManager } from './services/requestManager';
 import { UserService } from './services/userService';
 import { DatosIdentificacion } from '../@core/models/datos_identificacion';
+import { Tercero } from '../@core/models/tercero';
+import { VinculacionTercero } from '../@core/models/vinculacion_tercero';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -52,11 +54,29 @@ export class PagesComponent implements OnInit {
 
     this.userService.user$.subscribe((data: any) => {
       if (data ? data.userService ? data.userService.documento ? true : false : false : false) {
-        this.request.get(environment.TERCEROS_SERVICE, `datos_identificacion?query=Numero:` + data.userService.documento)
-        .subscribe((datosIdentificacion: DatosIdentificacion) => {
-          const tercero = datosIdentificacion[0].TerceroId;
-          this.terceroName = tercero ? tercero.NombreCompleto ? tercero.NombreCompleto : '' : '';
-          this.userService.updateTercero(tercero);
+        this.request.get(
+          environment.TERCEROS_SERVICE, 
+          `datos_identificacion?query=Numero:${data.userService.documento}`
+        ).subscribe({
+          next: (datosIdentificacion: DatosIdentificacion[]) => {
+            const tercero: Tercero = datosIdentificacion[0].TerceroId;
+            this.terceroName = tercero ? tercero.NombreCompleto ? tercero.NombreCompleto : '' : '';
+            this.userService.updateTercero(tercero);
+            this.request.get(
+              environment.TERCEROS_SERVICE, 
+              `vinculacion?limit=0&order=desc&sortby=Id&query=Activo:true,TerceroPrincipalId.Id:${tercero.Id}`
+            ).subscribe({
+              next: (vinculacion: VinculacionTercero[]) => {
+                const data = vinculacion[0];
+                this.userService.updateVinculacion(data);
+              }, error: () => {
+                this.userService.updateVinculacion(null);
+              }
+            });
+          }, error: () => {
+            this.userService.updateTercero(null);
+            this.userService.updateVinculacion(null);
+          }
         });
       }
     });
