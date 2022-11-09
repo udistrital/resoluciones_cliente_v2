@@ -1,3 +1,32 @@
-.vacio {
+.welcome-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
+    padding: 3%;
+    width: fit-content;
+}
+
+.welcome-title {
+    h1 {
+        border-bottom: 1px solid var(--primary);
+        margin-bottom: 1em;
+        font-weight: 300;
+    }
+}
+
+.welcome-content {
+    font-size: 24px;
+    text-align: left;
+}
+
+@media screen and (max-width: 1024px) {
+    .welcome-card {
+        position: unset;
+        left: 0%;
+        top: 0%;
+        transform: translate(0%, 0%);
+        width: 95%;
+    }
 }

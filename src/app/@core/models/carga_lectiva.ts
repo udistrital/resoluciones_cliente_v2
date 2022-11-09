@@ -1,9 +1,9 @@
 export class CargaLectiva {
     Anio: string;
     HorasLectivas: string;
-    DocDocente: string;
+    docente_documento: string;
     IDFacultad: string;
-    IDProyecto: string;
+    id_proyecto: string;
     DependenciaAcademica: number;
     IDTipoVinculacion: string;
     NombreFacultad: string;
