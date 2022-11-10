@@ -30,7 +30,7 @@ export class UserService {
     }
 
     updateVinculacion(data: VinculacionTercero): void {
-      this.dependenciaData = {...this.dependenciaData, ...data}
+      this.dependenciaData = {...this.dependenciaData, ...data};
       this.dependenciaSubject.next(this.dependenciaData);
     }
 }

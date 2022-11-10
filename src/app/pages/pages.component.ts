@@ -55,7 +55,7 @@ export class PagesComponent implements OnInit {
     this.userService.user$.subscribe((data: any) => {
       if (data ? data.userService ? data.userService.documento ? true : false : false : false) {
         this.request.get(
-          environment.TERCEROS_SERVICE, 
+          environment.TERCEROS_SERVICE,
           `datos_identificacion?query=Numero:${data.userService.documento}`
         ).subscribe({
           next: (datosIdentificacion: DatosIdentificacion[]) => {
@@ -63,12 +63,12 @@ export class PagesComponent implements OnInit {
             this.terceroName = tercero ? tercero.NombreCompleto ? tercero.NombreCompleto : '' : '';
             this.userService.updateTercero(tercero);
             this.request.get(
-              environment.TERCEROS_SERVICE, 
+              environment.TERCEROS_SERVICE,
               `vinculacion?limit=0&order=desc&sortby=Id&query=Activo:true,TerceroPrincipalId.Id:${tercero.Id}`
             ).subscribe({
               next: (vinculacion: VinculacionTercero[]) => {
-                const data = vinculacion[0];
-                this.userService.updateVinculacion(data);
+                const data2 = vinculacion[0];
+                this.userService.updateVinculacion(data2);
               }, error: () => {
                 this.userService.updateVinculacion(null);
               }
