@@ -255,7 +255,7 @@ export class VincularDocentesComponent implements OnInit {
         });
       });
     } else {
-      this.popUp.warning('Debe seleccionar docentes con categoría.')
+      this.popUp.warning('Debe seleccionar docentes con categoría.');
     }
   }
 
