@@ -192,6 +192,6 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   salir(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 }
