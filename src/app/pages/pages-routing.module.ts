@@ -13,6 +13,7 @@ import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-doce
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { NavGuard } from '../@core/components/guard/nav.guard'
+import { RoleGuard } from '../@core/components/guard/role.guard';
 
 const routes: Routes = [{
   path: '',
@@ -25,14 +26,12 @@ const routes: Routes = [{
     {
       path: 'plantillas',
       component: PlantillasComponent,
-      canDeactivate: [NavGuard],
-      canActivate: [NavGuard],
+      canActivate: [NavGuard, RoleGuard],
       runGuardsAndResolvers: 'always',
     },
     {
       path: 'gestion_resoluciones',
-      canDeactivate: [NavGuard],
-      canActivate: [NavGuard],
+      canActivate: [NavGuard, RoleGuard],
       children: [
         {
           path: '',
@@ -67,15 +66,13 @@ const routes: Routes = [{
     {
       path: 'resolucion_administracion',
       component: AdminResolucionesComponent,
-      canActivate: [NavGuard],
-      canDeactivate: [NavGuard],
+      canActivate: [NavGuard, RoleGuard],
       runGuardsAndResolvers: 'always'
     },
     {
       path: 'resolucion_aprobacion',
       component: AprobacionResolucionesComponent,
-      canActivate: [NavGuard],
-      canDeactivate: [NavGuard],
+      canActivate: [NavGuard, RoleGuard],
       runGuardsAndResolvers: 'always'
     },
     

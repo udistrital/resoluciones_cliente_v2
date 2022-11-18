@@ -8,32 +8,36 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class NavGuard implements CanActivate {
+export class RoleGuard implements CanActivate {
 
   constructor(
     private router: Router,
     private request: RequestManager,
     private popUp: UtilService,
   ) {}
-
+  
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    this.popUp.loading();
+    const ruta = route.url[0].path;
+    const user = JSON.parse(atob(localStorage.getItem('user')));
+    const roles = Array(user.user.role).join(',').replace('Internal/everyone,', '');
     return this.request.get(
-      environment.CONFIGURACION_SERVICE,
-      `parametro?query=Aplicacion.Nombre:${environment.appname}`
+      environment.CONF_MENU_SERVICE,
+      `${roles}/${environment.appname}`
     ).pipe(
       map((response: any[]) => {
-        const granted = response[0].Valor === "true"
-        if (!granted) {
-          this.popUp.close();
-          this.popUp.warning('El sistema se encuentra cerrado temporalmente.').then(() => {
+        let autorizado = false;
+        response.forEach(opcion => {
+          autorizado ||= (opcion.Url as string).indexOf(ruta) !== -1;
+        });
+        if (!autorizado) {
+          this.popUp.warning('No tiene acceso al módulo solicitado.').then(() => {
             this.router.navigateByUrl('pages/dashboard');
           });
         }
-        return granted;
+        return autorizado;
       })
     );
   }

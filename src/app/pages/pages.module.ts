@@ -53,6 +53,7 @@ import { ModalReduccionesComponent } from './gestion-vinculaciones/modal-reducci
 import { TablasDisponibilidadesComponent } from './gestion-vinculaciones/tablas-disponibilidades/tablas-disponibilidades.component';
 import { ModalDocumentoViewerComponent } from './modal-documento-viewer/modal-documento-viewer.component';
 import { NavGuard } from '../@core/components/guard/nav.guard';
+import { RoleGuard } from '../@core/components/guard/role.guard';
 
 
 const pagesComponents = [
@@ -117,6 +118,7 @@ const materialModules = [
   ],
   providers: [
     NavGuard,
+    RoleGuard,
     RequestManager,
     MatDatepickerModule,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
