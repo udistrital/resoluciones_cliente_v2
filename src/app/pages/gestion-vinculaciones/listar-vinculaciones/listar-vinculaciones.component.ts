@@ -148,7 +148,7 @@ export class ListarVinculacionesComponent implements OnInit {
         }
       }, error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }

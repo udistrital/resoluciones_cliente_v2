@@ -77,7 +77,7 @@ export class VincularDocentesComponent implements OnInit {
             this.obtenerCargaAcademica();
           },
           error: () => {
-            this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
         });
       }
@@ -109,7 +109,7 @@ export class VincularDocentesComponent implements OnInit {
         }
       }, error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
@@ -137,7 +137,7 @@ export class VincularDocentesComponent implements OnInit {
           });
         }
       }, error: () => {
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
