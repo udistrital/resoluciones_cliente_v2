@@ -24,7 +24,7 @@ export class DetalleResolucionComponent implements OnInit {
   }
 
   volver(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 
 }
