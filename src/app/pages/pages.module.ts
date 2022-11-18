@@ -52,6 +52,7 @@ import { ModalAdicionesComponent } from './gestion-vinculaciones/modal-adiciones
 import { ModalReduccionesComponent } from './gestion-vinculaciones/modal-reducciones/modal-reducciones.component';
 import { TablasDisponibilidadesComponent } from './gestion-vinculaciones/tablas-disponibilidades/tablas-disponibilidades.component';
 import { ModalDocumentoViewerComponent } from './modal-documento-viewer/modal-documento-viewer.component';
+import { NavGuard } from '../@core/components/guard/nav.guard';
 
 
 const pagesComponents = [
@@ -115,6 +116,7 @@ const materialModules = [
     ...materialModules
   ],
   providers: [
+    NavGuard,
     RequestManager,
     MatDatepickerModule,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },

@@ -12,6 +12,7 @@ import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vin
 import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
+import { NavGuard } from '../@core/components/guard/nav.guard'
 
 const routes: Routes = [{
   path: '',
@@ -24,43 +25,60 @@ const routes: Routes = [{
     {
       path: 'plantillas',
       component: PlantillasComponent,
+      canDeactivate: [NavGuard],
+      canActivate: [NavGuard],
+      runGuardsAndResolvers: 'always',
     },
     {
       path: 'gestion_resoluciones',
-      component: GestionResolucionesComponent,
-    },
-    {
-      path: 'detalle_resolucion',
-      component: DetalleResolucionComponent,
-    },
-    {
-      path: 'generacion_resolucion',
-      component: GeneracionResolucionComponent,
-    },
-    {
-      path: 'consulta_docente',
-      component: ConsultaDocenteComponent,
+      canDeactivate: [NavGuard],
+      canActivate: [NavGuard],
+      children: [
+        {
+          path: '',
+          component: GestionResolucionesComponent,
+        },
+        {
+          path: 'detalle_resolucion',
+          component: DetalleResolucionComponent,
+        },
+        {
+          path: 'generacion_resolucion',
+          component: GeneracionResolucionComponent,
+        },
+        {
+          path: 'consulta_docente',
+          component: ConsultaDocenteComponent,
+        },
+        {
+          path: 'vincular_docentes',
+          component: VincularDocentesComponent,
+        },
+        {
+          path: 'listar_vinculaciones',
+          component: ListarVinculacionesComponent,
+        },
+        {
+          path: 'cancelar_vinculaciones',
+          component: CancelarVinculacionesComponent,
+        },
+      ]
     },
     {
       path: 'resolucion_administracion',
       component: AdminResolucionesComponent,
+      canActivate: [NavGuard],
+      canDeactivate: [NavGuard],
+      runGuardsAndResolvers: 'always'
     },
     {
       path: 'resolucion_aprobacion',
-      component: AprobacionResolucionesComponent
+      component: AprobacionResolucionesComponent,
+      canActivate: [NavGuard],
+      canDeactivate: [NavGuard],
+      runGuardsAndResolvers: 'always'
     },
-    {
-      path: 'vincular_docentes',
-      component: VincularDocentesComponent,
-    },
-    {
-      path: 'listar_vinculaciones',
-      component: ListarVinculacionesComponent,
-    },
-    {
-      path: 'cancelar_vinculaciones',
-      component: CancelarVinculacionesComponent,
-    },
+    
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',
     },
