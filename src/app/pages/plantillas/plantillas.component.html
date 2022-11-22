@@ -11,8 +11,7 @@
                         [settings]="plantillasSettings" 
                         [source]="plantillasData"
                         (create)="createPlantilla()"
-                        (edit)="editPlantilla($event)"
-                        (delete)="deletePlantilla($event)"
+                        (custom)="eventHandler($event)"
                     ></ng2-smart-table>
                 </div>
             </mat-tab>
@@ -21,6 +20,7 @@
                     <app-form-detalle-resolucion 
                         [resolucionId]="resolucionId" 
                         [esPlantilla]="true"
+                        [esCopia]="copia"
                         (volver)="setSelectedTab(0, true)"
                     ></app-form-detalle-resolucion>
                 </div>

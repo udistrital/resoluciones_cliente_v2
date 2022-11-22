@@ -15,6 +15,7 @@ export class PlantillasComponent implements OnInit {
   plantillasData: LocalDataSource;
   selectedTab = 0;
   resolucionId = 0;
+  copia = false;
 
   constructor(
     private request: RequestManager,
@@ -68,20 +69,50 @@ export class PlantillasComponent implements OnInit {
       },
       mode: 'external',
       actions: {
+        edit: false,
+        delete: false,
         position: 'right',
         columnTitle: 'Acciones',
+        custom: [
+          {
+            name: 'editar',
+            title: '<em class="material-icons" title="Editar plantilla">edit</em>',
+          },
+          {
+            name: 'copiar',
+            title: '<em class="material-icons" title="Copiar plantilla">file_copy</em>',
+          },
+          {
+            name: 'borrar',
+            title: '<em class="material-icons" title="Eliminar plantilla">delete</em>',
+          },
+        ]
       },
       add: {
-        addButtonContent: '<i class="material-icons title="Agregar">add_circle_outline</i>',
-      },
-      edit: {
-        editButtonContent: '<i class="material-icons" title="Editar">edit</i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="material-icons" title="Eliminar">delete</i>',
+        addButtonContent: '<i class="material-icons title="Agregar plantilla">add_circle_outline</i>',
       },
       noDataMessage: 'No hay plantillas de resoluciones registradas en el sistema',
     };
+  }
+
+  eventHandler(event: any): void {
+    switch (event.action) {
+      case 'editar':
+        this.editPlantilla(event);
+        break;
+      case 'copiar':
+        this.copyPlantilla(event);
+        break;
+      case 'borrar':
+        this.deletePlantilla(event);
+        break;
+    }
+  }
+
+  copyPlantilla(event: any): void {
+    this.setSelectedTab(1, false);
+    this.copia = true;
+    this.resolucionId = event.data.Id;
   }
 
   createPlantilla(): void {
@@ -91,6 +122,7 @@ export class PlantillasComponent implements OnInit {
 
   editPlantilla(event: any): void {
     this.setSelectedTab(1, false);
+    this.copia = false;
     this.resolucionId = event.data.Id;
   }
 
