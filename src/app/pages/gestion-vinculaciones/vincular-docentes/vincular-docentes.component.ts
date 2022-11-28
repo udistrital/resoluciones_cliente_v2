@@ -15,6 +15,7 @@ import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/moda
 import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
 import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
 import { first, forkJoin } from 'rxjs';
+import { Parametro } from 'src/app/@core/models/parametro';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -33,6 +34,7 @@ export class VincularDocentesComponent implements OnInit {
   vinculacionesData: LocalDataSource;
   docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
+  tipoResolucion: Parametro;
 
   constructor(
     private request: RequestManager,
@@ -74,6 +76,16 @@ export class VincularDocentesComponent implements OnInit {
               tablaCarga.actions = false;
               this.cargaAcademicaSettings = {...tablaCarga};
             }
+            this.request.get(
+              environment.PARAMETROS_SERVICE,
+              `parametro/${this.resolucion.TipoResolucionId}`
+            ).subscribe({
+              next: (response: Respuesta) => {
+                this.tipoResolucion = response.Data as Parametro;
+              }, error: () => {
+                this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+              }
+            });
             this.obtenerCargaAcademica();
           },
           error: () => {

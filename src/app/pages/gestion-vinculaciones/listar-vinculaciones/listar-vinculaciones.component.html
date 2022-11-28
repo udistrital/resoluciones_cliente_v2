@@ -1,13 +1,13 @@
 <mat-card class="card-oas">
     <mat-card-title class="vinculacion-title">
-        <h1>Docentes vinculados</h1>
-        <h2>Resolución # {{ resolucion.NumeroResolucion }}</h2>
-        <h2>{{ resolucionVinculacion.Dedicacion }}</h2>
+        <h1>Docentes registrados</h1>
+        <h2>{{ tipoResolucion.Nombre }} # {{ resolucion.NumeroResolucion }}</h2>
+        <h2>{{ resolucionVinculacion.Dedicacion }} - {{ resolucionVinculacion.NivelAcademico }}</h2>
     </mat-card-title>
     <mat-card-content>
         <fieldset class="form-container">
             <legend>
-                <h3>Docentes vinculados</h3>
+                <h3>Docentes registrados</h3>
             </legend>
             <ng2-smart-table
                 [settings]="vinculacionesSettings"
