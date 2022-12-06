@@ -10,6 +10,7 @@ import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-res
 import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
 import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
 import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
+import { RpVinculacionesComponent } from './gestion-vinculaciones/rp-vinculaciones/rp-vinculaciones.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { NavGuard } from '../@core/components/guard/nav.guard'
@@ -60,6 +61,10 @@ const routes: Routes = [{
         {
           path: 'cancelar_vinculaciones',
           component: CancelarVinculacionesComponent,
+        },
+        {
+          path: 'rp_vinculacion',
+          component: RpVinculacionesComponent,
         },
       ]
     },

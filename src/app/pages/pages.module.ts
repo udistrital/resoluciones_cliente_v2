@@ -52,11 +52,15 @@ import { ModalAdicionesComponent } from './gestion-vinculaciones/modal-adiciones
 import { ModalReduccionesComponent } from './gestion-vinculaciones/modal-reducciones/modal-reducciones.component';
 import { TablasDisponibilidadesComponent } from './gestion-vinculaciones/tablas-disponibilidades/tablas-disponibilidades.component';
 import { ModalDocumentoViewerComponent } from './modal-documento-viewer/modal-documento-viewer.component';
+import { RpVinculacionesComponent } from './gestion-vinculaciones/rp-vinculaciones/rp-vinculaciones.component';
+import { RpSelectorComponent } from '../@core/components/rp-selector/rp-selector.component';
 import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 
 
 const pagesComponents = [
+  RpVinculacionesComponent,
+  RpSelectorComponent,
   TablasDisponibilidadesComponent,
   CancelarVinculacionesComponent,
   ListarVinculacionesComponent,

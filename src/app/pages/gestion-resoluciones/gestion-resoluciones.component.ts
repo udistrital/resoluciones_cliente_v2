@@ -97,6 +97,9 @@ export class GestionResolucionesComponent implements OnInit {
       case 'documento':
         this.cargarDocumento(rowData);
         break;
+      case 'rp':
+        this.asignarRp(rowData.Id);
+        break;
       case 'editar':
         this.editarResolución(rowData.Id);
         break;
@@ -170,6 +173,10 @@ export class GestionResolucionesComponent implements OnInit {
         }
       });
     }
+  }
+
+  asignarRp(id: number): void {
+    this.router.navigate(['rp_vinculacion', { Id: id }], { relativeTo: this.route });
   }
 
   editarResolución(id: number): void {

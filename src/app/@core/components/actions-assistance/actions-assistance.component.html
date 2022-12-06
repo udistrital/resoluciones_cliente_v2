@@ -10,6 +10,10 @@
         (click)="iconoSelect('expedicion')">note_add</em>
     
     <!-- Gestión de resoluciones -->
+    <em class="material-icons icon" title="Asignar RP" name="rp"
+        *ngIf="this.modulo === 'gestion' && (rowData.TipoResolucion.includes('Vinculación') || rowData.TipoResolucion.includes('Adición')) && (rowData.Estado === 'Expedida')"
+        (click)="iconoSelect('rp')">fact_check</em>
+
     <em class="material-icons icon" title="Vincular" name="vincular"
         *ngIf="this.modulo === 'gestion' && rowData.TipoResolucion.includes('Vinculación') && (rowData.Estado === 'Solicitada' || rowData.Estado === 'Rechazada')"
         (click)="iconoSelect('vincular')">person_add</em>
