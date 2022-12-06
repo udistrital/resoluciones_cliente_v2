@@ -18,7 +18,7 @@
             </div>
             <fieldset class="form-container" *ngIf="tipoResolucion === 'RVIN'">
                 <legend></legend>
-                <mat-grid-list cols="2" rowHeight="15vw">
+                <mat-grid-list [appOasGridCols]="{xs: 1, sm: 1, md: 2, lg: 2, xl: 2}" rowHeight="15rem">
                     <mat-grid-tile>
                         <mat-form-field class="form-field form-field-full" >
                             <mat-label>Numero de resolución</mat-label>
@@ -135,7 +135,7 @@
                     <mat-slide-toggle 
                         [(ngModel)]="filtrarFacultad"
                         labelPosition="before"
-                        [disabled]="dependenciaUsuario == 0"
+                        [disabled]="dependenciaUsuario === 0"
                         (change)="initTable()"
                     >Filtrar según mi facultad:</mat-slide-toggle>
                 </div>

@@ -14,6 +14,8 @@ import { ModalAdicionesComponent } from '../modal-adiciones/modal-adiciones.comp
 import { ModalReduccionesComponent } from '../modal-reducciones/modal-reducciones.component';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { CambioVinculacion } from 'src/app/@core/models/cambio_vinculacion';
+import { Parametro } from 'src/app/@core/models/parametro';
+import { first, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-listar-vinculaciones',
@@ -30,6 +32,7 @@ export class ListarVinculacionesComponent implements OnInit {
   vinculacionesSettings: any;
   vinculacionesData: LocalDataSource;
   tipoVista: string;
+  tipoResolucion: Parametro;
 
   constructor(
     private request: RequestManager,
@@ -41,6 +44,7 @@ export class ListarVinculacionesComponent implements OnInit {
     this.vinculacionesData = new LocalDataSource();
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
   }
 
   ngOnInit(): void {
@@ -62,17 +66,32 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   preloadData(): void {
-    this.request.get(
-      environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion/${this.resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      this.resolucion = response.Data as Resolucion;
-    });
-    this.request.get(
-      environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion_vinculacion_docente/${this.resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
+    forkJoin<[Respuesta, Respuesta]>([
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion/${this.resolucionId}`
+      ).pipe(first()),
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion_vinculacion_docente/${this.resolucionId}`
+      ).pipe(first()),
+    ]).pipe().subscribe({
+      next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
+        this.resolucion = resp1.Data as Resolucion;
+        this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
+        this.request.get(
+          environment.PARAMETROS_SERVICE,
+          `parametro/${this.resolucion.TipoResolucionId}`
+        ).subscribe({
+          next: (response: Respuesta) => {
+            this.tipoResolucion = response.Data as Parametro;
+          }, error: () => {
+            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+          }
+        });
+      }, error: () => {
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+      }
     });
   }
 
@@ -148,7 +167,7 @@ export class ListarVinculacionesComponent implements OnInit {
         }
       }, error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
@@ -197,10 +216,12 @@ export class ListarVinculacionesComponent implements OnInit {
                   }
                 });
               }
+            } else {
+              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }
           },
           error: () => {
-            this.popUp.error("No se ha podido realizar la consulta del semaforo.")
+            this.popUp.error("No se ha podido realizar la consulta del semaforo.");
           }
         });
         break;
@@ -223,10 +244,12 @@ export class ListarVinculacionesComponent implements OnInit {
                   }
                 });
               }
+            } else {
+              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }
           },
           error: () => {
-            this.popUp.error("No se ha podido realizar la consulta del semaforo.")
+            this.popUp.error("No se ha podido realizar la consulta del semaforo.");
           }
         });
         break;
@@ -251,6 +274,9 @@ export class ListarVinculacionesComponent implements OnInit {
           this.popUp.success(response.Message).then(() => {
             this.cargarVinculaciones();
           });
+        } else {
+          this.popUp.close();
+          this.popUp.error('No se ha podido registrar la modificación de la vinculacion.');
         }
       }, error: () => {
         this.popUp.close();
@@ -260,6 +286,6 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   volver(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 }

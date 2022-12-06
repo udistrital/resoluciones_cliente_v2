@@ -1,8 +1,8 @@
 <mat-card class="card-oas">
     <mat-card-title class="vinculacion-title">
         <h1>Cancelación de vinculaciones</h1>
-        <h2>Resolución # {{ resolucion.NumeroResolucion }}</h2>
-        <h2>{{ resolucionVinculacion.Dedicacion }}</h2>
+        <h2>{{ tipoResolucion.Nombre }} # {{ resolucion.NumeroResolucion }}</h2>
+        <h2>{{ resolucionVinculacion.Dedicacion }} - {{ resolucionVinculacion.NivelAcademico }}</h2>
     </mat-card-title>
     <mat-card-content>
         <fieldset class="form-container">
@@ -20,14 +20,18 @@
                 <h3>Docentes Seleccionados Para Reversar</h3>
             </legend>
             <form #cform="ngForm" novalidate>
-                <mat-form-field class="form-field-column">
+                <mat-form-field class="form-field-column" *ngIf="resolucionVinculacion.NivelAcademico === 'PREGRADO'">
                     <mat-label>Numero de semanas a reversar:</mat-label>
                     <input matInput type="number" min="0" [(ngModel)]="numeroSemanas" name="semanas" #semanas="ngModel" required >
+                </mat-form-field>
+                <mat-form-field class="form-field-column" *ngIf="resolucionVinculacion.NivelAcademico === 'POSGRADO'">
+                    <mat-label>Numero de horas semestrales a reversar:</mat-label>
+                    <input matInput type="number" min="0" [(ngModel)]="numeroHorasSemestrales" name="horasSem" #horasSem="ngModel" required >
                 </mat-form-field>
                 <mat-expansion-panel *ngFor="let v of cambioVinculacion; let i=index" hideToggle disabled>
                     <mat-expansion-panel-header>
                         <mat-panel-title class="cancelacion-panel">
-                            <strong>{{i + 1}}. {{v.VinculacionOriginal.PersonaId}} - {{v.VinculacionOriginal.Nombre}} - {{v.VinculacionOriginal.NumeroHorasSemanales}} Horas semanales</strong>
+                            <strong>{{i + 1}}. {{v.VinculacionOriginal.PersonaId}} - {{v.VinculacionOriginal.Nombre}} - {{v.VinculacionOriginal.NumeroHorasSemanales}} Horas {{ resolucionVinculacion.NivelAcademico === 'PREGRADO' ? 'semanales' : 'semestrales'}}</strong>
                             <mat-form-field class="form-field-exp">
                                 <mat-label>Registro presupuestal</mat-label>
                                 <mat-select [(ngModel)]="v.DocPresupuestal" name="rp_{{i}}" #rp_{{i}}="ngModel" >

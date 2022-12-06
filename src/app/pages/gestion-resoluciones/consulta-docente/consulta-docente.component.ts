@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { Respuesta } from 'src/app/@core/models/respuesta';
@@ -26,6 +26,7 @@ export class ConsultaDocenteComponent {
     private request: RequestManager,
     private popUp: UtilService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
   ) {
     this.initTable();
@@ -59,6 +60,7 @@ export class ConsultaDocenteComponent {
       selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones registradas en el sistema',
     };
+    this.popUp.close();
   }
 
   consultarDocente(): void {
@@ -113,7 +115,7 @@ export class ConsultaDocenteComponent {
   }
 
   volver(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 
 }

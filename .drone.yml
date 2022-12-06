@@ -1,6 +1,11 @@
 kind: pipeline
 name: oas_cliente_ci
 
+trigger:
+  event:
+    exclude:
+      - tag
+
 steps:
 - name: check_readme
   image: jjvargass/qa_develoment:latest
@@ -86,6 +91,7 @@ steps:
     - feature/*
     - develop
     - release/*
+    - dependabot/**
     event:
     - push
 

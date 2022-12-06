@@ -11,10 +11,11 @@ import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vi
 import { UtilService } from '../../services/utilService';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { UserService } from '../../services/userService';
+import { first, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-generacion-resolucion',
@@ -42,6 +43,7 @@ export class GeneracionResolucionComponent implements OnInit {
   constructor(
     private request: RequestManager,
     private router: Router,
+    private route: ActivatedRoute,
     private popUp: UtilService,
     private http: HttpClient,
     private userService: UserService,
@@ -60,7 +62,7 @@ export class GeneracionResolucionComponent implements OnInit {
       selectedRowIndex: -1,
     };
 
-    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida&ExcluirTipo=RCAN`
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida&ExcluirTipo=RCAN`;
     this.resolucionesExpedidasData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
@@ -87,39 +89,41 @@ export class GeneracionResolucionComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.request.get(
-      environment.PARAMETROS_SERVICE,
-      `parametro?limit=0&query=ParametroPadreId.CodigoAbreviacion:DVE`
-    ).subscribe((response: Respuesta) => {
-      this.dedicaciones = response.Data as Parametro[];
-    });
-
-    this.request.get(
-      environment.PARAMETROS_SERVICE,
-      `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
-    ).subscribe((response: Respuesta) => {
-      this.tiposResoluciones = response.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
-    });
-
-    this.request.get(
-      environment.PARAMETROS_SERVICE,
-      `periodo?query=CodigoAbreviacion:VG&fields=Year`
-    ).subscribe((response: Respuesta) => {
-      this.vigencias = response.Data as Periodo[];
-    });
-
-    this.request.get(
-      environment.OIKOS_SERVICE,
-      `dependencia_tipo_dependencia?query=TipoDependenciaId.Id:2&limit=0`
-    ).subscribe((response: any) => {
-      this.facultades = response;
-    });
-
-    this.request.get(
-      environment.PROYECTOS_SERVICE,
-      `nivel_formacion?limit=0`
-    ).subscribe((response: NivelFormacion[]) => {
-      this.niveles = response.filter(nivel => nivel.NivelFormacionPadreId === null);
+    this.popUp.loading();
+    forkJoin([
+      this.request.get(
+        environment.PARAMETROS_SERVICE,
+        `parametro?limit=0&query=ParametroPadreId.CodigoAbreviacion:DVE`
+      ).pipe(first()),
+      this.request.get(
+        environment.PARAMETROS_SERVICE,
+        `parametro?query=TipoParametroId.CodigoAbreviacion:TR`
+      ).pipe(first()),
+      this.request.get(
+        environment.PARAMETROS_SERVICE,
+        `periodo?query=CodigoAbreviacion:VG&fields=Year`
+      ).pipe(first()),
+      this.request.get(
+        environment.OIKOS_SERVICE,
+        `dependencia_tipo_dependencia?query=TipoDependenciaId.Id:2&limit=0`
+      ).pipe(first()),
+      this.request.get(
+        environment.PROYECTOS_SERVICE,
+        `nivel_formacion?limit=0`
+      ).pipe(first())
+    ]).pipe().subscribe({
+      next: ([resp1, resp2, resp3, resp4, resp5]: [Respuesta, Respuesta, Respuesta, any[], NivelFormacion[],]) => {
+        this.dedicaciones = resp1.Data as Parametro[];
+        this.tiposResoluciones = resp2.Data.filter((tipo: Parametro) => tipo.ParametroPadreId === null);
+        this.vigencias = resp3.Data as Periodo[];
+        this.facultades = resp4;
+        this.niveles = resp5.filter(nivel => nivel.NivelFormacionPadreId === null);
+        this.popUp.close();
+      },
+      error: () => {
+        this.popUp.close();
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+      }
     });
   }
 
@@ -150,7 +154,7 @@ export class GeneracionResolucionComponent implements OnInit {
               if (response.Data !== 0) {
                 this.popUp.close();
                 this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                  this.router.navigateByUrl('pages/gestion_resoluciones');
+                  this.router.navigate(['../'], {relativeTo: this.route});
                 });
               } else {
                 this.popUp.close();
@@ -189,7 +193,7 @@ export class GeneracionResolucionComponent implements OnInit {
                 if (response.Data !== 0) {
                   this.popUp.close();
                   this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                    this.router.navigateByUrl('pages/gestion_resoluciones');
+                    this.router.navigate(['../'], {relativeTo: this.route});
                   });
                 } else {
                   this.popUp.close();

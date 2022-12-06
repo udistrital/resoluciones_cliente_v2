@@ -97,6 +97,9 @@ export class GestionResolucionesComponent implements OnInit {
       case 'documento':
         this.cargarDocumento(rowData);
         break;
+      case 'rp':
+        this.asignarRp(rowData.Id);
+        break;
       case 'editar':
         this.editarResolución(rowData.Id);
         break;
@@ -172,8 +175,12 @@ export class GestionResolucionesComponent implements OnInit {
     }
   }
 
+  asignarRp(id: number): void {
+    this.router.navigate(['rp_vinculacion', { Id: id }], { relativeTo: this.route });
+  }
+
   editarResolución(id: number): void {
-    this.router.navigate(['../detalle_resolucion', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['detalle_resolucion', { Id: id }], { relativeTo: this.route });
   }
 
   anularResolución(id: number): void {
@@ -206,23 +213,23 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   consultarVinculacionesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'vista' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'vista' }], { relativeTo: this.route });
   }
 
   vincularDocentesResolución(id: number): void {
-    this.router.navigate(['../vincular_docentes', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['vincular_docentes', { Id: id }], { relativeTo: this.route });
   }
 
   cancelarDocentesResolución(id: number): void {
-    this.router.navigate(['../cancelar_vinculaciones', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['cancelar_vinculaciones', { Id: id }], { relativeTo: this.route });
   }
 
   adicionarHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'adicion' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'adicion' }], { relativeTo: this.route });
   }
 
   reducirHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'reduccion' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'reduccion' }], { relativeTo: this.route });
   }
 
   enviarRevision(Id: number): void {
@@ -257,11 +264,11 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   crearResolucion(): void {
-    this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route });
+    this.router.navigate(['generacion_resolucion'], { relativeTo: this.route });
   }
 
   consultarDocente(): void {
-    this.router.navigate(['../consulta_docente'], { relativeTo: this.route });
+    this.router.navigate(['consulta_docente'], { relativeTo: this.route });
   }
 
 }

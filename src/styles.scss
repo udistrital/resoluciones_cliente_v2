@@ -255,11 +255,25 @@ a {
   }
 }
 
-@media screen and (max-width: 425px) {
-  table tbody tr td {
-    font-size: 0.675em !important;
+@media screen and (max-width: 1024px) {
+  table tbody tr td, table thead tr th {
+    font-size: 0.7em !important;
+    padding: 5px !important;
+    line-height: normal;
+  }
+
+  .mat-card-title {
+    font-size: 20px;
   }
 }
+
+@media screen and (max-width: 599px) {
+  table tbody tr td, table thead tr th {
+    font-size: 0.675em !important;
+    padding: 1px !important;
+  }
+}
+
 @media screen and (min-width: 1024px) {
   .username-info {
     display: none;
