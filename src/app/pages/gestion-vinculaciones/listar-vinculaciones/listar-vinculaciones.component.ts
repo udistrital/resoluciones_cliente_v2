@@ -44,6 +44,7 @@ export class ListarVinculacionesComponent implements OnInit {
     this.vinculacionesData = new LocalDataSource();
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
   }
 
   ngOnInit(): void {

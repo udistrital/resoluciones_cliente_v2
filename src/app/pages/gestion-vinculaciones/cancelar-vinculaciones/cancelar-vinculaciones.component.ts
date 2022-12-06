@@ -43,6 +43,7 @@ export class CancelarVinculacionesComponent implements OnInit {
   ) {
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
     this.vinculacionesData = new LocalDataSource();
     this.vinculacionesSeleccionadas = [];
     this.cambioVinculacion = [];
@@ -137,7 +138,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       const vinculacion = new CambioVinculacion();
       vinculacion.VinculacionOriginal = nueva;
       vinculacion.NumeroSemanas = 0;
-      vinculacion.NumeroHorasSemanales = nueva.NumeroHorasSemanales;
+      vinculacion.NumeroHorasSemanales = 0;
       this.cambioVinculacion.push(vinculacion);
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
         this.registrosPresupuestales[nueva.PersonaId] = [];

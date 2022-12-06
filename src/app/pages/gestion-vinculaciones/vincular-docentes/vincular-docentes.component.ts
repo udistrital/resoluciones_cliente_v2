@@ -44,6 +44,7 @@ export class VincularDocentesComponent implements OnInit {
   ) {
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
     this.cargaAcademicaData = new LocalDataSource();
     this.vinculacionesData = new LocalDataSource();
     this.docentesSeleccionados = [];

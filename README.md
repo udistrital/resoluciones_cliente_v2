@@ -4,7 +4,7 @@
 ## Especificaciones Técnicas
 
 ### Tecnologías Implementadas y Versiones
-* [Angular 12.2.12](https://angular.io/)
+* [Angular 12.2.16](https://angular.io/)
 
 ### Variables de Entorno
 ```shell
@@ -66,13 +66,13 @@ npm run test:ui
 
 ## Estado CI
 
-| Develop | Relese 0.0.1 | Master |
-| -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) |
+| Develop | Relese 0.0.1 | Master | Sonar |
+| -- | -- | -- | -- |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/resoluciones_cliente_v2/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/resoluciones_cliente_v2) | [![Quality Gate Status](https://sonarqube.portaloas.udistrital.edu.co/api/project_badges/measure?project=udistrital%3Aresoluciones_cliente_v2&metric=alert_status)](https://sonarqube.portaloas.udistrital.edu.co/dashboard?id=udistrital%3Aresoluciones_cliente_v2) |
 
 ## Licencia
 
-[This file is part of sga_cliente.](LICENSE)
+[This file is part of resoluciones_cliente_v2.](LICENSE)
 
 
 resoluciones_cliente_v2 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (atSara Sampaio your option) any later version.
