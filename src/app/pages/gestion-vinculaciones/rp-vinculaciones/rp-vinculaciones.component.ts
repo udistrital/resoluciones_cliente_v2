@@ -107,11 +107,15 @@ export class RpVinculacionesComponent implements OnInit {
       renderComponent: RpSelectorComponent,
       onComponentInitFunction: (instance: RpSelectorComponent) => {
         instance.event.subscribe((selected: RpSeleccionado) => {
-          if (selected.Consecutivo === undefined) {
-            const i = this.rpsSeleccionados.findIndex(rp => rp.VinculacionId === selected.VinculacionId);
-            this.rpsSeleccionados.splice(i, 1);
-          } else {
+          const i = this.rpsSeleccionados.findIndex(rp => rp.VinculacionId === selected.VinculacionId);
+          if (i < 0) {
             this.rpsSeleccionados.push(selected);
+          } else {
+            if (selected.Consecutivo === undefined) {
+              this.rpsSeleccionados.splice(i, 1);
+            } else {
+              this.rpsSeleccionados.splice(i, 1, selected)
+            }
           }
         });
       },
