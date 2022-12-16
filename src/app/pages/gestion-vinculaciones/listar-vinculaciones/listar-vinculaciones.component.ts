@@ -205,9 +205,9 @@ export class ListarVinculacionesComponent implements OnInit {
         ).subscribe({
           next: (response: Respuesta) => {
             if (response.Success) {
-              if ((response.Data as string) == '') {
+              //if ((response.Data as string) == '') {
                 this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
-              } else {
+              //} else { quitar para prod
                 this.dialogConfig.data = vinculacion;
                 const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
                 dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
@@ -215,7 +215,7 @@ export class ListarVinculacionesComponent implements OnInit {
                     this.registrarModificacion(data);
                   }
                 });
-              }
+              //}
             } else {
               this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }
@@ -233,9 +233,9 @@ export class ListarVinculacionesComponent implements OnInit {
         ).subscribe({
           next: (response: Respuesta) => {
             if (response.Success) {
-              if ((response.Data as string) == '') {
+              //if ((response.Data as string) == '') {
                 this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
-              } else {
+              //} else {
                 this.dialogConfig.data = vinculacion;
                 const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
                 dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
@@ -243,7 +243,7 @@ export class ListarVinculacionesComponent implements OnInit {
                     this.registrarModificacion(data);
                   }
                 });
-              }
+              //}
             } else {
               this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }

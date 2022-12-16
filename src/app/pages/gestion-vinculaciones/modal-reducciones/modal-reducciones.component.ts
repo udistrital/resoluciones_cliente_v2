@@ -52,8 +52,8 @@ export class ModalReduccionesComponent implements OnInit {
       environment.SICAPITAL_JBPM_SERVICE,
       `cdprpdocente/${this.cambioVinculacion.VinculacionOriginal.Disponibilidad}/${this.cambioVinculacion.VinculacionOriginal.Vigencia}/${this.cambioVinculacion.VinculacionOriginal.PersonaId}`
     ).subscribe(response => {
-      if (Object.keys(response.cdp_rp_docente.array.length > 0)) {
-        response.cdp_rp_docente.cdp_rp.array.forEach(rp => {
+      if (Object.keys(response.cdp_rp_docente).length > 0) {
+        (response.cdp_rp_docente.cdp_rp as Array<any>).forEach(rp => {
           const reg = new DocumentoPresupuestal();
           reg.Consecutivo = parseInt(rp.rp, 10);
           reg.Vigencia = parseInt(rp.vigencia, 10);
