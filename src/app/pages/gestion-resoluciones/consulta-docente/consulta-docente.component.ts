@@ -73,8 +73,8 @@ export class ConsultaDocenteComponent {
         if (response.Success) {
           this.popUp.close();
           this.resolucionesDocenteData = new LocalDataSource(response.Data);
-          if (response.Data.length === 0) {
-            this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+          if ((response.Data as any[]).length === 0) {
+            this.popUp.warning('No se encontraron resoluciones para el docente indicado.');
           }
         }
       }, error: () => {
