@@ -27,7 +27,7 @@ export class RpSelectorComponent implements OnInit {
       environment.SICAPITAL_JBPM_SERVICE,
       `cdprpdocente/${this.rowData.Disponibilidad}/${this.rowData.Vigencia}/${this.rowData.PersonaId}`
     ).subscribe(response => {
-      if (Object.keys(response.cdp_rp_docente).length > 0) {
+      if (Object.keys(response.cdp_rp_docente).length > 0 || environment.production) {
         (response.cdp_rp_docente.cdp_rp as Array<any>).forEach(rp => {
           const reg = new RpSeleccionado();
           reg.Consecutivo = parseInt(rp.rp, 10);
