@@ -199,59 +199,80 @@ export class ListarVinculacionesComponent implements OnInit {
         break;
 
       case 'adicionar':
-        this.request.get(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
-        ).subscribe({
-          next: (response: Respuesta) => {
-            if (response.Success) {
-              //if ((response.Data as string) == '') {
-                this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
-              //} else { quitar para prod
-                this.dialogConfig.data = vinculacion;
-                const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
-                dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
-                  if (data) {
-                    this.registrarModificacion(data);
-                  }
-                });
-              //}
-            } else {
+        if (environment.production) {
+          this.request.get(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+          ).subscribe({
+            next: (response: Respuesta) => {
+              if (response.Success) {
+                if ((response.Data as string) == '') {
+                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
+                } else {
+                  this.dialogConfig.data = vinculacion;
+                  const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+                  dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+                    if (data) {
+                      this.registrarModificacion(data);
+                    }
+                  });
+                }
+              } else {
+                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              }
+            },
+            error: () => {
               this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }
-          },
-          error: () => {
-            this.popUp.error("No se ha podido realizar la consulta del semaforo.");
-          }
-        });
+          });
+        } else {
+          this.dialogConfig.data = vinculacion;
+          const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+          dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+            if (data) {
+              this.registrarModificacion(data);
+            }
+          });
+        }
         break;
 
       case 'reducir':
-        this.request.get(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
-        ).subscribe({
-          next: (response: Respuesta) => {
-            if (response.Success) {
-              //if ((response.Data as string) == '') {
-                this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
-              //} else {
-                this.dialogConfig.data = vinculacion;
-                const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
-                dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
-                  if (data) {
-                    this.registrarModificacion(data);
-                  }
-                });
-              //}
-            } else {
+        if (environment.production) {
+          this.request.get(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+          ).subscribe({
+            next: (response: Respuesta) => {
+              if (response.Success) {
+                if ((response.Data as string) == '') {
+                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
+                } else {
+                  this.dialogConfig.data = vinculacion;
+                  const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+                  dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+                    if (data) {
+                      this.registrarModificacion(data);
+                    }
+                  });
+                }
+              } else {
+                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              }
+            },
+            error: () => {
               this.popUp.error("No se ha podido realizar la consulta del semaforo.");
             }
-          },
-          error: () => {
-            this.popUp.error("No se ha podido realizar la consulta del semaforo.");
-          }
-        });
+          });
+
+        } else {
+          this.dialogConfig.data = vinculacion;
+          const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+          dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+            if (data) {
+              this.registrarModificacion(data);
+            }
+          });
+        }
         break;
     }
   }
