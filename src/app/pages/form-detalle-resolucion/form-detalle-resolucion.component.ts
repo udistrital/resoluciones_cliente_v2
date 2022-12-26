@@ -38,6 +38,9 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   @Input()
   esPlantilla = false;
 
+  @Input()
+  esCopia = false;
+
   @Output()
   volver = new EventEmitter<void>();
 
@@ -148,7 +151,17 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           this.contenidoResolucion = response.Data as ContenidoResolucion;
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
-          this.edicion = true;
+          this.edicion = !this.esCopia;
+          if (this.esCopia) {
+            this.contenidoResolucion.Resolucion.Id = null;
+            this.contenidoResolucion.Vinculacion.Id = null;
+            this.contenidoResolucion.Articulos.forEach(articulo => {
+              articulo.Articulo.Id = null;
+              articulo.Paragrafos.forEach(paragrafo => {
+                paragrafo.Id = null;
+              });
+            });
+          }
           this.popUp.close();
           resolve();
         }) :
@@ -229,6 +242,8 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           'create',
         ).then(result => {
           if (result.isConfirmed) {
+            this.contenidoResolucion.Resolucion.DependenciaId = this.contenidoResolucion.Vinculacion.FacultadId;
+            this.contenidoResolucion.Resolucion.DependenciaFirmaId = this.contenidoResolucion.Vinculacion.FacultadId;
             this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
               this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
               this.popUp.loading();
@@ -240,6 +255,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
                 next: (response: Respuesta) => {
                   if (response.Success) {
                     this.contenidoResolucion.Resolucion.Id = response.Data;
+                    this.esCopia = this.esCopia ? !this.esCopia : this.esCopia;
                     this.popUp.close();
                     this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
                       this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {

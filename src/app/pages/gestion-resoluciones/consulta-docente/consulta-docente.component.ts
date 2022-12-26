@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { Respuesta } from 'src/app/@core/models/respuesta';
@@ -26,6 +26,7 @@ export class ConsultaDocenteComponent {
     private request: RequestManager,
     private popUp: UtilService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
   ) {
     this.initTable();
@@ -39,6 +40,7 @@ export class ConsultaDocenteComponent {
     if (TablaResoluciones.Acciones !== undefined) {
       delete TablaResoluciones.Acciones;
     }
+    TablaResoluciones.Estado.filter = false;
     this.resolucionesDocenteSettings = {
       columns: TablaResoluciones,
       mode: 'external',
@@ -58,6 +60,7 @@ export class ConsultaDocenteComponent {
       selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones registradas en el sistema',
     };
+    this.popUp.close();
   }
 
   consultarDocente(): void {
@@ -70,8 +73,8 @@ export class ConsultaDocenteComponent {
         if (response.Success) {
           this.popUp.close();
           this.resolucionesDocenteData = new LocalDataSource(response.Data);
-          if (response.Data.length === 0) {
-            this.popUp.error('No se encontraron resoluciones para el docente indicado.');
+          if ((response.Data as any[]).length === 0) {
+            this.popUp.warning('No se encontraron resoluciones para el docente indicado.');
           }
         }
       }, error: () => {
@@ -112,7 +115,7 @@ export class ConsultaDocenteComponent {
   }
 
   volver(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 
 }

@@ -12,6 +12,8 @@ import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
+import { first, forkJoin } from 'rxjs';
+import { Parametro } from 'src/app/@core/models/parametro';
 
 @Component({
   selector: 'app-cancelar-vinculaciones',
@@ -30,6 +32,8 @@ export class CancelarVinculacionesComponent implements OnInit {
   registrosPresupuestales: any;
   cambioVinculacion: CambioVinculacion[];
   numeroSemanas: number;
+  numeroHorasSemestrales: number;
+  tipoResolucion: Parametro;
 
   constructor(
     private request: RequestManager,
@@ -39,6 +43,7 @@ export class CancelarVinculacionesComponent implements OnInit {
   ) {
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
     this.vinculacionesData = new LocalDataSource();
     this.vinculacionesSeleccionadas = [];
     this.cambioVinculacion = [];
@@ -60,45 +65,63 @@ export class CancelarVinculacionesComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       if (params.get('Id') !== null) {
         this.resolucionId = Number(params.get('Id'));
-        this.request.get(
-          environment.RESOLUCIONES_V2_SERVICE,
-          `resolucion/${this.resolucionId}`
-        ).subscribe((response: Respuesta) => {
-          this.resolucion = response.Data as Resolucion;
-        });
-
-        this.request.get(
-          environment.RESOLUCIONES_V2_SERVICE,
-          `resolucion_vinculacion_docente/${this.resolucionId}`
-        ).subscribe((response: Respuesta) => {
-          this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
-        });
         this.popUp.loading();
-        this.request.get(
-          environment.RESOLUCIONES_V2_SERVICE,
-          `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
-        ).subscribe({
-          next: (response: Respuesta) => {
-            if (response.Success) {
-              this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
-              this.request.get(
-                environment.RESOLUCIONES_MID_V2_SERVICE,
-                `gestion_vinculaciones/${this.modificacionResolucion.ResolucionAnteriorId.Id}`
-              ).subscribe({
-                next: (response2: Respuesta) => {
-                  if (response2.Success) {
-                    this.vinculacionesData.load(response2.Data);
-                    this.popUp.close();
-                  }
-                }, error: () => {
+        forkJoin<[Respuesta, Respuesta]>([
+          this.request.get(
+            environment.RESOLUCIONES_V2_SERVICE,
+            `resolucion/${this.resolucionId}`
+          ).pipe(first()),
+          this.request.get(
+            environment.RESOLUCIONES_V2_SERVICE,
+            `resolucion_vinculacion_docente/${this.resolucionId}`
+          ).pipe(first()),
+        ]).pipe().subscribe({
+          next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
+            this.resolucion = resp1.Data as Resolucion;
+            this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
+            this.request.get(
+              environment.RESOLUCIONES_V2_SERVICE,
+              `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
+            ).subscribe({
+              next: (response: Respuesta) => {
+                if (response.Success) {
+                  this.modificacionResolucion = (response.Data as ModificacionResolucion[])[0];
+                  this.request.get(
+                    environment.RESOLUCIONES_MID_V2_SERVICE,
+                    `gestion_vinculaciones/${this.modificacionResolucion.ResolucionAnteriorId.Id}`
+                  ).subscribe({
+                    next: (response2: Respuesta) => {
+                      if (response2.Success) {
+                        this.vinculacionesData.load(response2.Data);
+                        this.popUp.close();
+                      }
+                    }, error: () => {
+                      this.popUp.close();
+                      this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+                    }
+                  });
+                } else {
                   this.popUp.close();
-                  this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+                  this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
                 }
-              });
-            }
+              }, error: () => {
+                this.popUp.close();
+                this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+              }
+            });
+            this.request.get(
+              environment.PARAMETROS_SERVICE,
+              `parametro/${this.resolucion.TipoResolucionId}`
+            ).subscribe({
+              next: (response: Respuesta) => {
+                this.tipoResolucion = response.Data as Parametro;
+              }, error: () => {
+                this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+              }
+            });
           }, error: () => {
             this.popUp.close();
-            this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
         });
       }
@@ -115,7 +138,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       const vinculacion = new CambioVinculacion();
       vinculacion.VinculacionOriginal = nueva;
       vinculacion.NumeroSemanas = 0;
-      vinculacion.NumeroHorasSemanales = nueva.NumeroHorasSemanales;
+      vinculacion.NumeroHorasSemanales = 0;
       this.cambioVinculacion.push(vinculacion);
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
         this.registrosPresupuestales[nueva.PersonaId] = [];
@@ -156,8 +179,15 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   cancelarVinculaciones(): void {
-    for (const cambio of this.cambioVinculacion) {
-      cambio.NumeroSemanas = this.numeroSemanas;
+    if (this.resolucionVinculacion.NivelAcademico === 'PREGRADO') {
+      for (const cambio of this.cambioVinculacion) {
+        cambio.NumeroSemanas = this.numeroSemanas;
+      }
+    } else {
+      for (const cambio of this.cambioVinculacion) {
+        cambio.NumeroHorasSemanales = this.numeroHorasSemestrales;
+        cambio.NumeroSemanas = cambio.VinculacionOriginal.NumeroSemanas;
+      }
     }
     const objetoCancelaciones = {
       CambiosVinculacion: this.cambioVinculacion,
@@ -180,7 +210,11 @@ export class CancelarVinculacionesComponent implements OnInit {
           next: (response: Respuesta) => {
             if (response.Success) {
               this.popUp.close();
-              this.popUp.success(response.Message);
+              this.popUp.success(response.Message).then(() => {
+                this.cambioVinculacion = [];
+                this.registrosPresupuestales = {};
+                this.loadData();
+              });
             }
           }, error: () => {
             this.popUp.close();
@@ -192,6 +226,6 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   salir(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 }

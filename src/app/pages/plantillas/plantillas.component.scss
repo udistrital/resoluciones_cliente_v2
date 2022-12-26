@@ -9,3 +9,9 @@
 .bigger-container {
     padding: 2%;
 }
+
+@media screen and (max-width: 1024px) {
+    .inner-container {
+        padding: 3% 3%;
+    }
+  }

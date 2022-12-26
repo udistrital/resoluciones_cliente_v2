@@ -7,3 +7,15 @@
     display: flex;
     justify-content: space-around;
 }
+
+@media screen and (max-width: 1024px) {
+    .icon {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .acciones {
+        flex-wrap: wrap;
+    }
+}

@@ -15,6 +15,7 @@ import { ModalDocumentoViewerComponent } from '../../modal-documento-viewer/moda
 import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
 import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
 import { first, forkJoin } from 'rxjs';
+import { Parametro } from 'src/app/@core/models/parametro';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -33,6 +34,7 @@ export class VincularDocentesComponent implements OnInit {
   vinculacionesData: LocalDataSource;
   docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
+  tipoResolucion: Parametro;
 
   constructor(
     private request: RequestManager,
@@ -42,6 +44,7 @@ export class VincularDocentesComponent implements OnInit {
   ) {
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
     this.cargaAcademicaData = new LocalDataSource();
     this.vinculacionesData = new LocalDataSource();
     this.docentesSeleccionados = [];
@@ -67,10 +70,27 @@ export class VincularDocentesComponent implements OnInit {
           next: ([res, vinc]: [Respuesta, Respuesta]) => {
             this.resolucion = res.Data as Resolucion;
             this.resolucionVinculacion = vinc.Data as ResolucionVinculacionDocente;
+            if (this.resolucionVinculacion.NivelAcademico !== 'POSGRADO') {
+              const tablaCarga = this.cargaAcademicaSettings;
+              tablaCarga.columns.horas_lectivas.editable = false;
+              tablaCarga.edit = false;
+              tablaCarga.actions = false;
+              this.cargaAcademicaSettings = {...tablaCarga};
+            }
+            this.request.get(
+              environment.PARAMETROS_SERVICE,
+              `parametro/${this.resolucion.TipoResolucionId}`
+            ).subscribe({
+              next: (response: Respuesta) => {
+                this.tipoResolucion = response.Data as Parametro;
+              }, error: () => {
+                this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+              }
+            });
             this.obtenerCargaAcademica();
           },
           error: () => {
-            this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
         });
       }
@@ -102,7 +122,7 @@ export class VincularDocentesComponent implements OnInit {
         }
       }, error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
@@ -114,10 +134,23 @@ export class VincularDocentesComponent implements OnInit {
     ).subscribe({
       next: (response: Respuesta) => {
         if (response.Success) {
-          this.vinculacionesData.load(response.Data);
+          const vinculaciones = response.Data as Vinculaciones[];
+          this.vinculacionesData.load(vinculaciones);
+          this.cargaAcademicaData.getAll().then((carga: CargaLectiva[]) => {
+            const contratados = carga.filter((reg: CargaLectiva) => {
+              let encontrado = false;
+              vinculaciones.forEach(vinc => {
+                encontrado ||= (reg.docente_documento === vinc.PersonaId.toString() && reg.id_proyecto === vinc.ProyectoCurricularId.toString());
+              });
+              return encontrado;
+            });
+            contratados.forEach((reg2: CargaLectiva) => {
+              this.cargaAcademicaData.remove(reg2);
+            });
+          });
         }
       }, error: () => {
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
@@ -183,53 +216,60 @@ export class VincularDocentesComponent implements OnInit {
       actions: false,
       selectMode: 'multi',
       mode: 'external',
-      hideSubHeader: true,
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
   }
 
   abrirModalDisponibilidad(): void {
-    const previnculaciones = {
-      Docentes: this.docentesSeleccionados,
-      ResolucionData: this.resolucionVinculacion,
-      NumeroSemanas: this.resolucion.NumeroSemanas,
-      Vigencia: this.resolucion.Vigencia,
-      Disponibilidad: []
-    };
-    this.request.post(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      'gestion_vinculaciones/calcular_valor_contratos_seleccionados',
-      previnculaciones
-    ).subscribe((response: Respuesta) => {
-      this.dialogConfig.data = {
-        vigencia: this.resolucion.Vigencia,
-        total: response.Data as string
-      };
-      const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
-      dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
-        if (disponibilidad) {
-          previnculaciones.Disponibilidad = disponibilidad;
-          this.popUp.loading();
-          this.request.post(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            'gestion_vinculaciones',
-            previnculaciones
-          ).subscribe({
-            next: (response2: Respuesta) => {
-              if (response2.Success) {
-                this.popUp.close();
-                this.popUp.success(response2.Message).then(() => {
-                  this.cargarVinculaciones();
-                });
-              }
-            }, error: () => {
-              this.popUp.close();
-              this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
-            }
-          });
-        }
-      });
+    let puedeContratar = true;
+    this.docentesSeleccionados.forEach((docente: CargaLectiva) => {
+      puedeContratar = puedeContratar && docente.CategoriaNombre !== '';
     });
+    if (puedeContratar) {
+      const previnculaciones = {
+        Docentes: this.docentesSeleccionados,
+        ResolucionData: this.resolucionVinculacion,
+        NumeroSemanas: this.resolucion.NumeroSemanas,
+        Vigencia: this.resolucion.Vigencia,
+        Disponibilidad: []
+      };
+      this.request.post(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        'gestion_vinculaciones/calcular_valor_contratos_seleccionados',
+        previnculaciones
+      ).subscribe((response: Respuesta) => {
+        this.dialogConfig.data = {
+          vigencia: this.resolucion.Vigencia,
+          total: response.Data as string
+        };
+        const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
+        dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
+          if (disponibilidad) {
+            previnculaciones.Disponibilidad = disponibilidad;
+            this.popUp.loading();
+            this.request.post(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              'gestion_vinculaciones',
+              previnculaciones
+            ).subscribe({
+              next: (response2: Respuesta) => {
+                if (response2.Success) {
+                  this.popUp.close();
+                  this.popUp.success(response2.Message).then(() => {
+                    this.cargarVinculaciones();
+                  });
+                }
+              }, error: () => {
+                this.popUp.close();
+                this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
+              }
+            });
+          }
+        });
+      });
+    } else {
+      this.popUp.warning('Debe seleccionar docentes con categoría.');
+    }
   }
 
   generarInformeCSV(): void {
@@ -295,11 +335,11 @@ export class VincularDocentesComponent implements OnInit {
   }
 
   seleccionarDocentes(event): void {
-    this.docentesSeleccionados = event.selected;
+    this.docentesSeleccionados = event.selected as CargaLectiva[];
   }
 
   seleccionarVinculaciones(event): void {
-    this.vinculacionesSeleccionadas = event.selected;
+    this.vinculacionesSeleccionadas = event.selected as Vinculaciones[];
   }
 
 }

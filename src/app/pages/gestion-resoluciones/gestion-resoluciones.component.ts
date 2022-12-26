@@ -12,6 +12,8 @@ import { UtilService } from '../services/utilService';
 import { ResolucionesDataSourceComponent } from 'src/app/@core/components/resoluciones-data-source/resoluciones-data-source.component';
 import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Resolucion } from 'src/app/@core/models/resolucion';
+import { UserService } from '../services/userService';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -28,10 +30,8 @@ export class GestionResolucionesComponent implements OnInit {
   resolucionesData: ResolucionesDataSourceComponent;
 
   icono: string;
-
-  parametros = '';
-  query = 'query=Activo:true';
-  cadenaFiltro: string[] = [];
+  dependenciaUsuario = 0;
+  filtrarFacultad: boolean;
 
   constructor(
     private request: RequestManager,
@@ -40,22 +40,27 @@ export class GestionResolucionesComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private dialog: MatDialog,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_inscritas?` + this.query + this.parametros,
+    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}`:'', {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
       totalKey: 'Total',
     });
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = '';
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {
@@ -76,7 +81,8 @@ export class GestionResolucionesComponent implements OnInit {
         });
       },
     };
-
+    TablaResoluciones.Estado.filter = true;
+    TablaResoluciones.TipoResolucion.filter = true;
     this.resolucionesSettings = {
       columns: TablaResoluciones,
       mode: 'external',
@@ -90,6 +96,9 @@ export class GestionResolucionesComponent implements OnInit {
     switch (event) {
       case 'documento':
         this.cargarDocumento(rowData);
+        break;
+      case 'rp':
+        this.asignarRp(rowData.Id);
         break;
       case 'editar':
         this.editarResolución(rowData.Id);
@@ -116,46 +125,6 @@ export class GestionResolucionesComponent implements OnInit {
         this.reducirHorasDocentesResolución(rowData.Id);
         break;
     }
-  }
-
-  filtroTabla(): void {
-    this.query = 'query=Activo:true';
-    this.parametros = '';
-    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
-      this.query = this.query.concat(',NumeroResolucion:' + this.cadenaFiltro[0]);
-    }
-    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== '') {
-      this.query = this.query.concat(',Vigencia:' + this.cadenaFiltro[1]);
-    }
-    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== '') {
-      this.query = this.query.concat(',Periodo=' + this.cadenaFiltro[2]);
-    }
-    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== '') {
-      this.parametros = this.parametros.concat('&facultad=' + this.cadenaFiltro[3]);
-    }
-    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== '') {
-      this.parametros = this.parametros.concat('&nivelA=' + this.cadenaFiltro[4]);
-    }
-    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== '') {
-      this.parametros = this.parametros.concat('&dedicacion=' + this.cadenaFiltro[5]);
-    }
-    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== '') {
-      this.query = this.query.concat(',NumeroSemanas=' + this.cadenaFiltro[6]);
-    }
-    if (this.cadenaFiltro[7] !== undefined && this.cadenaFiltro[7] !== '') {
-      this.parametros = this.parametros.concat('&estadoRes=' + this.cadenaFiltro[7]);
-    }
-    if (this.cadenaFiltro[8] !== undefined && this.cadenaFiltro[8] !== '') {
-      this.parametros = this.parametros.concat('&tipoRes=' + this.cadenaFiltro[8]);
-    }
-    this.ngOnInit();
-  }
-
-  limpiarFiltro(): void {
-    for (let i of this.cadenaFiltro) {
-      i = '';
-    }
-    this.ngOnInit();
   }
 
   cargarDocumento(row: Resoluciones): void {
@@ -206,8 +175,12 @@ export class GestionResolucionesComponent implements OnInit {
     }
   }
 
+  asignarRp(id: number): void {
+    this.router.navigate(['rp_vinculacion', { Id: id }], { relativeTo: this.route });
+  }
+
   editarResolución(id: number): void {
-    this.router.navigate(['../detalle_resolucion', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['detalle_resolucion', { Id: id }], { relativeTo: this.route });
   }
 
   anularResolución(id: number): void {
@@ -217,6 +190,7 @@ export class GestionResolucionesComponent implements OnInit {
       'delete'
     ).then(result => {
       if (result.isConfirmed) {
+        this.popUp.loading();
         this.request.delete(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_resoluciones`,
@@ -224,11 +198,13 @@ export class GestionResolucionesComponent implements OnInit {
         ).subscribe({
           next: (response: Respuesta) => {
             if (response.Success) {
+              this.popUp.close();
               this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
                 this.ngOnInit();
               });
             }
           }, error: () => {
+            this.popUp.close();
             this.popUp.error('No se ha podido anular la resolución.');
           }
         });
@@ -237,23 +213,23 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   consultarVinculacionesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'vista' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'vista' }], { relativeTo: this.route });
   }
 
   vincularDocentesResolución(id: number): void {
-    this.router.navigate(['../vincular_docentes', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['vincular_docentes', { Id: id }], { relativeTo: this.route });
   }
 
   cancelarDocentesResolución(id: number): void {
-    this.router.navigate(['../cancelar_vinculaciones', { Id: id }], { relativeTo: this.route });
+    this.router.navigate(['cancelar_vinculaciones', { Id: id }], { relativeTo: this.route });
   }
 
   adicionarHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'adicion' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'adicion' }], { relativeTo: this.route });
   }
 
   reducirHorasDocentesResolución(id: number): void {
-    this.router.navigate(['../listar_vinculaciones', { Id: id, tipo: 'reduccion' }], { relativeTo: this.route });
+    this.router.navigate(['listar_vinculaciones', { Id: id, tipo: 'reduccion' }], { relativeTo: this.route });
   }
 
   enviarRevision(Id: number): void {
@@ -288,11 +264,11 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   crearResolucion(): void {
-    this.router.navigate(['../generacion_resolucion'], { relativeTo: this.route });
+    this.router.navigate(['generacion_resolucion'], { relativeTo: this.route });
   }
 
   consultarDocente(): void {
-    this.router.navigate(['../consulta_docente'], { relativeTo: this.route });
+    this.router.navigate(['consulta_docente'], { relativeTo: this.route });
   }
 
 }

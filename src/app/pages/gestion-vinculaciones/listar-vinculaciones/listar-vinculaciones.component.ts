@@ -14,6 +14,8 @@ import { ModalAdicionesComponent } from '../modal-adiciones/modal-adiciones.comp
 import { ModalReduccionesComponent } from '../modal-reducciones/modal-reducciones.component';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { CambioVinculacion } from 'src/app/@core/models/cambio_vinculacion';
+import { Parametro } from 'src/app/@core/models/parametro';
+import { first, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-listar-vinculaciones',
@@ -30,6 +32,7 @@ export class ListarVinculacionesComponent implements OnInit {
   vinculacionesSettings: any;
   vinculacionesData: LocalDataSource;
   tipoVista: string;
+  tipoResolucion: Parametro;
 
   constructor(
     private request: RequestManager,
@@ -41,6 +44,7 @@ export class ListarVinculacionesComponent implements OnInit {
     this.vinculacionesData = new LocalDataSource();
     this.resolucion = new Resolucion();
     this.resolucionVinculacion = new ResolucionVinculacionDocente();
+    this.tipoResolucion = new Parametro();
   }
 
   ngOnInit(): void {
@@ -62,17 +66,32 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   preloadData(): void {
-    this.request.get(
-      environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion/${this.resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      this.resolucion = response.Data as Resolucion;
-    });
-    this.request.get(
-      environment.RESOLUCIONES_V2_SERVICE,
-      `resolucion_vinculacion_docente/${this.resolucionId}`
-    ).subscribe((response: Respuesta) => {
-      this.resolucionVinculacion = response.Data as ResolucionVinculacionDocente;
+    forkJoin<[Respuesta, Respuesta]>([
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion/${this.resolucionId}`
+      ).pipe(first()),
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion_vinculacion_docente/${this.resolucionId}`
+      ).pipe(first()),
+    ]).pipe().subscribe({
+      next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
+        this.resolucion = resp1.Data as Resolucion;
+        this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
+        this.request.get(
+          environment.PARAMETROS_SERVICE,
+          `parametro/${this.resolucion.TipoResolucionId}`
+        ).subscribe({
+          next: (response: Respuesta) => {
+            this.tipoResolucion = response.Data as Parametro;
+          }, error: () => {
+            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+          }
+        });
+      }, error: () => {
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+      }
     });
   }
 
@@ -148,12 +167,13 @@ export class ListarVinculacionesComponent implements OnInit {
         }
       }, error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el area de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
     });
   }
 
   eventHandler(event: any): void {
+    const vinculacion = event.data as Vinculaciones;
     switch (event.action) {
       case 'anular':
         this.popUp.confirm(
@@ -166,7 +186,7 @@ export class ListarVinculacionesComponent implements OnInit {
             this.request.post(
               environment.RESOLUCIONES_MID_V2_SERVICE,
               'gestion_vinculaciones/desvincular_docentes',
-              [event.data]
+              [vinculacion]
             ).subscribe((response: Respuesta) => {
               if (response.Success) {
                 this.popUp.success('La vinculacion ha sido anulada').then(() => {
@@ -179,23 +199,80 @@ export class ListarVinculacionesComponent implements OnInit {
         break;
 
       case 'adicionar':
-        this.dialogConfig.data = event.data as Vinculaciones;
-        const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
-        dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
-          if (data) {
-            this.registrarModificacion(data);
-          }
-        });
+        if (environment.production) {
+          this.request.get(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+          ).subscribe({
+            next: (response: Respuesta) => {
+              if (response.Success) {
+                if ((response.Data as string) == '') {
+                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
+                } else {
+                  this.dialogConfig.data = vinculacion;
+                  const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+                  dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+                    if (data) {
+                      this.registrarModificacion(data);
+                    }
+                  });
+                }
+              } else {
+                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              }
+            },
+            error: () => {
+              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+            }
+          });
+        } else {
+          this.dialogConfig.data = vinculacion;
+          const dialogAdicion = this.dialog.open(ModalAdicionesComponent, this.dialogConfig);
+          dialogAdicion.afterClosed().subscribe((data: CambioVinculacion) => {
+            if (data) {
+              this.registrarModificacion(data);
+            }
+          });
+        }
         break;
 
       case 'reducir':
-        this.dialogConfig.data = event.data as Vinculaciones;
-        const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
-        dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
-          if (data) {
-            this.registrarModificacion(data);
-          }
-        });
+        if (environment.production) {
+          this.request.get(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            `gestion_vinculaciones/consultar_semaforo_docente/${this.resolucion.VigenciaCarga}/${this.resolucion.PeriodoCarga}/${vinculacion.PersonaId}`,
+          ).subscribe({
+            next: (response: Respuesta) => {
+              if (response.Success) {
+                if ((response.Data as string) == '') {
+                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
+                } else {
+                  this.dialogConfig.data = vinculacion;
+                  const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+                  dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+                    if (data) {
+                      this.registrarModificacion(data);
+                    }
+                  });
+                }
+              } else {
+                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              }
+            },
+            error: () => {
+              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+            }
+          });
+
+        } else {
+          this.dialogConfig.data = vinculacion;
+          const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
+          dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
+            if (data) {
+              this.registrarModificacion(data);
+            }
+          });
+        }
         break;
     }
   }
@@ -218,6 +295,9 @@ export class ListarVinculacionesComponent implements OnInit {
           this.popUp.success(response.Message).then(() => {
             this.cargarVinculaciones();
           });
+        } else {
+          this.popUp.close();
+          this.popUp.error('No se ha podido registrar la modificación de la vinculacion.');
         }
       }, error: () => {
         this.popUp.close();
@@ -227,6 +307,6 @@ export class ListarVinculacionesComponent implements OnInit {
   }
 
   volver(): void {
-    this.router.navigateByUrl('pages/gestion_resoluciones');
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 }

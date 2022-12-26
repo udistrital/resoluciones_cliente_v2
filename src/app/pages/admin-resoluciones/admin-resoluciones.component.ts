@@ -14,6 +14,8 @@ import { Respuesta } from 'src/app/@core/models/respuesta';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { UtilService } from '../services/utilService';
+import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
+import { UserService } from '../services/userService';
 
 
 @Component({
@@ -26,34 +28,38 @@ export class AdminResolucionesComponent implements OnInit {
   dialogConfig: MatDialogConfig;
   icono: string;
 
-  cadenaFiltro: string[] = [];
-
   adminResolucionesSettings: any;
   adminResolucionesData: ResolucionesDataSourceComponent;
-  parametros = '';
-  query = 'query=Activo:true';
+  filtrarFacultad = false;
+  dependenciaUsuario = 0;
 
   constructor(
     private request: RequestManager,
     private dialog: MatDialog,
     private http: HttpClient,
     private popUp: UtilService,
+    private userService: UserService,
   ) {
     this.initTable();
   }
 
   ngOnInit(): void {
-    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, {
-      endPoint: environment.RESOLUCIONES_MID_V2_SERVICE + `gestion_resoluciones/resoluciones_aprobadas?` + this.query + this.parametros,
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida|Aprobada`
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
+      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
       pagerPageKey: 'offset',
       pagerLimitKey: 'limit',
+      filterFieldKey: '#field#',
       totalKey: 'Total',
     });
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
+    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
+      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+    });
   }
 
   initTable(): void {
@@ -83,9 +89,6 @@ export class AdminResolucionesComponent implements OnInit {
       noDataMessage: 'No hay resoluciones aprobadas en el sistema',
     };
 
-    this.cadenaFiltro.forEach((value: string) => {
-      value = '';
-    });
   }
 
   eventHandler(event: string, rowData: Resoluciones): void {
@@ -97,40 +100,6 @@ export class AdminResolucionesComponent implements OnInit {
         this.expedirVista(rowData);
         break;
     }
-  }
-
-  filtroTabla(): void {
-    this.query = 'query=Activo:true';
-    this.parametros = '';
-    if (this.cadenaFiltro[0] !== undefined && this.cadenaFiltro[0] !== '') {
-      this.query = this.query.concat(',ResolucionId.NumeroResolucion:' + this.cadenaFiltro[0]);
-    }
-    if (this.cadenaFiltro[1] !== undefined && this.cadenaFiltro[1] !== '') {
-      this.query = this.query.concat(',ResolucionId.Vigencia:' + this.cadenaFiltro[1]);
-    }
-    if (this.cadenaFiltro[2] !== undefined && this.cadenaFiltro[2] !== '') {
-      this.parametros = this.parametros.concat('&facultad=' + this.cadenaFiltro[2]);
-    }
-    if (this.cadenaFiltro[3] !== undefined && this.cadenaFiltro[3] !== '') {
-      this.parametros = this.parametros.concat('&tipoRes=' + this.cadenaFiltro[3]);
-    }
-    if (this.cadenaFiltro[4] !== undefined && this.cadenaFiltro[4] !== '') {
-      this.parametros = this.parametros.concat('&nivelA=' + this.cadenaFiltro[4]);
-    }
-    if (this.cadenaFiltro[5] !== undefined && this.cadenaFiltro[5] !== '') {
-      this.parametros = this.parametros.concat('&dedicacion=' + this.cadenaFiltro[5]);
-    }
-    if (this.cadenaFiltro[6] !== undefined && this.cadenaFiltro[6] !== '') {
-      this.parametros = this.parametros.concat('&estadoRes=' + this.cadenaFiltro[6]);
-    }
-    this.ngOnInit();
-  }
-
-  limpiarFiltro(): void {
-    for (let i in this.cadenaFiltro) {
-      i = '';
-    }
-    this.ngOnInit();
   }
 
   cargarDocumento(rowData: Resoluciones): void {

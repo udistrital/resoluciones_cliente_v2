@@ -61,16 +61,16 @@ export class UtilService {
         });
     }
 
-    error(texto: string): void {
-        Swal.fire({
+    error(texto: string): Promise<any> {
+        return Swal.fire({
             title: 'Error',
             text: texto,
             icon: 'error',
         });
     }
 
-    warning(texto: string): void {
-        Swal.fire({
+    warning(texto: string): Promise<any> {
+        return Swal.fire({
             title: 'Atención',
             text: texto,
             icon: 'warning',

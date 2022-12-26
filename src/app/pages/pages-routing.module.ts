@@ -10,8 +10,11 @@ import { GestionResolucionesComponent } from './gestion-resoluciones/gestion-res
 import { CancelarVinculacionesComponent } from './gestion-vinculaciones/cancelar-vinculaciones/cancelar-vinculaciones.component';
 import { ListarVinculacionesComponent } from './gestion-vinculaciones/listar-vinculaciones/listar-vinculaciones.component';
 import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-docentes/vincular-docentes.component';
+import { RpVinculacionesComponent } from './gestion-vinculaciones/rp-vinculaciones/rp-vinculaciones.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
+import { NavGuard } from '../@core/components/guard/nav.guard'
+import { RoleGuard } from '../@core/components/guard/role.guard';
 
 const routes: Routes = [{
   path: '',
@@ -24,43 +27,60 @@ const routes: Routes = [{
     {
       path: 'plantillas',
       component: PlantillasComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always',
     },
     {
       path: 'gestion_resoluciones',
-      component: GestionResolucionesComponent,
-    },
-    {
-      path: 'detalle_resolucion',
-      component: DetalleResolucionComponent,
-    },
-    {
-      path: 'generacion_resolucion',
-      component: GeneracionResolucionComponent,
-    },
-    {
-      path: 'consulta_docente',
-      component: ConsultaDocenteComponent,
+      canActivate: [NavGuard, RoleGuard],
+      children: [
+        {
+          path: '',
+          component: GestionResolucionesComponent,
+        },
+        {
+          path: 'detalle_resolucion',
+          component: DetalleResolucionComponent,
+        },
+        {
+          path: 'generacion_resolucion',
+          component: GeneracionResolucionComponent,
+        },
+        {
+          path: 'consulta_docente',
+          component: ConsultaDocenteComponent,
+        },
+        {
+          path: 'vincular_docentes',
+          component: VincularDocentesComponent,
+        },
+        {
+          path: 'listar_vinculaciones',
+          component: ListarVinculacionesComponent,
+        },
+        {
+          path: 'cancelar_vinculaciones',
+          component: CancelarVinculacionesComponent,
+        },
+        {
+          path: 'rp_vinculacion',
+          component: RpVinculacionesComponent,
+        },
+      ]
     },
     {
       path: 'resolucion_administracion',
       component: AdminResolucionesComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
     },
     {
       path: 'resolucion_aprobacion',
-      component: AprobacionResolucionesComponent
+      component: AprobacionResolucionesComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
     },
-    {
-      path: 'vincular_docentes',
-      component: VincularDocentesComponent,
-    },
-    {
-      path: 'listar_vinculaciones',
-      component: ListarVinculacionesComponent,
-    },
-    {
-      path: 'cancelar_vinculaciones',
-      component: CancelarVinculacionesComponent,
-    },
+    
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',
     },

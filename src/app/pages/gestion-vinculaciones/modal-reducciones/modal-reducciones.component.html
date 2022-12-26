@@ -31,12 +31,12 @@
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Semanas a reducir</mat-label>
-                <input matInput type="text" name="semanasRed" #semanasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroSemanas" required >
+                <input matInput type="text" name="semanasRed" #semanasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroSemanas" required disabled>
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Fecha de inicio válida</mat-label>
                 <mat-datepicker #fechaPicker></mat-datepicker>
-                <input matInput [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" required >
+                <input matInput [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required >
                 <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
             </mat-form-field>
         </mat-grid-tile>

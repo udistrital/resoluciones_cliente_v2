@@ -12,8 +12,8 @@
             <ng2-smart-table
                 [settings]="vinculacionesSettings"
                 [source]="vinculacionesData"
-                (custom)="eventHandler($event)"
             ></ng2-smart-table>
+            <button mat-button class="button button-submit" type="button" (click)="guardar()">Guardar</button>
         </fieldset>
         <button mat-button class="button button-remove" type="button" (click)="volver()">Volver</button>
     </mat-card-content>
