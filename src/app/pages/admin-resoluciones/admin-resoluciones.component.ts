@@ -152,7 +152,6 @@ export class AdminResolucionesComponent implements OnInit {
 
   expedirVista(rowData: Resoluciones): void {
     const cadena = rowData.TipoResolucion.replace('Resolución de ', '');
-    console.log(cadena);
     let dialogo: MatDialogRef<any>;
     this.dialogConfig.data = rowData;
     switch (cadena) {

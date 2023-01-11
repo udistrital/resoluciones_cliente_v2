@@ -1,7 +1,7 @@
 <form novalidate>
     <mat-form-field class="form-field-exp">
         <mat-label>Registro presupuestal</mat-label>
-        <mat-select (selectionChange)="onSelect($event)">
+        <mat-select (selectionChange)="onSelect($event)" [(ngModel)]="rpSeleccionado" [ngModelOptions]="{standalone: true}">
             <mat-option>--Seleccionar--</mat-option>
             <mat-option *ngFor="let rp of rps" [value]="rp">
                 CRP {{rp.Consecutivo}} - {{ rp.Vigencia }}

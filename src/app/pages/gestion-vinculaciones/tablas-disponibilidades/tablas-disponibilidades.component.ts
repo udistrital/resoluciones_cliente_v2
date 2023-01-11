@@ -27,6 +27,9 @@ export class TablasDisponibilidadesComponent implements OnChanges {
   @Output()
   seleccion = new EventEmitter<DocumentoPresupuestal>();
 
+  @Output()
+  cerrar = new EventEmitter<void>();
+
   constructor(
     private request: RequestManager,
     private popUp: UtilService,
@@ -80,9 +83,13 @@ export class TablasDisponibilidadesComponent implements OnChanges {
             disponibilidades.push(disponibilidad);
             this.disponibilidadesData.load(disponibilidades);
           } else {
-            this.popUp.error('El número de disponibilidad ingresado no es correcto');
+            this.popUp.error('El número de disponibilidad ingresado no es correcto').then(() => {
+              this.cerrar.emit();
+            });
           }
         });
+      } else {
+        this.cerrar.emit();
       }
     });
   }

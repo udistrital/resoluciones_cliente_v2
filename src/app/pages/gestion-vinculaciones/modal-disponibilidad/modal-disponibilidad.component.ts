@@ -42,6 +42,20 @@ export class ModalDisponibilidadComponent implements OnInit {
         this.popUp.error('Debe elegir una disponibilidad diferente');
       }
     }
+    let reservado = 0;
+    this.disponibilidades.forEach(disp => {
+      disp.Afectacion.forEach(rubro => {
+        reservado += rubro.ValorInicial;
+      });
+    });
+    let valor = this.valorContratos;
+    while (valor.indexOf(',') > 0) {
+      valor = valor.replace(",", "");
+    }
+    const contratos = parseFloat(valor.replace("$", ""));
+    if (reservado < contratos) {
+      this.popUp.warning('El saldo del CDP seleccionado es insuficiente');
+    }
   }
 
   agregarTablas(): void {
