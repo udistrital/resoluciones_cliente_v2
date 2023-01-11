@@ -165,7 +165,7 @@ export class CancelarVinculacionesComponent implements OnInit {
             const reg = new DocumentoPresupuestal();
             reg.Consecutivo = parseInt(rp.rp, 10);
             reg.Vigencia = parseInt(rp.vigencia, 10);
-            reg.Tipo = "rp";
+            reg.Tipo = 'rp';
             this.registrosPresupuestales[nueva.PersonaId].push(reg);
           });
         }

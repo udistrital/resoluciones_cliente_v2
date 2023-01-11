@@ -26,7 +26,7 @@ export class NavGuard implements CanActivate {
       `parametro?query=Aplicacion.Nombre:${environment.appname}`
     ).pipe(
       map((response: any[]) => {
-        const granted = response[0].Valor === "true"
+        const granted = response[0].Valor === "true";
         if (!granted) {
           this.popUp.close();
           this.popUp.warning('El sistema se encuentra cerrado temporalmente.').then(() => {
@@ -37,5 +37,5 @@ export class NavGuard implements CanActivate {
       })
     );
   }
-  
+
 }

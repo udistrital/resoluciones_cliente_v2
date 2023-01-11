@@ -57,7 +57,7 @@ export class RpSelectorComponent implements OnInit {
   }
 
   onSelect(event): void {
-    this.rpSeleccionado = event.value
+    this.rpSeleccionado = event.value;
     if (this.rpSeleccionado === undefined) {
       this.rpSeleccionado = new RpSeleccionado();
       this.rpSeleccionado.VinculacionId = this.rowData.Id;

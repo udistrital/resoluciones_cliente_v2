@@ -50,9 +50,9 @@ export class ModalDisponibilidadComponent implements OnInit {
     });
     let valor = this.valorContratos;
     while (valor.indexOf(',') > 0) {
-      valor = valor.replace(",", "");
+      valor = valor.replace(',', '');
     }
-    const contratos = parseFloat(valor.replace("$", ""));
+    const contratos = parseFloat(valor.replace('$', ''));
     if (reservado < contratos) {
       this.popUp.warning('El saldo del CDP seleccionado es insuficiente');
     }

@@ -13,7 +13,7 @@ import { VincularDocentesComponent } from './gestion-vinculaciones/vincular-doce
 import { RpVinculacionesComponent } from './gestion-vinculaciones/rp-vinculaciones/rp-vinculaciones.component';
 import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
-import { NavGuard } from '../@core/components/guard/nav.guard'
+import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 
 const routes: Routes = [{
@@ -80,7 +80,6 @@ const routes: Routes = [{
       canActivate: [NavGuard, RoleGuard],
       runGuardsAndResolvers: 'always'
     },
-    
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',
     },

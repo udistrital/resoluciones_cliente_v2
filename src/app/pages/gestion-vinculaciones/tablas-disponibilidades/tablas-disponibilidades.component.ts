@@ -132,9 +132,7 @@ export class TablasDisponibilidadesComponent implements OnChanges {
           title: 'Rubro',
           width: '33%',
           editable: false,
-          valuePrepareFunction: (value: Rubro) => {
-            return value.General.Nombre;
-          },
+          valuePrepareFunction: (value: Rubro) => value.General.Nombre,
         },
         ValorInicial: {
           title: 'Valor',

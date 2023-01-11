@@ -7,7 +7,7 @@
             <mat-slide-toggle 
                 [(ngModel)]="filtrarFacultad"
                 labelPosition="before"
-                [disabled]="dependenciaUsuario == 0"
+                [disabled]="dependenciaUsuario === 0"
                 (change)="ngOnInit()"
             >Filtrar según mi facultad:</mat-slide-toggle>
         </div>

@@ -114,7 +114,7 @@ export class RpVinculacionesComponent implements OnInit {
             if (selected.Consecutivo === undefined) {
               this.rpsSeleccionados.splice(i, 1);
             } else {
-              this.rpsSeleccionados.splice(i, 1, selected)
+              this.rpsSeleccionados.splice(i, 1, selected);
             }
           }
         });

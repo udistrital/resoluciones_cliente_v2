@@ -1,7 +1,7 @@
 export class Plantilla {
     Id: number;
     Dedicacion: string;
-    NivelAcademico: string
+    NivelAcademico: string;
     Facultad: string;
-    TipoResolucion: string
+    TipoResolucion: string;
 }
