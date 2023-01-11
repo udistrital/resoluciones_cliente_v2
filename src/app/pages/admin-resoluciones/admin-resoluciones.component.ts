@@ -44,7 +44,7 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida|Aprobada`
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida|Aprobada`;
     this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',
@@ -152,7 +152,6 @@ export class AdminResolucionesComponent implements OnInit {
 
   expedirVista(rowData: Resoluciones): void {
     const cadena = rowData.TipoResolucion.replace('Resolución de ', '');
-    console.log(cadena);
     let dialogo: MatDialogRef<any>;
     this.dialogConfig.data = rowData;
     switch (cadena) {

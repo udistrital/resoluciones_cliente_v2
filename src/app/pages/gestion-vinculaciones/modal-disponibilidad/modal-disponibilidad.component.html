@@ -7,7 +7,7 @@
 </div>
 <ng-container *ngFor="let _ of tablas; let i=index">
     <em *ngIf="i > 0" class="material-icons quitar" title="Quitar" (click)="quitarTabla(i)">close</em>
-    <app-tablas-disponibilidades [vigencia]="vigencia" (seleccion)="seleccionado($event, i)"></app-tablas-disponibilidades>
+    <app-tablas-disponibilidades [vigencia]="vigencia" (seleccion)="seleccionado($event, i)" (cerrar)="dialogRef.close()"></app-tablas-disponibilidades>
 </ng-container>
 <button mat-button class="button button-add" type="button" (click)="agregarTablas()" >Agregar otra disponibilidad</button>
 <button mat-button class="button button-submit" type="submit" (click)="vincular()" [disabled]="disponibilidades.length === 0" >Vincular docentes</button>

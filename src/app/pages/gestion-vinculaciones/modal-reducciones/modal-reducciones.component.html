@@ -36,7 +36,7 @@
             <mat-form-field class="form-field-modal">
                 <mat-label>Fecha de inicio válida</mat-label>
                 <mat-datepicker #fechaPicker></mat-datepicker>
-                <input matInput [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required >
+                <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required >
                 <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
             </mat-form-field>
         </mat-grid-tile>

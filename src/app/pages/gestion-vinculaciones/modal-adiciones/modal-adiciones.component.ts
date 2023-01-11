@@ -55,8 +55,14 @@ export class ModalAdicionesComponent {
     ).subscribe({
       next: (respuesta: Respuesta) => {
         if (respuesta.Success) {
-          this.cambioVinculacion.NumeroSemanas = respuesta.Data as number;
+          const semanas = respuesta.Data as number;
           this.popUp.close();
+          if (semanas <= 0) {
+            this.cambioVinculacion.NumeroSemanas = null;
+            this.popUp.warning('La fecha de inicio ingresada no es válida.');
+          } else {
+            this.cambioVinculacion.NumeroSemanas = semanas;
+          }
         } else {
           this.cambioVinculacion.NumeroSemanas = null;
           this.popUp.close();
@@ -86,6 +92,11 @@ export class ModalAdicionesComponent {
     } else {
       this.popUp.warning('El número de semanas no es válido.');
     }
+  }
+
+  filtrarDias(d: any): boolean {
+    const f = d === undefined ? new Date() : moment(d).toDate();
+    return f.getDay() === 1;
   }
 
 }

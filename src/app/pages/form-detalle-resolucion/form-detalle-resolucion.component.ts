@@ -254,14 +254,19 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
               ).subscribe({
                 next: (response: Respuesta) => {
                   if (response.Success) {
-                    this.contenidoResolucion.Resolucion.Id = response.Data;
-                    this.esCopia = this.esCopia ? !this.esCopia : this.esCopia;
+                    const result2 = response.Data as number;
                     this.popUp.close();
-                    this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
-                      this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
-                        resolve();
+                    if (result2 > 0) {
+                      this.contenidoResolucion.Resolucion.Id = result2;
+                      this.esCopia = this.esCopia ? !this.esCopia : this.esCopia;
+                      this.popUp.success('La plantilla se ha guardado con éxito').then(() => {
+                        this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                          resolve();
+                        });
                       });
-                    });
+                    } else {
+                      this.popUp.warning('Ya existe una plantilla para los parámetros ingresados');
+                    }
                   }
                 },
                 error: (error: any) => {
