@@ -43,12 +43,21 @@ export class RpSelectorComponent implements OnInit {
         reg.VinculacionId = this.rowData.Id;
         this.rps.push(reg);
       }
-
+      if (this.rowData.RegistroPresupuestal !== 0) {
+        const reg = new RpSeleccionado();
+        reg.Consecutivo = this.rowData.RegistroPresupuestal;
+        reg.Vigencia = this.rowData.Vigencia;
+        reg.VinculacionId = this.rowData.Id;
+        if (!environment.production) {
+          this.rps.push(reg);
+        }
+        this.rpSeleccionado = reg;
+      }
     });
   }
 
   onSelect(event): void {
-    this.rpSeleccionado = event.value
+    this.rpSeleccionado = event.value;
     if (this.rpSeleccionado === undefined) {
       this.rpSeleccionado = new RpSeleccionado();
       this.rpSeleccionado.VinculacionId = this.rowData.Id;

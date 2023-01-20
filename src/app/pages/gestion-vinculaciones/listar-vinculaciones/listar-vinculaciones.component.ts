@@ -206,7 +206,7 @@ export class ListarVinculacionesComponent implements OnInit {
           ).subscribe({
             next: (response: Respuesta) => {
               if (response.Success) {
-                if ((response.Data as string) == '') {
+                if ((response.Data as string) === '') {
                   this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
                 } else {
                   this.dialogConfig.data = vinculacion;
@@ -218,11 +218,11 @@ export class ListarVinculacionesComponent implements OnInit {
                   });
                 }
               } else {
-                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+                this.popUp.error('No se ha podido realizar la consulta del semaforo.');
               }
             },
             error: () => {
-              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              this.popUp.error('No se ha podido realizar la consulta del semaforo.');
             }
           });
         } else {
@@ -244,8 +244,8 @@ export class ListarVinculacionesComponent implements OnInit {
           ).subscribe({
             next: (response: Respuesta) => {
               if (response.Success) {
-                if ((response.Data as string) == '') {
-                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.')
+                if ((response.Data as string) === '') {
+                  this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
                 } else {
                   this.dialogConfig.data = vinculacion;
                   const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
@@ -256,11 +256,11 @@ export class ListarVinculacionesComponent implements OnInit {
                   });
                 }
               } else {
-                this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+                this.popUp.error('No se ha podido realizar la consulta del semaforo.');
               }
             },
             error: () => {
-              this.popUp.error("No se ha podido realizar la consulta del semaforo.");
+              this.popUp.error('No se ha podido realizar la consulta del semaforo.');
             }
           });
 

@@ -126,7 +126,7 @@
                 <legend></legend>
                 <mat-form-field class="selector-tipo" >
                     <mat-label>Numero de resolución</mat-label>
-                    <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numRes" #numRes="ngModel" [(ngModel)]="NumeroResolucion" required>
+                    <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" [(ngModel)]="NumeroResolucion" name="numRes" #numRes="ngModel" required>
                     <mat-error *ngIf="numRes.errors?.['required'] && numRes.touched">
                         Indique el número de la resolución 
                     </mat-error>

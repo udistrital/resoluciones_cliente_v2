@@ -69,8 +69,10 @@ export class ExpedirCancelacionComponent implements OnInit {
     ).subscribe((response: Respuesta) => {
       this.resolucionActual = response.Data as Resolucion;
       if (this.resolucionActual.FechaExpedicion !== undefined
-          && this.resolucionActual.FechaExpedicion !== new Date('0001-01-01T00:00:00Z')) {
+          && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:000Z') {
         this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
+      } else {
+        this.resolucionActual.FechaExpedicion = null;
       }
     });
 

@@ -39,7 +39,7 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Aprobada|Por revisar`
+    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Aprobada|Por revisar`;
     this.aprobResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
       endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
       dataKey: 'Data',

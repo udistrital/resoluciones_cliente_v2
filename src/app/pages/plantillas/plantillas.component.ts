@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { Respuesta } from 'src/app/@core/models/respuesta';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../services/requestManager';
 import { UtilService } from '../services/utilService';
@@ -30,9 +31,14 @@ export class PlantillasComponent implements OnInit {
       environment.RESOLUCIONES_MID_V2_SERVICE,
       `gestion_plantillas`
     ).subscribe({
-      next: (response: any) => {
-        this.plantillasData = new LocalDataSource(response.Data);
-        this.popUp.close();
+      next: (response: Respuesta) => {
+        if (response.Success) {
+          this.plantillasData = new LocalDataSource(response.Data);
+          this.popUp.close();
+        } else {
+          this.popUp.close();
+          this.popUp.error('No se han podido cargar las plantillas');
+        }
       }, error: () => {
         this.popUp.close();
         this.popUp.error('No se han podido cargar las plantillas');
@@ -137,10 +143,13 @@ export class PlantillasComponent implements OnInit {
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_plantillas`,
           event.data.Id
-        ).subscribe((response: any) => {
-          if (response.Status) {
-            this.popUp.success('La plantilla se ha eliminado con éxito');
-            this.ngOnInit();
+        ).subscribe((response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.success('La plantilla se ha eliminado con éxito.').then(() => {
+              this.ngOnInit();
+            });
+          } else {
+            this.popUp.error('No se ha podido eliminar la plantilla.');
           }
         });
       }
