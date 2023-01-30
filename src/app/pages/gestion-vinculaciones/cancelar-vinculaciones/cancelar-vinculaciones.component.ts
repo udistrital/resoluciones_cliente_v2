@@ -14,6 +14,7 @@ import { RequestManager } from '../../services/requestManager';
 import { UtilService } from '../../services/utilService';
 import { first, forkJoin } from 'rxjs';
 import { Parametro } from 'src/app/@core/models/parametro';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-cancelar-vinculaciones',
@@ -34,6 +35,7 @@ export class CancelarVinculacionesComponent implements OnInit {
   numeroSemanas: number;
   numeroHorasSemestrales: number;
   tipoResolucion: Parametro;
+  semanasMaximo: string;
 
   constructor(
     private request: RequestManager,
@@ -130,6 +132,7 @@ export class CancelarVinculacionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.registrosPresupuestales = {};
+    this.semanasMaximo = "";
   }
 
   seleccionarVinculaciones(event): void {
@@ -140,6 +143,7 @@ export class CancelarVinculacionesComponent implements OnInit {
       vinculacion.NumeroSemanas = 0;
       vinculacion.NumeroHorasSemanales = 0;
       this.cambioVinculacion.push(vinculacion);
+      this.calcularSemanasSugeridas(nueva);
       if (!(nueva.PersonaId in this.registrosPresupuestales)) {
         this.registrosPresupuestales[nueva.PersonaId] = [];
       }
@@ -223,6 +227,28 @@ export class CancelarVinculacionesComponent implements OnInit {
         });
       }
     });
+  }
+
+  calcularSemanasSugeridas(vinc: Vinculaciones): void {
+    if (this.semanasMaximo === '') {
+      const fecha = moment(new Date()).format('YYYY-MM-DD');
+      this.popUp.loading();
+      this.request.get(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_vinculaciones/consultar_semanas_restantes/${fecha}/${vinc.Vigencia}/${vinc.NumeroContrato}`
+      ).subscribe({
+        next: (respuesta: Respuesta) => {
+          const semanas = respuesta.Data as number;
+          this.popUp.close();
+          this.semanasMaximo = Math.max(0, Math.min(vinc.NumeroSemanas, semanas)).toString();
+        }, error: () => {
+          this.semanasMaximo = '';
+          this.popUp.close();
+          this.popUp.error('No se ha podido calcular el numero de semanas sugerido.');
+        }
+      });
+
+    }
   }
 
   salir(): void {

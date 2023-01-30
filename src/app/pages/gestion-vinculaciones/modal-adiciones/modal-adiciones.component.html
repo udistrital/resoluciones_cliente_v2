@@ -37,6 +37,7 @@
             <button mat-button class="button button-add" type="button" (click)="mostrarDisponibilidad()">Cambiar disponibilidad</button>
         </mat-grid-tile>
     </mat-grid-list>
+    <p style="color:red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
     <app-tablas-disponibilidades *ngIf="mostrar" [vigencia]="cambioVinculacion.VinculacionOriginal.Vigencia" (seleccion)="nuevaDisponibilidad($event)"></app-tablas-disponibilidades>
     <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!aform.valid" >Modificar</button>
 </form>
