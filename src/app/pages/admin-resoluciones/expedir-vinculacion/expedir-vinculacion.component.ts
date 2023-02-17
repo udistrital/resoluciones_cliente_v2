@@ -135,7 +135,7 @@ export class ExpedirVinculacionComponent implements OnInit {
       this.contratados.forEach(contratado => {
         const contratoGeneral: ContratoGeneral = {...this.Contrato};
         const actaI: ActaInicio = {...this.acta};
-        actaI.FechaInicio = moment(actaI.FechaInicio).format('YYYY-MM-DDT00:00:00Z')
+        actaI.FechaInicio = moment(actaI.FechaInicio).format('YYYY-MM-DDT00:00:00Z');
         contratoGeneral.Contratista = contratado.PersonaId;
         contratoGeneral.DependenciaSolicitante = contratado.ProyectoCurricularId.toString();
         contratoGeneral.PlazoEjecucion = contratado.NumeroHorasSemanales;

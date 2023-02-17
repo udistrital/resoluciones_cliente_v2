@@ -112,7 +112,7 @@ export class ExpedirCancelacionComponent implements OnInit {
     const conjuntoContratos = [];
     if (this.contratados) {
       this.contratados.forEach(contratado => {
-        const contratoCancelado: ContratoCancelado = JSON.parse(JSON.stringify(this.contratoCanceladoBase));
+        const contratoCancelado: ContratoCancelado = {...this.contratoCanceladoBase};
         contratoCancelado.NumeroContrato = contratado.NumeroContrato;
         contratoCancelado.Vigencia = contratado.Vigencia;
         contratoCancelado.FechaCancelacion = new Date();
