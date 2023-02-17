@@ -65,23 +65,8 @@ steps:
 #     branch:
 #     - unitest
 
-- name: run_sonar_scanner
-  image: aosapps/drone-sonar-plugin
-  settings:
-    sonar_host:
-      from_secret: SONAR_HOST
-    sonar_token:
-      from_secret: SONAR_TOKEN
-  when:
-    branch:
-    - develop
-    - feature/*
-    - release/*
-    event:
-    - push
-
 - name: nodejs_release
-  image: node:16.15.1
+  image: node:16.19.0
   commands:
   - node --version
   - npm i --legacy-peer-deps
@@ -96,7 +81,7 @@ steps:
     - push
 
 - name: nodejs_master
-  image: node:16.15.1
+  image: node:16.19.0
   commands:
   - node --version
   - npm i --legacy-peer-deps
@@ -104,6 +89,21 @@ steps:
   when:
     branch:
     - master
+    event:
+    - push
+
+- name: run_sonar_scanner
+  image: aosapps/drone-sonar-plugin
+  settings:
+    sonar_host:
+      from_secret: SONAR_HOST
+    sonar_token:
+      from_secret: SONAR_TOKEN
+  when:
+    branch:
+    - develop
+    - feature/*
+    - release/*
     event:
     - push
 

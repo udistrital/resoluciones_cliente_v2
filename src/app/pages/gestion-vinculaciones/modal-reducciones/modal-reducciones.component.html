@@ -41,5 +41,6 @@
             </mat-form-field>
         </mat-grid-tile>
     </mat-grid-list>
+    <p style="color: red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
     <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!rform.valid" >Modificar</button>
 </form>

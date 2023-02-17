@@ -14,6 +14,7 @@ import { Resoluciones } from 'src/app/@core/models/resoluciones';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { UserService } from '../services/userService';
 import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
+import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -239,23 +240,41 @@ export class GestionResolucionesComponent implements OnInit {
       'update'
     ).then(result => {
       if (result.isConfirmed) {
-        const estado = {
-          ResolucionId: Id,
-          Estado: 'RREV',
-          Usuario: localStorage.getItem('user'),
-        };
-        this.request.post(
+        this.popUp.loading();
+        this.request.get(
           environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_resoluciones/actualizar_estado`,
-          estado
+          `gestion_vinculaciones/${Id}`
         ).subscribe({
           next: (response: Respuesta) => {
-            if (response.Success) {
-              this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
-                this.ngOnInit();
+            if ((response.Data as Vinculaciones[]).length > 0) {
+              const estado = {
+                ResolucionId: Id,
+                Estado: 'RREV',
+                Usuario: localStorage.getItem('user'),
+              };
+              this.request.post(
+                environment.RESOLUCIONES_MID_V2_SERVICE,
+                `gestion_resoluciones/actualizar_estado`,
+                estado
+              ).subscribe({
+                next: (response: Respuesta) => {
+                  if (response.Success) {
+                    this.popUp.close();
+                    this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
+                      this.ngOnInit();
+                    });
+                  }
+                }, error: () => {
+                  this.popUp.close();
+                  this.popUp.error('No se ha podido enviar la resolución a revisión.');
+                }
               });
+            } else {
+              this.popUp.close();
+              this.popUp.warning('La resolución no contiene vinculaciones, realice vinculaciones para poder enviar la resolución.')
             }
-          }, error: () => {
+          }, error: () =>{
+            this.popUp.close();
             this.popUp.error('No se ha podido enviar la resolución a revisión.');
           }
         });

@@ -10,6 +10,7 @@ import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { UtilService } from '../../services/utilService';
 import { RequestManager } from '../../services/requestManager';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-expedir-vinculacion',
@@ -132,8 +133,9 @@ export class ExpedirVinculacionComponent implements OnInit {
     const conjuntoContratos = [];
     if (this.contratados.length > 0) {
       this.contratados.forEach(contratado => {
-        const contratoGeneral: ContratoGeneral = JSON.parse(JSON.stringify(this.Contrato));
-        const actaI: ActaInicio = JSON.parse(JSON.stringify(this.acta));
+        const contratoGeneral: ContratoGeneral = {...this.Contrato};
+        const actaI: ActaInicio = {...this.acta};
+        actaI.FechaInicio = moment(actaI.FechaInicio).format('YYYY-MM-DDT00:00:00Z');
         contratoGeneral.Contratista = contratado.PersonaId;
         contratoGeneral.DependenciaSolicitante = contratado.ProyectoCurricularId.toString();
         contratoGeneral.PlazoEjecucion = contratado.NumeroHorasSemanales;

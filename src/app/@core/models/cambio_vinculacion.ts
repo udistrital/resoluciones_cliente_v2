@@ -4,7 +4,7 @@ import { Vinculaciones } from './vinculaciones';
 export class CambioVinculacion {
     NumeroHorasSemanales: number;
     NumeroSemanas: number;
-    FechaInicio: Date;
+    FechaInicio: string;
     DocPresupuestal: DocumentoPresupuestal;
     VinculacionOriginal: Vinculaciones;
 }
