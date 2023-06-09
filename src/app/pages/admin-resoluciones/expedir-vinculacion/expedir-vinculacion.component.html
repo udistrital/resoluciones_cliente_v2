@@ -34,9 +34,15 @@
         <h2 class="section-title">Periodo de Vinculación</h2>
         <mat-form-field class="form-field-date">
             <mat-label>Fecha de inicio válida</mat-label>
-            <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="acta.FechaInicio">
+            <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="acta.FechaInicio" (dateChange)="cambioFechaResolucion()">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="form-field-date">
+            <mat-label>Fecha fin</mat-label>
+            <input matInput [matDatepicker]="picker2" name="fechaFin" [(ngModel)]="resolucionActual.FechaFin">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
         <mat-form-field style="width: 100%">
             <mat-label>Descripción</mat-label>

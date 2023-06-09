@@ -34,6 +34,16 @@
     padding: 0 1%;
 }
 
+.form-field-column-2 {
+    width: 31%;
+    padding: 0 1%;
+}
+
+.form-field-date {
+    display: flex;
+    align-items: flex-start;
+}
+
 @media screen and (max-width: 1024px) {
     .form-field-column {
         width: 100%;
