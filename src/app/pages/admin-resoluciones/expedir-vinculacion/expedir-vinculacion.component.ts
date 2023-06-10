@@ -25,6 +25,8 @@ export class ExpedirVinculacionComponent implements OnInit {
   resolucionVinculacion: ResolucionVinculacionDocente;
   contratados: Vinculaciones[];
   acta: ActaInicio;
+  fechaFin: Date;
+  resolucionAux: Resolucion;
   esconderBoton = false;
 
   constructor(
@@ -51,6 +53,8 @@ export class ExpedirVinculacionComponent implements OnInit {
       `resolucion/${this.resolucion.Id}`
     ).subscribe((responseRes: Respuesta) => {
       this.resolucionActual = responseRes.Data as Resolucion;
+      this.resolucionAux = responseRes.Data as Resolucion;
+      this.acta.FechaInicio = (this.resolucionActual.FechaInicio).toString()
       if (this.resolucionActual.FechaExpedicion !== undefined
           && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:00Z') {
         this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
@@ -199,5 +203,37 @@ export class ExpedirVinculacionComponent implements OnInit {
   cancelarExpedicion(): void {
     this.dialogRef.close(false);
   }
+
+  cambioFechaResolucion() {
+    var object = {
+      "FechaInicio": this.acta.FechaInicio,
+      "NumeroSemanas": this.resolucionActual.NumeroSemanas
+    }
+    this.request.post(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_plantillas/calculo_fecha_fin`,
+      object
+    ).subscribe(response => {
+      this.resolucionActual.FechaFin = response.Data
+      this.resolucionAux.FechaInicio = new Date(this.acta.FechaInicio)
+      this.resolucionAux.FechaFin = this.resolucionActual.FechaFin
+      this.request.put(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `resolucion`,
+        this.resolucionAux,
+        this.resolucionAux.Id
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.close();
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('No se ha podido actualizar la resolución');
+        }
+      });
+    })
+  }
+
 
 }
