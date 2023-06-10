@@ -26,11 +26,15 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   contenidoResolucion: ContenidoResolucion;
   responsabilidadesSettings: any;
   responsabilidadesData: LocalDataSource;
+  fechaInicio: Date;
+  fechaFin: Date;
+  numeroSemanas: string;
   niveles: NivelFormacion[];
   dedicaciones: Parametro[];
   facultades: any[];
   tiposResoluciones: Parametro[];
   edicion = false;
+  asigFechas: boolean = false;
 
   @Input()
   resolucionId: number;
@@ -149,6 +153,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           `gestion_plantillas/${Id}`
         ).subscribe((response: Respuesta) => {
           this.contenidoResolucion = response.Data as ContenidoResolucion;
+          this.checkTipoResolucion();
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
           this.edicion = !this.esCopia;
@@ -244,6 +249,10 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           if (result.isConfirmed) {
             this.contenidoResolucion.Resolucion.DependenciaId = this.contenidoResolucion.Vinculacion.FacultadId;
             this.contenidoResolucion.Resolucion.DependenciaFirmaId = this.contenidoResolucion.Vinculacion.FacultadId;
+            if (!this.asigFechas) {
+              this.contenidoResolucion.Resolucion.FechaInicio = null
+              this.contenidoResolucion.Resolucion.FechaFin = null
+            }
             this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
               this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
               this.popUp.loading();
@@ -337,6 +346,36 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
             }
           });
         });
+      }
+    });
+  }
+
+  public onChange(event: any): void {
+    if (this.contenidoResolucion.Resolucion.FechaInicio != null && this.contenidoResolucion.Resolucion.NumeroSemanas != null) {
+      var object = {
+        "FechaInicio": this.contenidoResolucion.Resolucion.FechaInicio,
+        "NumeroSemanas": this.contenidoResolucion.Resolucion.NumeroSemanas
+      }
+      this.request.post(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_plantillas/calculo_fecha_fin`,
+        object
+      ).subscribe(response => {
+        this.fechaFin = response.Data
+        this.contenidoResolucion.Resolucion.FechaFin  = response.Data
+      })
+    }
+  }
+
+  checkTipoResolucion() {
+    this.request.get(
+      environment.PARAMETROS_SERVICE,
+      `parametro/${this.contenidoResolucion.Resolucion.TipoResolucionId}`
+    ).subscribe((response: Respuesta) => {
+      if (response.Data.CodigoAbreviacion == "RVIN") {
+        this.asigFechas = true
+      } else {
+        this.asigFechas = false
       }
     });
   }

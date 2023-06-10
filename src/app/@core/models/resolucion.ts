@@ -18,4 +18,6 @@ export class Resolucion {
     Activo: boolean;
     FechaCreacion: string;
     FechaModificacion: string;
+    FechaInicio: Date;
+    FechaFin: Date;
 }

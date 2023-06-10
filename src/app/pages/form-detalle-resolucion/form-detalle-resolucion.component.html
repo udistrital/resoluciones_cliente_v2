@@ -45,7 +45,7 @@
                 </mat-form-field>
                 <mat-form-field class="form-field-column">
                     <mat-label>Tipo de resolución</mat-label>
-                    <mat-select name="tr" [(ngModel)]="contenidoResolucion.Resolucion.TipoResolucionId" [disabled]="!esPlantilla || edicion" #tr="ngModel" required>
+                    <mat-select name="tr" [(ngModel)]="contenidoResolucion.Resolucion.TipoResolucionId" [disabled]="!esPlantilla || edicion" #tr="ngModel" (selectionChange)="checkTipoResolucion()" required>
                         <mat-option>--Seleccionar--</mat-option>
                         <mat-option *ngFor="let tipo of tiposResoluciones" [value]="tipo.Id">
                             {{ tipo.Nombre }}
@@ -76,6 +76,25 @@
                     <mat-error *ngIf="consider.errors?.['required'] && consider.touched">
                         Indique la consideración de la resolución
                     </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field-column-2" *ngIf="asigFechas">
+                    <mat-label>Cantidad de semanas</mat-label>
+                    <input matInput type="number" name="CantidadSemanas" [(ngModel)]="contenidoResolucion.Resolucion.NumeroSemanas " required #cantSemanas="ngModel" (change)="onChange($event)">
+                    <mat-error *ngIf="cantSemanas.errors?.['required'] && cantSemanas.touched">
+                        Indique la cantidad de semanas
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-field-column-2" *ngIf="asigFechas">
+                    <mat-label>Fecha de inicio:</mat-label>
+                    <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="contenidoResolucion.Resolucion.FechaInicio" (dateChange)="onChange($event)">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker ></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="form-field-column-2" *ngIf="asigFechas">
+                    <mat-label>Fecha fin:</mat-label>
+                    <input matInput [matDatepicker]="picker2" [(ngModel)]="contenidoResolucion.Resolucion.FechaFin" name="fechaFin" [disabled]="true">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
                 </mat-form-field>
                 <button mat-button class="button button-add" type="button" (click)="generarVistaPrevia()" [disabled]="!fform.valid">Vista previa de la resolución</button>
             </div>
