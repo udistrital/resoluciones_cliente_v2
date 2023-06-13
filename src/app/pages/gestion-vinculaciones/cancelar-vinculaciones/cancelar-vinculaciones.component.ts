@@ -286,32 +286,36 @@ export class CancelarVinculacionesComponent implements OnInit {
           ).subscribe({
             next : (responseVinDoc: Respuesta) => {
               console.log("RESPONSE VIN DOC" , responseVinDoc)
-              this.request.get(
-                environment.RESOLUCIONES_MID_V2_SERVICE,
-                `gestion_vinculaciones/${responseVinDoc.Data[0].ResolucionVinculacionDocenteId.Id}`
-              ).subscribe({
-                next : (responseGesVin: Respuesta) => {
-                  // console.log("RESPONSE GES VIN ", responseGesVin)
-                  var gestion_vinc = (responseGesVin.Data).filter(x => x.PersonaId == responseMod.Data[0].VinculacionDocenteCanceladaId.PersonaId)
-                  // console.log("gest vinc ", gestion_vinc)
-                  for (let i = 0; i < gestion_vinc.length; i++) {
-                    const vinculacion = new CambioVinculacion();
-                    vinculacion.VinculacionOriginal = gestion_vinc[i];
-                    vinculacion.NumeroSemanas = 0;
-                    vinculacion.  NumeroHorasSemanales = 0;
-                    this.cambioVincTemp.push(vinculacion);
+              if (responseVinDoc.Data.length > 0) {
+                this.request.get(
+                  environment.RESOLUCIONES_MID_V2_SERVICE,
+                  `gestion_vinculaciones/${responseVinDoc.Data[0].ResolucionVinculacionDocenteId.Id}`
+                ).subscribe({
+                  next : (responseGesVin: Respuesta) => {
+                    // console.log("RESPONSE GES VIN ", responseGesVin)
+                    var gestion_vinc = (responseGesVin.Data).filter(x => x.PersonaId == responseMod.Data[0].VinculacionDocenteCanceladaId.PersonaId)
+                    // console.log("gest vinc ", gestion_vinc)
+                    for (let i = 0; i < gestion_vinc.length; i++) {
+                      const vinculacion = new CambioVinculacion();
+                      vinculacion.VinculacionOriginal = gestion_vinc[i];
+                      vinculacion.NumeroSemanas = 0;
+                      vinculacion.  NumeroHorasSemanales = 0;
+                      this.cambioVincTemp.push(vinculacion);
+                    }
+                    this.cambioVincTemp.forEach(element => {
+                      var aux1 = this.cambioVinculacion.filter(x => x.VinculacionOriginal.Id == element.VinculacionOriginal.Id)
+                      if (aux1.length == 0) this.cambioVinculacion.push(element)
+                    });
+                    // console.log("CLOSE ", this.cambioVinculacion)
+                    this.popUp.close();
+                  }, error: () => {
+                    this.popUp.close()
+                    this.popUp.error('Error al consultar otras vinculaciones');
                   }
-                  this.cambioVincTemp.forEach(element => {
-                    var aux1 = this.cambioVinculacion.filter(x => x.VinculacionOriginal.Id == element.VinculacionOriginal.Id)
-                    if (aux1.length == 0) this.cambioVinculacion.push(element)
-                  });
-                  // console.log("CLOSE ", this.cambioVinculacion)
-                  this.popUp.close();
-                }, error: () => {
-                  this.popUp.close()
-                  this.popUp.error('Error al consultar otras vinculaciones');
-                }
-              })
+                })
+              } else {
+                this.popUp.close()
+              }
             }, error: () => {
               this.popUp.close()
               this.popUp.error('Error al consultar otras vinculaciones');
