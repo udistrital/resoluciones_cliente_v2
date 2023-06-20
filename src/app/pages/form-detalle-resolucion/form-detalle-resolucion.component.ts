@@ -175,6 +175,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           `gestion_resoluciones/${Id}`
         ).subscribe((response: Respuesta) => {
           this.contenidoResolucion = response.Data as ContenidoResolucion;
+          this.checkTipoResolucion();
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
           this.edicion = true;
