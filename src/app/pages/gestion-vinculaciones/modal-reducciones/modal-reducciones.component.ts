@@ -8,6 +8,7 @@ import { UtilService } from '../../services/utilService';
 import { CambioVinculacion } from 'src/app/@core/models/cambio_vinculacion';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import * as moment from 'moment';
+import { VinculacionesAux } from 'src/app/@core/models/vinculaciones_aux';
 
 @Component({
   selector: 'app-modal-reducciones',
@@ -21,12 +22,13 @@ export class ModalReduccionesComponent implements OnInit {
 
   horasTotales: number;
   semanasMaximo: string;
+  posgrado: boolean = false
 
   constructor(
     private popUp: UtilService,
     private request: RequestManager,
     public dialogRef: MatDialogRef<ModalReduccionesComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Vinculaciones,
+    @Inject(MAT_DIALOG_DATA) private data: VinculacionesAux,
   ) {
     this.cambioVinculacion = new CambioVinculacion();
     this.cambioVinculacion.VinculacionOriginal = this.data;
@@ -64,6 +66,12 @@ export class ModalReduccionesComponent implements OnInit {
         });
       }
     });
+
+    if (this.data.NivelAcademico == 'POSGRADO') {
+      this.posgrado = true
+    } else {
+      this.posgrado = false
+    }
   }
 
   sumarHoras(): void {
