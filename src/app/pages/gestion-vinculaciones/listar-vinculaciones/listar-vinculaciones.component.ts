@@ -237,6 +237,24 @@ export class ListarVinculacionesComponent implements OnInit {
         break;
 
       case 'reducir':
+        var aux = {
+          Id: vinculacion.Id,
+          Nombre: vinculacion.Nombre,
+          PersonaId: vinculacion.PersonaId,
+          TipoDocumento: vinculacion.TipoDocumento,
+          ExpedicionDocumento: vinculacion.ExpedicionDocumento,
+          NumeroContrato: vinculacion.NumeroContrato,
+          Vigencia: vinculacion.Vigencia,
+          Categoria: vinculacion.Categoria,
+          Dedicacion: vinculacion.Dedicacion,
+          NumeroHorasSemanales: vinculacion.NumeroHorasSemanales,
+          NumeroSemanas: vinculacion.NumeroSemanas,
+          Disponibilidad: vinculacion.Disponibilidad,
+          RegistroPresupuestal: vinculacion.RegistroPresupuestal,
+          ValorContratoFormato: vinculacion.ValorContratoFormato,
+          ProyectoCurricularId: vinculacion.ProyectoCurricularId,
+          NivelAcademico: this.resolucionVinculacion.NivelAcademico
+        }
         if (environment.production) {
           this.request.get(
             environment.RESOLUCIONES_MID_V2_SERVICE,
@@ -247,7 +265,7 @@ export class ListarVinculacionesComponent implements OnInit {
                 if ((response.Data as string) === '') {
                   this.popUp.warning('Se debe verificar el estado del semáforo para este docente.');
                 } else {
-                  this.dialogConfig.data = vinculacion;
+                  this.dialogConfig.data = aux;
                   const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
                   dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
                     if (data) {
@@ -265,7 +283,7 @@ export class ListarVinculacionesComponent implements OnInit {
           });
 
         } else {
-          this.dialogConfig.data = vinculacion;
+          this.dialogConfig.data = aux;
           const dialogReduccion = this.dialog.open(ModalReduccionesComponent, this.dialogConfig);
           dialogReduccion.afterClosed().subscribe((data: CambioVinculacion) => {
             if (data) {
