@@ -21,13 +21,9 @@
                 <h3>Docentes Seleccionados Para Reversar</h3>
             </legend>
             <form #cform="ngForm" novalidate>
-                <mat-form-field class="form-field-column" *ngIf="resolucionVinculacion.NivelAcademico === 'PREGRADO'">
+                <mat-form-field class="form-field-column">
                     <mat-label>Numero de semanas a reversar:</mat-label>
                     <input matInput type="number" min="0" max="{{semanasMaximo}}" [(ngModel)]="numeroSemanas" name="semanas" #semanas="ngModel" required >
-                </mat-form-field>
-                <mat-form-field class="form-field-column" *ngIf="resolucionVinculacion.NivelAcademico === 'POSGRADO'">
-                    <mat-label>Numero de horas semestrales a reversar:</mat-label>
-                    <input matInput type="number" min="0" [(ngModel)]="numeroHorasSemestrales" name="horasSem" #horasSem="ngModel" required >
                 </mat-form-field>
                 <p style="color: red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
                 <mat-expansion-panel *ngFor="let v of cambioVinculacion; let i=index" hideToggle disabled>
@@ -42,6 +38,10 @@
                                         Registro presupuestal {{rp.Consecutivo}} - {{ rp.Vigencia }}
                                     </mat-option>
                                 </mat-select>
+                            </mat-form-field>
+                            <mat-form-field class="form-field-column" *ngIf="resolucionVinculacion.NivelAcademico === 'POSGRADO'">
+                                <mat-label>Numero de horas a reversar:</mat-label>
+                                <input matInput type="number" min="0" [(ngModel)]="v.NumeroHorasSemanales" name="horasSem" #horasSem="ngModel" required >
                             </mat-form-field>
                         </mat-panel-title>
                     </mat-expansion-panel-header>

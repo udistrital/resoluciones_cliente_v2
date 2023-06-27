@@ -38,10 +38,12 @@ export class CancelarVinculacionesComponent implements OnInit {
   cambioVincTemp: CambioVinculacion[];
   numeroSemanas: number;
   numeroHorasSemestrales: number;
+  numeroHorasSemes: number[];
   tipoResolucion: Parametro;
   parametros: any;
   semanasMaximo: string;
   vinculacionesTotales: any;
+  posgrado: boolean;
 
   constructor(
     private request: RequestManager,
@@ -87,7 +89,11 @@ export class CancelarVinculacionesComponent implements OnInit {
         ]).pipe().subscribe({
           next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
             this.resolucion = resp1.Data as Resolucion;
+            console.log("res ", this.resolucion)
             this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
+            console.log(this.resolucionVinculacion)
+            if (this.resolucionVinculacion.NivelAcademico == 'POSGRADO') this.posgrado = true;
+            else this.posgrado = false;
             this.request.get(
               environment.RESOLUCIONES_V2_SERVICE,
               `modificacion_resolucion?limit=0&query=ResolucionNuevaId.Id:${this.resolucionId}`
@@ -374,16 +380,16 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   cancelarVinculaciones(): void {
-    if (this.resolucionVinculacion.NivelAcademico === 'PREGRADO') {
-      for (const cambio of this.cambioVinculacion) {
-        cambio.NumeroSemanas = this.numeroSemanas;
-      }
+    for (const cambio of this.cambioVinculacion) {
+      cambio.NumeroSemanas = this.numeroSemanas;
+    }
+    /*if (this.resolucionVinculacion.NivelAcademico === 'PREGRADO') {
     } else {
       for (const cambio of this.cambioVinculacion) {
-        cambio.NumeroHorasSemanales = this.numeroHorasSemestrales;
+        //cambio.NumeroHorasSemanales = this.numeroHorasSemestrales;
         cambio.NumeroSemanas = cambio.VinculacionOriginal.NumeroSemanas;
       }
-    }
+    }*/
     const objetoCancelaciones = {
       CambiosVinculacion: this.cambioVinculacion,
       ResolucionNuevaId: this.resolucionVinculacion,
