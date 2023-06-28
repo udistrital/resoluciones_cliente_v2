@@ -89,9 +89,7 @@ export class CancelarVinculacionesComponent implements OnInit {
         ]).pipe().subscribe({
           next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
             this.resolucion = resp1.Data as Resolucion;
-            console.log("res ", this.resolucion)
             this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
-            console.log(this.resolucionVinculacion)
             if (this.resolucionVinculacion.NivelAcademico == 'POSGRADO') this.posgrado = true;
             else this.posgrado = false;
             this.request.get(
