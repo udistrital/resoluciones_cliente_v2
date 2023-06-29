@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -16,6 +16,7 @@ import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
 import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
 import { first, forkJoin } from 'rxjs';
 import { Parametro } from 'src/app/@core/models/parametro';
+import { formatCurrency } from '@angular/common';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -38,6 +39,7 @@ export class VincularDocentesComponent implements OnInit {
   tipoResolucion: Parametro;
 
   constructor(
+    @Inject(LOCALE_ID) public locale: string,
     private request: RequestManager,
     private route: ActivatedRoute,
     private popUp: UtilService,
@@ -367,19 +369,19 @@ export class VincularDocentesComponent implements OnInit {
           texto += v.Disponibilidad + ';';
           texto += v.ValorContratoFormato + ';';
           var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "Vacaciones")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "Cesantias")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
-          texto += (aux[0].Valor).toString() + ';';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
-          texto += (aux[0].Valor).toString() + '\n';
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
           resolve(texto)
         }
       )
