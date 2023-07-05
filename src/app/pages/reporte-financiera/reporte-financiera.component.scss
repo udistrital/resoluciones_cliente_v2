@@ -1,0 +1,45 @@
+@import '../form-detalle-resolucion/form-detalle-resolucion.component.scss';
+
+.reporte-title {
+    text-align: center;
+}
+
+.form-container {
+    padding: 3%;
+    border: solid 2px var(--primary);
+    border-radius: 20px;
+}
+
+.form-field {
+    padding: 0 5%;
+    &.form-field-full {
+        width: 100%;
+    }
+    &.form-field-half {
+        width: 40%;
+    }
+}
+
+.button {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 45%;
+    color: #fff;
+
+    &.button-add {
+        background-color: var(--others-main);
+    }
+    &.button-remove {
+        background-color: var(--danger-main);
+    }
+    &.button-submit {
+        background-color: var(--primary);
+    }
+    &.button-submit:disabled,
+    &.button-submit[disabled] {
+        background-color: var(--primary);
+        color: #999;
+    }
+
+}
