@@ -15,6 +15,7 @@ import { PagesComponent } from './pages.component';
 import { PlantillasComponent } from './plantillas/plantillas.component';
 import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
+import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
 
 const routes: Routes = [{
   path: '',
@@ -77,6 +78,12 @@ const routes: Routes = [{
     {
       path: 'resolucion_aprobacion',
       component: AprobacionResolucionesComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
+    },
+    {
+      path: 'reporte_financiera',
+      component: ReporteFinancieraComponent,
       canActivate: [NavGuard, RoleGuard],
       runGuardsAndResolvers: 'always'
     },

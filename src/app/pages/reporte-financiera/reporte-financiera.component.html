@@ -1,0 +1,56 @@
+<mat-card class="card-oas">
+    <mat-card-title class="reporte-title"><h1>Reporte de Financiera</h1></mat-card-title>
+    <mat-card-content>
+        <form #gform="ngForm" novalidate>
+            <fieldset class="form-container">
+                <mat-grid-list [appOasGridCols]="{xs: 1, sm: 1, md: 2, lg: 2, xl: 2}" rowHeight="15rem">
+                    <mat-grid-tile>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Numero de resolución</mat-label>
+                            <input matInput type="text" pattern="[0-9]*" minlength="1" maxlength="5" name="numRes" [(ngModel)]="datosReporte.Resolucion" #numRes="ngModel" required>
+                            <mat-error *ngIf="numRes.errors?.['required'] && numRes.touched">
+                                Indique el número de la resolución
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Nivel académico</mat-label>
+                            <mat-select name="niv" [(ngModel)]="datosReporte.NivelAcademico" #niv="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option *ngFor="let nivel of niveles" [value]="nivel.Nombre.toUpperCase()">
+                                    {{ nivel.Nombre.toUpperCase() }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="niv.errors?.['required'] && niv.touched">
+                                Seleccione el nivel académico
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Facultad</mat-label>
+                            <mat-select name="fac" [(ngModel)]="datosReporte.Facultad" #fac="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option *ngFor="let facultad of facultades" [value]="facultad.DependenciaId.Id">
+                                    {{ facultad.DependenciaId.Nombre }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="fac.errors?.['required'] && fac.touched">
+                                Seleccione la facultad
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field class="form-field form-field-full">
+                            <mat-label>Vigencia</mat-label>
+                            <mat-select name="vig" [(ngModel)]="datosReporte.Vigencia" #vig="ngModel" required>
+                                <mat-option>--Seleccionar--</mat-option>
+                                <mat-option *ngFor="let vigencia of vigencias" [value]="vigencia.Year">
+                                    {{ vigencia.Year }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <button mat-button class="button button-submit" type="submit" (click)="generarReporte()" [disabled]="!gform.valid" >Generar Reporte</button>
+            </fieldset>
+        </form>
+    </mat-card-content>
+</mat-card>
