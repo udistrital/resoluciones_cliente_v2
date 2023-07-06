@@ -22,6 +22,11 @@ export const TablaVinculaciones: any = {
         width: '11%',
         editable: false,
     },
+    ProyectoCurricularNombre: {
+        title: 'Proyecto Curricular',
+        width: '11%',
+        editable: false,
+    },
     NumeroHorasSemanales: {
         title: 'Horas',
         width: '11%',
