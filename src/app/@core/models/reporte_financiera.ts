@@ -4,6 +4,8 @@ export class ReporteFinanciera {
     Nombre: string;
     Cedula: number;
     Facultad: string;
+    CodigoProyecto: number;
+    ProyectoCurricular: string;
     Horas: number;
     Semanas: number;
     Cdp: number;
@@ -39,6 +41,16 @@ export const ReporteFinancieraExcel: any = {
     },
     Facultad: {
         title: 'Facultad',
+        width: '15%',
+        editable: false,
+    },
+    CodigoProyecto: {
+        title: 'Codigo Proyecto',
+        width: '15%',
+        editable: false,
+    },
+    ProyectoCurricular: {
+        title: 'Proyecto Curricular',
         width: '15%',
         editable: false,
     },
