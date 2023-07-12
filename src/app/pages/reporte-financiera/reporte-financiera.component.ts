@@ -111,6 +111,8 @@ export class ReporteFinancieraComponent implements OnInit {
       texto += reporte.Nombre + ';';
       texto += reporte.Cedula + ';';
       texto += reporte.Facultad + ';';
+      texto += reporte.CodigoProyecto + ';';
+      texto += reporte.ProyectoCurricular + ';';
       texto += reporte.Horas + ';';
       texto += reporte.Semanas + ';';
       texto += reporte.Cdp + ';';
