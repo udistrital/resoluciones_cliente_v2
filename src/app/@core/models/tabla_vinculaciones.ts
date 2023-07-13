@@ -47,6 +47,11 @@ export const TablaVinculaciones: any = {
         width: '15%',
         editable: false,
     },
+    RegistroPresupuestal: {
+        title: 'Registro Presupuestal',
+        width: '15%',
+        editable: false,
+    }
 };
 
 export const TablaVinculacionesExcel: any = {

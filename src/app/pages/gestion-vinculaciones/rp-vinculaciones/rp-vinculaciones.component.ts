@@ -27,6 +27,8 @@ export class RpVinculacionesComponent implements OnInit {
   vinculacionesData: LocalDataSource;
   tipoResolucion: Parametro;
   rpsSeleccionados: RpSeleccionado[];
+  vinc: any;
+  guardarRp: boolean = false;
 
   constructor(
     private request: RequestManager,
@@ -73,6 +75,8 @@ export class RpVinculacionesComponent implements OnInit {
           next: (response: Respuesta) => {
             if (response.Success) {
               this.vinculacionesData.load(response.Data);
+              this.vinc = response.Data;
+              this.rps();
               this.popUp.close();
             }
           }, error: () => {
@@ -99,27 +103,6 @@ export class RpVinculacionesComponent implements OnInit {
 
   initTable(): void {
     const tabla = {...TablaVinculaciones,};
-    tabla['RegPres'] = {
-      title: 'Registros Presupuestales',
-      editable: true,
-      width: '15%',
-      type: 'custom',
-      renderComponent: RpSelectorComponent,
-      onComponentInitFunction: (instance: RpSelectorComponent) => {
-        instance.event.subscribe((selected: RpSeleccionado) => {
-          const i = this.rpsSeleccionados.findIndex(rp => rp.VinculacionId === selected.VinculacionId);
-          if (i < 0) {
-            this.rpsSeleccionados.push(selected);
-          } else {
-            if (selected.Consecutivo === undefined) {
-              this.rpsSeleccionados.splice(i, 1);
-            } else {
-              this.rpsSeleccionados.splice(i, 1, selected);
-            }
-          }
-        });
-      },
-    };
 
     this.vinculacionesSettings = {
       mode: 'external',
@@ -129,6 +112,23 @@ export class RpVinculacionesComponent implements OnInit {
       hideSubHeader: true,
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
+  }
+
+  rps() {
+    (this.vinc).forEach(element => {
+      if (element.RegistroPresupuestal != 0){
+        var rp = {
+          Consecutivo: element.RegistroPresupuestal,
+          Vigencia: element.Vigencia,
+          VinculacionId: element.Id
+        }
+        this.rpsSeleccionados.push(rp)
+        this.guardarRp = true;
+      } else {
+        this.guardarRp = false;
+        return
+      }
+    });
   }
 
   guardar(): void {
