@@ -69,7 +69,7 @@ export class ExpedirCancelacionComponent implements OnInit {
     ).subscribe((response: Respuesta) => {
       this.resolucionActual = response.Data as Resolucion;
       if (this.resolucionActual.FechaExpedicion !== undefined
-          && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:000Z') {
+          && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:00Z') {
         this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
       } else {
         this.resolucionActual.FechaExpedicion = null;
@@ -112,7 +112,7 @@ export class ExpedirCancelacionComponent implements OnInit {
     const conjuntoContratos = [];
     if (this.contratados) {
       this.contratados.forEach(contratado => {
-        const contratoCancelado: ContratoCancelado = JSON.parse(JSON.stringify(this.contratoCanceladoBase));
+        const contratoCancelado: ContratoCancelado = {...this.contratoCanceladoBase};
         contratoCancelado.NumeroContrato = contratado.NumeroContrato;
         contratoCancelado.Vigencia = contratado.Vigencia;
         contratoCancelado.FechaCancelacion = new Date();

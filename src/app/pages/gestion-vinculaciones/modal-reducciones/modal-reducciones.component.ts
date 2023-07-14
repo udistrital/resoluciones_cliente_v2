@@ -8,6 +8,7 @@ import { UtilService } from '../../services/utilService';
 import { CambioVinculacion } from 'src/app/@core/models/cambio_vinculacion';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import * as moment from 'moment';
+import { VinculacionesAux } from 'src/app/@core/models/vinculaciones_aux';
 
 @Component({
   selector: 'app-modal-reducciones',
@@ -20,16 +21,19 @@ export class ModalReduccionesComponent implements OnInit {
   registrosPresupuestales: DocumentoPresupuestal[];
 
   horasTotales: number;
+  semanasMaximo: string;
+  posgrado: boolean = false
 
   constructor(
     private popUp: UtilService,
     private request: RequestManager,
     public dialogRef: MatDialogRef<ModalReduccionesComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Vinculaciones,
+    @Inject(MAT_DIALOG_DATA) private data: VinculacionesAux,
   ) {
     this.cambioVinculacion = new CambioVinculacion();
     this.cambioVinculacion.VinculacionOriginal = this.data;
     this.cambioVinculacion.DocPresupuestal = null;
+    this.calcularSemanasSugeridas();
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
   }
 
@@ -62,6 +66,12 @@ export class ModalReduccionesComponent implements OnInit {
         });
       }
     });
+
+    if (this.data.NivelAcademico == 'POSGRADO') {
+      this.posgrado = true
+    } else {
+      this.posgrado = false
+    }
   }
 
   sumarHoras(): void {
@@ -79,7 +89,7 @@ export class ModalReduccionesComponent implements OnInit {
         if (respuesta.Success) {
           const semanas = respuesta.Data as number;
           this.popUp.close();
-          if (semanas <= 0) {
+          if (semanas <= 0 || semanas > this.cambioVinculacion.VinculacionOriginal.NumeroSemanas) {
             this.cambioVinculacion.NumeroSemanas = null;
             this.popUp.warning('La fecha de inicio ingresada no es válida.');
           } else {
@@ -98,6 +108,25 @@ export class ModalReduccionesComponent implements OnInit {
     });
   }
 
+  calcularSemanasSugeridas(): void {
+    const fecha = moment(new Date()).format('YYYY-MM-DD');
+    this.popUp.loading();
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `gestion_vinculaciones/consultar_semanas_restantes/${fecha}/${this.data.Vigencia}/${this.data.NumeroContrato}`
+    ).subscribe({
+      next: (respuesta: Respuesta) => {
+        const semanas = respuesta.Data as number;
+        this.popUp.close();
+        this.semanasMaximo = Math.max(0, Math.min(this.cambioVinculacion.VinculacionOriginal.NumeroSemanas, semanas)).toString();
+      }, error: () => {
+        this.semanasMaximo = '';
+        this.popUp.close();
+        this.popUp.error('No se ha podido calcular el numero de semanas sugerido.');
+      }
+    });
+  }
+
   guardarCambios(): void {
     if (this.cambioVinculacion.NumeroSemanas > 0 && this.cambioVinculacion.NumeroSemanas <= this.data.NumeroSemanas) {
       this.popUp.confirm(
@@ -107,6 +136,7 @@ export class ModalReduccionesComponent implements OnInit {
       ).then(value => {
         if (value.isConfirmed) {
           this.cambioVinculacion.NumeroSemanas = parseInt(this.cambioVinculacion.NumeroSemanas.toString(), 10);
+          this.cambioVinculacion.FechaInicio = moment(this.cambioVinculacion.FechaInicio).format('YYYY-MM-DDT00:00:00Z');
           this.dialogRef.close(this.cambioVinculacion);
         }
       });

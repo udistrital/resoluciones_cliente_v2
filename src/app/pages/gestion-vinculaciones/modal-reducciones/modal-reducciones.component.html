@@ -39,7 +39,12 @@
                 <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required >
                 <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
             </mat-form-field>
+            <mat-form-field class="form-field-modal" *ngIf="posgrado">
+                <mat-label>Horas trabajadas</mat-label>
+                <input matInput type="number" name="horasTra" #horasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroHorasTrabajadas" required>
+            </mat-form-field>
         </mat-grid-tile>
     </mat-grid-list>
+    <p style="color: red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
     <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!rform.valid" >Modificar</button>
 </form>

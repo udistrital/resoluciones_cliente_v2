@@ -56,6 +56,7 @@ import { RpVinculacionesComponent } from './gestion-vinculaciones/rp-vinculacion
 import { RpSelectorComponent } from '../@core/components/rp-selector/rp-selector.component';
 import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
+import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
 
 
 const pagesComponents = [
@@ -79,6 +80,7 @@ const pagesComponents = [
   ExpedirCancelacionComponent,
   ExpedirModificacionComponent,
   AprobacionResolucionesComponent,
+  ReporteFinancieraComponent,
   PlantillasComponent,
   DashboardComponent,
   PagesComponent,

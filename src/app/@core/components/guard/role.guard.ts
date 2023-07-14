@@ -31,6 +31,11 @@ export class RoleGuard implements CanActivate {
         let autorizado = false;
         response.forEach(opcion => {
           autorizado ||= (opcion.Url as string).indexOf(ruta) !== -1;
+          if (opcion.Opciones != null) {
+            opcion.Opciones.forEach(opc => {
+              autorizado ||= (opc.Url as string).indexOf(ruta) !== -1;
+            });
+          }
         });
         if (!autorizado) {
           this.popUp.warning('No tiene acceso al módulo solicitado.').then(() => {

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { Respuesta } from 'src/app/@core/models/respuesta';
-import { TablaVinculaciones } from 'src/app/@core/models/tabla_vinculaciones';
+import { TablaVinculaciones, TablaVinculacionesExcel } from 'src/app/@core/models/tabla_vinculaciones';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
@@ -16,6 +16,7 @@ import { CargaLectiva } from 'src/app/@core/models/carga_lectiva';
 import { DocumentoPresupuestal } from 'src/app/@core/models/documento_presupuestal';
 import { first, forkJoin } from 'rxjs';
 import { Parametro } from 'src/app/@core/models/parametro';
+import { formatCurrency } from '@angular/common';
 
 @Component({
   selector: 'app-vincular-docentes',
@@ -31,12 +32,14 @@ export class VincularDocentesComponent implements OnInit {
   cargaAcademicaSettings: any;
   cargaAcademicaData: LocalDataSource;
   vinculacionesSettings: any;
+  vinculacionesSettingsCSV: any;
   vinculacionesData: LocalDataSource;
   docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
   tipoResolucion: Parametro;
 
   constructor(
+    @Inject(LOCALE_ID) public locale: string,
     private request: RequestManager,
     private route: ActivatedRoute,
     private popUp: UtilService,
@@ -218,6 +221,14 @@ export class VincularDocentesComponent implements OnInit {
       mode: 'external',
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
+
+    this.vinculacionesSettingsCSV = {
+      columns: TablaVinculacionesExcel,
+      actions: false,
+      selectMode: 'multi',
+      mode: 'external',
+      noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
+    };
   }
 
   abrirModalDisponibilidad(): void {
@@ -272,28 +283,26 @@ export class VincularDocentesComponent implements OnInit {
     }
   }
 
-  generarInformeCSV(): void {
+  async generarInformeCSV(): Promise<void> {
     let texto = '';
-    Object.keys(this.vinculacionesSettings.columns).forEach((col) => {
-      texto += this.vinculacionesSettings.columns[col].title + ';';
+    Object.keys(this.vinculacionesSettingsCSV.columns).forEach((col) => {
+      texto += this.vinculacionesSettingsCSV.columns[col].title + ';';
     });
     texto += '\n';
     this.vinculacionesData.getAll().then((vinculaciones: Vinculaciones[]) => {
-      vinculaciones.forEach(v => {
-        texto += v.Id + ';';
-        texto += v.Nombre + ';';
-        texto += v.PersonaId + ';';
-        texto += v.Categoria + ';';
-        texto += v.Dedicacion + ';';
-        texto += v.NumeroHorasSemanales + ';';
-        texto += v.NumeroSemanas + ';';
-        texto += v.Disponibilidad + ';';
-        texto += v.ValorContratoFormato + '\n';
+      var i = 0
+      vinculaciones.forEach(async v => {
+        var textoAux = await this.desagregadoCSV(v)
+        texto += textoAux
+        i += 1
+        if (i == vinculaciones.length) {
+          const a = document.createElement('a');
+          a.href = window.URL.createObjectURL(new Blob([texto], { type: 'text/plain' }));
+          a.download = 'precontratados.csv';
+          a.click();
+        }
       });
-      const a = document.createElement('a');
-      a.href = window.URL.createObjectURL(new Blob([texto], { type: 'text/plain' }));
-      a.download = 'precontratados.csv';
-      a.click();
+      
     });
   }
 
@@ -340,6 +349,43 @@ export class VincularDocentesComponent implements OnInit {
 
   seleccionarVinculaciones(event): void {
     this.vinculacionesSeleccionadas = event.selected as Vinculaciones[];
+  }
+
+  async desagregadoCSV (v: Vinculaciones){
+    var texto = ''
+    return new Promise(resolve => {
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `disponibilidad_vinculacion?query=Activo:true,VinculacionDocenteId.Id:${v.Id}`
+      ).subscribe(
+        response => {
+          texto += v.Id + ';';
+          texto += v.Nombre + ';';
+          texto += v.PersonaId + ';';
+          texto += v.Categoria + ';';
+          texto += v.Dedicacion + ';';
+          texto += v.NumeroHorasSemanales + ';';
+          texto += v.NumeroSemanas + ';';
+          texto += v.Disponibilidad + ';';
+          texto += v.ValorContratoFormato + ';';
+          var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "Vacaciones")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "Cesantias")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+          aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
+          resolve(texto)
+        }
+      )
+    })
   }
 
 }
