@@ -215,6 +215,8 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
           'update',
         ).then(result => {
           if (result.isConfirmed) {
+            this.contenidoResolucion.Resolucion.DependenciaId = this.contenidoResolucion.Vinculacion.FacultadId;
+            this.contenidoResolucion.Resolucion.DependenciaFirmaId = this.contenidoResolucion.Vinculacion.FacultadId;
             this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
               this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
               this.popUp.loading();
