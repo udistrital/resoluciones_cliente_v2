@@ -98,6 +98,11 @@ export const TablaVinculacionesExcel: any = {
         width: '15%',
         editable: false,
     },
+    PrimaNavidad: {
+        title: 'Prima Navidad',
+        width: '15%',
+        editable: false,
+    },
     PrimaServicios: {
         title: 'Prima Servicios',
         width: '15%',
