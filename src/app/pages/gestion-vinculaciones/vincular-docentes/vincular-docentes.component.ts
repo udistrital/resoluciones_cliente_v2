@@ -368,6 +368,8 @@ export class VincularDocentesComponent implements OnInit {
           texto += v.NumeroSemanas + ';';
           texto += v.Disponibilidad + ';';
           texto += v.ValorContratoFormato + ';';
+          var aux = response.Data.filter(x => x.Rubro == "PrimaNavidad")
+          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
           texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
           aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
