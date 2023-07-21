@@ -5,7 +5,7 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { Respuesta } from 'src/app/@core/models/respuesta';
-import { TablaVinculaciones, TablaVinculacionesExcel } from 'src/app/@core/models/tabla_vinculaciones';
+import { TablaVinculaciones, TablaVinculacionesExcel, TablaVinculacionesExcelHCH } from 'src/app/@core/models/tabla_vinculaciones';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
@@ -33,6 +33,7 @@ export class VincularDocentesComponent implements OnInit {
   cargaAcademicaData: LocalDataSource;
   vinculacionesSettings: any;
   vinculacionesSettingsCSV: any;
+  vinculacionesSettingsCSVHCH: any;
   vinculacionesData: LocalDataSource;
   docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
@@ -229,6 +230,14 @@ export class VincularDocentesComponent implements OnInit {
       mode: 'external',
       noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
     };
+
+    this.vinculacionesSettingsCSVHCH = {
+      columns: TablaVinculacionesExcelHCH,
+      actions: false,
+      selectMode: 'multi',
+      mode: 'external',
+      noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
+    };
   }
 
   abrirModalDisponibilidad(): void {
@@ -285,9 +294,15 @@ export class VincularDocentesComponent implements OnInit {
 
   async generarInformeCSV(): Promise<void> {
     let texto = '';
-    Object.keys(this.vinculacionesSettingsCSV.columns).forEach((col) => {
-      texto += this.vinculacionesSettingsCSV.columns[col].title + ';';
-    });
+    if (this.resolucionVinculacion.Dedicacion != "HCH") {
+      Object.keys(this.vinculacionesSettingsCSV.columns).forEach((col) => {
+        texto += this.vinculacionesSettingsCSV.columns[col].title + ';';
+      });
+    } else {
+      Object.keys(this.vinculacionesSettingsCSVHCH.columns).forEach((col) => {
+        texto += this.vinculacionesSettingsCSVHCH.columns[col].title + ';';
+      });
+    }
     texto += '\n';
     this.vinculacionesData.getAll().then((vinculaciones: Vinculaciones[]) => {
       var i = 0
@@ -302,7 +317,6 @@ export class VincularDocentesComponent implements OnInit {
           a.click();
         }
       });
-      
     });
   }
 
@@ -367,22 +381,30 @@ export class VincularDocentesComponent implements OnInit {
           texto += v.NumeroHorasSemanales + ';';
           texto += v.NumeroSemanas + ';';
           texto += v.Disponibilidad + ';';
-          texto += v.ValorContratoFormato + ';';
-          var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "Vacaciones")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "Cesantias")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
-          resolve(texto)
+          if (this.resolucionVinculacion.Dedicacion == "HCH") {
+            var aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n'
+            resolve(texto)
+          } else {
+            texto += v.ValorContratoFormato + ';';
+            var aux = response.Data.filter(x => x.Rubro == "PrimaNavidad")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "Vacaciones")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "Cesantias")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
+            resolve(texto)
+          }
         }
       )
     })

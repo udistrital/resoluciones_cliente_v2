@@ -297,6 +297,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         if (result.isConfirmed) {
           this.responsabilidadesData.getAll().then((data: CuadroResponsabilidades) => {
             this.contenidoResolucion.Resolucion.CuadroResponsabilidades = JSON.stringify(data);
+            this.contenidoResolucion.Resolucion.NumeroResolucion = (this.contenidoResolucion.Resolucion.NumeroResolucion).toString();
             this.popUp.loading();
             this.request.put(
               environment.RESOLUCIONES_MID_V2_SERVICE,
