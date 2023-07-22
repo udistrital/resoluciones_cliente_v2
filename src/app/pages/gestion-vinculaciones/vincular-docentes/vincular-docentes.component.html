@@ -13,6 +13,7 @@
                 [settings]="cargaAcademicaSettings"
                 [source]="cargaAcademicaData"
                 (userRowSelect)="seleccionarDocentes($event)"
+                #table
             ></ng2-smart-table>
             <button mat-button class="button button-submit" type="button" (click)="abrirModalDisponibilidad()" [disabled]="docentesSeleccionados.length === 0">Seleccionar disponibilidad</button>
         </fieldset>
