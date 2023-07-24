@@ -1,11 +1,11 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
-import { LocalDataSource } from 'ng2-smart-table';
+import { LocalDataSource, Ng2SmartTableComponent } from 'ng2-smart-table';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { Respuesta } from 'src/app/@core/models/respuesta';
-import { TablaVinculaciones, TablaVinculacionesExcel } from 'src/app/@core/models/tabla_vinculaciones';
+import { TablaVinculaciones, TablaVinculacionesExcel, TablaVinculacionesExcelHCH } from 'src/app/@core/models/tabla_vinculaciones';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { environment } from 'src/environments/environment';
 import { RequestManager } from '../../services/requestManager';
@@ -25,6 +25,8 @@ import { formatCurrency } from '@angular/common';
 })
 export class VincularDocentesComponent implements OnInit {
 
+  @ViewChild('table') smartTable: Ng2SmartTableComponent;
+  selectedRow;
   dialogConfig: MatDialogConfig;
   resolucionId: number;
   resolucion: Resolucion;
@@ -33,10 +35,14 @@ export class VincularDocentesComponent implements OnInit {
   cargaAcademicaData: LocalDataSource;
   vinculacionesSettings: any;
   vinculacionesSettingsCSV: any;
+  vinculacionesSettingsCSVHCH: any;
   vinculacionesData: LocalDataSource;
+  docSeleccionadosAux: CargaLectiva;
+  idSeleccionados: number[];
   docentesSeleccionados: CargaLectiva[];
   vinculacionesSeleccionadas: Vinculaciones[];
   tipoResolucion: Parametro;
+  userClick: boolean;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -52,8 +58,19 @@ export class VincularDocentesComponent implements OnInit {
     this.vinculacionesData = new LocalDataSource();
     this.docentesSeleccionados = [];
     this.vinculacionesSeleccionadas = [];
+    this.idSeleccionados = [];
     this.initTables();
     this.preloadData();
+    this.userClick = true;
+    this.cargaAcademicaData.onChanged().subscribe(change => {
+      console.log("CHANGE jhg ", change)
+      switch (change.action) {
+        case 'page':
+            this.seleccionarDocentesCambioTabla(change)
+          break;
+      }
+    });
+    console.log("ASD")
   }
 
   preloadData(): void {
@@ -137,6 +154,8 @@ export class VincularDocentesComponent implements OnInit {
     ).subscribe({
       next: (response: Respuesta) => {
         if (response.Success) {
+          this.docentesSeleccionados = [];
+          this.idSeleccionados = [];
           const vinculaciones = response.Data as Vinculaciones[];
           this.vinculacionesData.load(vinculaciones);
           this.cargaAcademicaData.getAll().then((carga: CargaLectiva[]) => {
@@ -208,8 +227,10 @@ export class VincularDocentesComponent implements OnInit {
         saveButtonContent: '<em class="material-icons" title="Guardar">check</em>',
         cancelButtonContent: '<em class="material-icons" title="Cancelar">close</em>'
       },
+      pager: {
+        display: true,
+      },
       selectMode: 'multi',
-      switchPageToSelectedRowPage: true,
       mode: 'internal',
       noDataMessage: 'No se ha cargado la información de carga académica',
     };
@@ -224,6 +245,14 @@ export class VincularDocentesComponent implements OnInit {
 
     this.vinculacionesSettingsCSV = {
       columns: TablaVinculacionesExcel,
+      actions: false,
+      selectMode: 'multi',
+      mode: 'external',
+      noDataMessage: 'No hay vinculaciones asociadas a esta resolución',
+    };
+
+    this.vinculacionesSettingsCSVHCH = {
+      columns: TablaVinculacionesExcelHCH,
       actions: false,
       selectMode: 'multi',
       mode: 'external',
@@ -285,9 +314,15 @@ export class VincularDocentesComponent implements OnInit {
 
   async generarInformeCSV(): Promise<void> {
     let texto = '';
-    Object.keys(this.vinculacionesSettingsCSV.columns).forEach((col) => {
-      texto += this.vinculacionesSettingsCSV.columns[col].title + ';';
-    });
+    if (this.resolucionVinculacion.Dedicacion != "HCH") {
+      Object.keys(this.vinculacionesSettingsCSV.columns).forEach((col) => {
+        texto += this.vinculacionesSettingsCSV.columns[col].title + ';';
+      });
+    } else {
+      Object.keys(this.vinculacionesSettingsCSVHCH.columns).forEach((col) => {
+        texto += this.vinculacionesSettingsCSVHCH.columns[col].title + ';';
+      });
+    }
     texto += '\n';
     this.vinculacionesData.getAll().then((vinculaciones: Vinculaciones[]) => {
       var i = 0
@@ -302,7 +337,6 @@ export class VincularDocentesComponent implements OnInit {
           a.click();
         }
       });
-      
     });
   }
 
@@ -343,8 +377,49 @@ export class VincularDocentesComponent implements OnInit {
     });
   }
 
+  seleccionarDocentesCambioTabla(event): void {
+    this.userClick = false;
+    console.log("ASD ", event);
+    console.log(this.docentesSeleccionados);
+    setTimeout(() => {
+      this.docentesSeleccionados.forEach(docSel => {
+        console.log("DOC SEL ", docSel);
+        if (event.elements.includes(docSel)) {
+          var idAux = event.elements.indexOf(docSel);
+          console.log("ID AUX ", idAux);
+          console.log(idAux + ((event.paging.page - 1) * event.paging.perPage));
+          console.log("Dc ", document)
+          let selectedElement: Element = document.querySelectorAll('ng2-smart-table table tbody tr').item(idAux)
+          console.log(selectedElement)
+          if(selectedElement) {
+            let row: HTMLElement = selectedElement.querySelector('td') as HTMLElement;
+            //row.setAttribute()
+            row.click()//
+            this.selectedRow = this.smartTable.grid.getSelectedRows().length;
+          }
+        }
+      });
+      this.userClick = true;
+    }, 500)
+  }
+
   seleccionarDocentes(event): void {
-    this.docentesSeleccionados = event.selected as CargaLectiva[];
+    console.log("ENTRA ", event)
+    this.docSeleccionadosAux = event.data as CargaLectiva;
+    var id = event.source.data.indexOf(event.data);
+    console.log(id)
+    console.log("USER CLIC ", this.userClick)
+    if ((this.idSeleccionados).includes(id) && this.userClick) {
+      const startIndex = this.idSeleccionados.indexOf(id);
+      this.idSeleccionados.splice(startIndex, 1);
+      this.docentesSeleccionados.splice(startIndex, 1)
+    } else if (!(this.idSeleccionados).includes(id) && this.userClick) {
+      this.idSeleccionados.push(id)
+      this.docentesSeleccionados.push(this.docSeleccionadosAux)
+    }
+    console.log("IDS ", this.idSeleccionados)
+    console.log("DOC ", this.docentesSeleccionados)
+
   }
 
   seleccionarVinculaciones(event): void {
@@ -367,22 +442,30 @@ export class VincularDocentesComponent implements OnInit {
           texto += v.NumeroHorasSemanales + ';';
           texto += v.NumeroSemanas + ';';
           texto += v.Disponibilidad + ';';
-          texto += v.ValorContratoFormato + ';';
-          var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "Vacaciones")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "Cesantias")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
-          aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
-          texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
-          resolve(texto)
+          if (this.resolucionVinculacion.Dedicacion == "HCH") {
+            var aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n'
+            resolve(texto)
+          } else {
+            texto += v.ValorContratoFormato + ';';
+            var aux = response.Data.filter(x => x.Rubro == "PrimaNavidad")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            var aux = response.Data.filter(x => x.Rubro == "PrimaServicios")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "PrimaVacaciones")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "Vacaciones")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "Cesantias")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "InteresesCesantias")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "SueldoBasico")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + ';';
+            aux = response.Data.filter(x => x.Rubro == "BonificacionServicios")
+            texto += formatCurrency(aux[0].Valor, this.locale, '$') + '\n';
+            resolve(texto)
+          }
         }
       )
     })
