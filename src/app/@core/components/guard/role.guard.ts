@@ -22,7 +22,10 @@ export class RoleGuard implements CanActivate {
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const ruta = route.url[0].path;
     const user = JSON.parse(atob(localStorage.getItem('user')));
-    const roles = Array(user.user.role).join(',').replace('Internal/everyone,', '');
+    for (let i = 0; i < user.user.role.length; i++) {
+      user.user.role[i] = user.user.role[i].replace("/", "_")
+    }
+    const roles = Array(user.user.role).join(',');
     return this.request.get(
       environment.CONF_MENU_SERVICE,
       `${roles}/${environment.appname}`
