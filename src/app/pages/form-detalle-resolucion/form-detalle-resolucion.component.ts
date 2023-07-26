@@ -14,6 +14,8 @@ import { UtilService } from '../services/utilService';
 import { Respuesta } from 'src/app/@core/models/respuesta';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
+import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
+import { VinculacionDocente } from 'src/app/@core/models/vinculacion_docente';
 
 @Component({
   selector: 'app-form-detalle-resolucion',
@@ -31,6 +33,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
   numeroSemanas: string;
   niveles: NivelFormacion[];
   dedicaciones: Parametro[];
+  vinculados: VinculacionDocente[];
   facultades: any[];
   tiposResoluciones: Parametro[];
   edicion = false;
@@ -307,11 +310,43 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
             ).subscribe({
               next: (response: Respuesta) => {
                 if (response.Success) {
-                  this.popUp.close();
-                  this.popUp.success('La resolución se ha actualizado con éxito').then(() => {
-                    this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
-                      resolve();
-                    });
+                  this.request.get(
+                    environment.PARAMETROS_SERVICE,
+                    `parametro/${this.contenidoResolucion.Resolucion.TipoResolucionId}`
+                  ).subscribe({
+                    next: async (response: Respuesta) => {
+                      var tipoResolucion = response.Data as Parametro;
+                      if (tipoResolucion.CodigoAbreviacion == "RVIN") {
+                        this.vinculados = await this.getVinculacionesDocente(this.contenidoResolucion.Resolucion.Id) as VinculacionDocente[];
+                        const vinculacionesEditar = {
+                          Vinculaciones: this.vinculados,
+                          Semanas: this.contenidoResolucion.Resolucion.NumeroSemanas,
+                          Dedicacion: this.contenidoResolucion.Vinculacion.Dedicacion,
+                          NivelAcademico: this.contenidoResolucion.Vinculacion.NivelAcademico
+                        };
+                        this.request.post(
+                          environment.RESOLUCIONES_MID_V2_SERVICE,
+                          `gestion_vinculaciones/editar_vinculaciones`,
+                          vinculacionesEditar
+                          ).subscribe({
+                            next: (response: Respuesta) => {
+                              if (response.Success) {
+                                this.popUp.close();
+                                this.popUp.success('La resolución se ha actualizado con éxito').then(() => {
+                                  this.cargarContenidoResolucion(this.contenidoResolucion.Resolucion.Id).then(() => {
+                                    resolve();
+                                  });
+                                });
+                              }
+                            }, error: () => {
+                              this.popUp.close();
+                              this.popUp.error('No se ha podido actualizar la resolución');
+                            }
+                          });
+                      }
+                    }, error: () => {
+                      this.popUp.error('Ha ocurrido un error al consultar el tipo de resolución.');
+                    }
                   });
                 }
               }, error: () => {
@@ -354,7 +389,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     });
   }
 
-  public onChange(event: any): void {
+  public async onChange(event: any): Promise<void> {
     if (this.contenidoResolucion.Resolucion.FechaInicio != null && this.contenidoResolucion.Resolucion.NumeroSemanas != null) {
       var object = {
         "FechaInicio": this.contenidoResolucion.Resolucion.FechaInicio,
@@ -369,6 +404,24 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         this.contenidoResolucion.Resolucion.FechaFin  = response.Data
       })
     }
+  }
+
+  async getVinculacionesDocente (id: number) {
+    return new Promise((resolve, reject) =>  {
+      this.request.get(
+        environment.RESOLUCIONES_V2_SERVICE,
+        `vinculacion_docente?query=resolucion_vinculacion_docente_id:${id},activo:true`
+      ).subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            resolve(response.Data)
+          }
+        }, error: () => {
+          this.popUp.close();
+          this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+        }
+      });
+    })
   }
 
   checkTipoResolucion() {

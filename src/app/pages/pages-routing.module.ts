@@ -84,8 +84,8 @@ const routes: Routes = [{
     {
       path: 'reporte_financiera',
       component: ReporteFinancieraComponent,
-      canActivate: [NavGuard, RoleGuard],
-      runGuardsAndResolvers: 'always'
+      //canActivate: [NavGuard, RoleGuard],
+      //runGuardsAndResolvers: 'always'
     },
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',
