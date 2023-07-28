@@ -234,6 +234,4 @@ export class ExpedirVinculacionComponent implements OnInit {
       });
     })
   }
-
-
 }
