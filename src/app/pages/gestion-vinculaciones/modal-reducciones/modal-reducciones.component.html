@@ -41,5 +41,8 @@
         </mat-grid-tile>
     </mat-grid-list>
     <p style="color: red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
-    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!rform.valid" >Modificar</button>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!rform.valid || !habilitado" >Modificar</button>
+    <mat-error *ngIf="!habilitado">
+        No es posible realizar la reducción debido a que el docente aún no tiene RP
+    </mat-error>
 </form>
