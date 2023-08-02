@@ -39,5 +39,8 @@
     </mat-grid-list>
     <p style="color:red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
     <app-tablas-disponibilidades *ngIf="mostrar" [vigencia]="cambioVinculacion.VinculacionOriginal.Vigencia" (seleccion)="nuevaDisponibilidad($event)"></app-tablas-disponibilidades>
-    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!aform.valid" >Modificar</button>
+    <button mat-button class="button button-submit" type="submit" (click)="guardarCambios()" [disabled]="!aform.valid || !habilitado" >Modificar</button>
+    <mat-error *ngIf="!habilitado">
+        No es posible realizar la adición debido a que el docente aún no tiene RP
+    </mat-error>
 </form>

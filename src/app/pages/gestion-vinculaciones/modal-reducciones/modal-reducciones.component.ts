@@ -23,6 +23,7 @@ export class ModalReduccionesComponent implements OnInit {
   horasTotales: number;
   semanasMaximo: string;
   posgrado: boolean = false
+  habilitado = false;
 
   constructor(
     private popUp: UtilService,
@@ -34,6 +35,8 @@ export class ModalReduccionesComponent implements OnInit {
     this.cambioVinculacion.VinculacionOriginal = this.data;
     this.cambioVinculacion.DocPresupuestal = null;
     this.calcularSemanasSugeridas();
+    if (this.cambioVinculacion.VinculacionOriginal.RegistroPresupuestal == 0) this.habilitado = false;
+    else this.habilitado = true;
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
   }
 
