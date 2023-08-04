@@ -21,7 +21,7 @@ export class ModalAdicionesComponent {
   horasTotales: number;
   semanasMaximo: string;
   mostrar = false;
-  habilitado = false;
+  // habilitado = false;
 
   constructor(
     private popUp: UtilService,
@@ -33,8 +33,8 @@ export class ModalAdicionesComponent {
     this.cambioVinculacion.VinculacionOriginal = this.data;
     this.cambioVinculacion.DocPresupuestal = null;
     this.calcularSemanasSugeridas();
-    if (this.cambioVinculacion.VinculacionOriginal.RegistroPresupuestal == 0) this.habilitado = false;
-    else this.habilitado = true;
+    /*if (this.cambioVinculacion.VinculacionOriginal.RegistroPresupuestal == 0) this.habilitado = false;
+    else this.habilitado = true;*/
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
   }
 
