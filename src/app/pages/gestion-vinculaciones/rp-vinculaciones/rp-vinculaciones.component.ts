@@ -123,7 +123,7 @@ export class RpVinculacionesComponent implements OnInit {
           VinculacionId: element.Id
         }
         this.rpsSeleccionados.push(rp)
-        this.guardarRp = true;
+        //this.guardarRp = true;
       } else {
         this.guardarRp = false;
         return
