@@ -179,6 +179,20 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         ).subscribe((response: Respuesta) => {
           this.contenidoResolucion = response.Data as ContenidoResolucion;
           this.checkTipoResolucion();
+          if (this.contenidoResolucion.Resolucion.FechaInicio != null && this.contenidoResolucion.Resolucion.NumeroSemanas != null) {
+            var object = {
+              "FechaInicio": this.contenidoResolucion.Resolucion.FechaInicio,
+              "NumeroSemanas": this.contenidoResolucion.Resolucion.NumeroSemanas
+            }
+            this.request.post(
+              environment.RESOLUCIONES_MID_V2_SERVICE,
+              `gestion_plantillas/calculo_fecha_fin`,
+              object
+            ).subscribe(response => {
+              this.fechaFin = response.Data
+              this.contenidoResolucion.Resolucion.FechaFin  = response.Data
+            })
+          }
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
           this.responsabilidadesData = new LocalDataSource(responsabilidades);
           this.edicion = true;
