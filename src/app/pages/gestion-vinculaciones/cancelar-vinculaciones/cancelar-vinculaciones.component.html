@@ -15,6 +15,9 @@
                 (userRowSelect)="seleccionarVinculaciones($event)"
                 #table
             ></ng2-smart-table>
+            <mat-error *ngIf="!habilitado">
+                No es posible realizar la cancelación debido a que el docente aún no tiene RP
+            </mat-error>
         </fieldset>
         <fieldset class="form-container" *ngIf="cambioVinculacion.length > 0">
             <legend>
