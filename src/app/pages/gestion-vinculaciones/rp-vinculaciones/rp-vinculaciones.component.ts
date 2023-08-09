@@ -70,7 +70,7 @@ export class RpVinculacionesComponent implements OnInit {
         this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
         this.request.get(
           environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_vinculaciones/${this.resolucionId}`
+          `gestion_vinculaciones/rp/${this.resolucionId}`
         ).subscribe({
           next: (response: Respuesta) => {
             if (response.Success) {
@@ -123,7 +123,8 @@ export class RpVinculacionesComponent implements OnInit {
           VinculacionId: element.Id
         }
         this.rpsSeleccionados.push(rp)
-        //this.guardarRp = true;
+        const user = JSON.parse(atob(localStorage.getItem('user')));
+        this.guardarRp = user.user.role.includes('ADMINISTRADOR_RESOLUCIONES');
       } else {
         this.guardarRp = false;
         return
