@@ -3,6 +3,9 @@
     <mat-card-content>
         <form #gform="ngForm" novalidate>
             <div class="selector">
+                <mat-error>
+                    Por el momento solo se permite realizar resoluciones de adición sobre resoluciones de vinculación ya existentes
+                </mat-error>
                 <mat-form-field class="selector-tipo">
                     <mat-label>Seleccione el tipo de resolución a crear</mat-label>
                     <mat-select name="tipo" [(ngModel)]="tipoResolucion" #tipo="ngModel" (selectionChange)="limpiarFormulario()" required>

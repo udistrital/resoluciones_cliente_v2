@@ -39,6 +39,11 @@ export const ReporteFinancieraExcel: any = {
         width: '15%',
         editable: false,
     },
+    CodigoFacultad: {
+        title: 'Codigo Facultad',
+        width: '15%',
+        editable: false,
+    },
     Facultad: {
         title: 'Facultad',
         width: '15%',

@@ -44,6 +44,7 @@ export class CancelarVinculacionesComponent implements OnInit {
   semanasMaximo: string;
   vinculacionesTotales: any;
   posgrado: boolean;
+  habilitado: boolean = true;
 
   constructor(
     private request: RequestManager,
@@ -202,68 +203,73 @@ export class CancelarVinculacionesComponent implements OnInit {
   }
 
   async seleccionarVinculaciones(event): Promise<void> {
-    const nueva = event.data as Vinculaciones;
-    var original: boolean = false
-    var contains = this.cambioVincTemp.find(x => x.VinculacionOriginal.Id == nueva.Id)
-    // console.log("CONTAINS ", contains)
-    // console.log("EVENT ", event)
-    if (event.isSelected as boolean) {
-      // console.log("ORIGINAL")
-      if (this.cambioVincTemp.length == 0 || contains == undefined) {
-        const vinculacion = new CambioVinculacion();
-        vinculacion.VinculacionOriginal = nueva;
-        vinculacion.NumeroSemanas = 0;
-        vinculacion.NumeroHorasSemanales = 0;
-        this.cambioVincTemp.push(vinculacion);
-        // console.log("prueba ", this.cambioVincTemp)
-        this.calcularSemanasSugeridas(nueva);
-        if (!(nueva.PersonaId in this.registrosPresupuestales)) {
-          this.registrosPresupuestales[nueva.PersonaId] = [];
-        }
-        this.request.get(
-          environment.SICAPITAL_JBPM_SERVICE,
-          `cdprpdocente/${nueva.Disponibilidad}/${nueva.Vigencia}/${nueva.PersonaId}`
-        ).subscribe(response => {
-          if (Object.keys(response.cdp_rp_docente).length > 0) {
-            (response.cdp_rp_docente.cdp_rp as Array<any>).forEach(rp => {
-              const reg = new DocumentoPresupuestal();
-              reg.Consecutivo = parseInt(rp.rp, 10);
-              reg.Vigencia = parseInt(rp.vigencia, 10);
-              reg.Tipo = 'rp';
-              //this.registrosPresupuestales[nueva.PersonaId].push(reg);
-            });
+    if (event.data.RegistroPresupuestal != 0){
+      this.habilitado = true;
+      const nueva = event.data as Vinculaciones;
+      var original: boolean = false
+      var contains = this.cambioVincTemp.find(x => x.VinculacionOriginal.Id == nueva.Id)
+      // console.log("CONTAINS ", contains)
+      console.log("EVENT ", event)
+      if (event.isSelected as boolean) {
+        // console.log("ORIGINAL")
+        if (this.cambioVincTemp.length == 0 || contains == undefined) {
+          const vinculacion = new CambioVinculacion();
+          vinculacion.VinculacionOriginal = nueva;
+          vinculacion.NumeroSemanas = 0;
+          vinculacion.NumeroHorasSemanales = 0;
+          this.cambioVincTemp.push(vinculacion);
+          // console.log("prueba ", this.cambioVincTemp)
+          this.calcularSemanasSugeridas(nueva);
+          if (!(nueva.PersonaId in this.registrosPresupuestales)) {
+            this.registrosPresupuestales[nueva.PersonaId] = [];
           }
-        });
-        this.vinculacionesTotales = await this.getVinculaciones(nueva, event);
-      }
-      // console.log("ASD1 ", this.cambioVincTemp)
-      await this.otrasVinculaciones(original, nueva)
-      this.cambioVincTemp = []
-      // console.log("ASD2 ", this.cambioVincTemp)
-    } else {
-      // console.log("ELSE")
-      const i = this.cambioVinculacion.findIndex(v => v.VinculacionOriginal.Id === nueva.Id);
-      this.cambioVinculacion.splice(i, 1);
-      delete this.registrosPresupuestales[nueva.PersonaId];
-      const vinculaciones : Vinculaciones[] = this.vinculacionesData['data']
-      var vinculaciones_rp = this.cambioVinculacion.filter(x => x.VinculacionOriginal.RegistroPresupuestal == nueva.RegistroPresupuestal)
-      // console.log("VINCULACIONES RP ", vinculaciones_rp)
-      if (vinculaciones_rp.length > 0){
-        var id = event.source.data.indexOf(vinculaciones_rp[0].VinculacionOriginal)
-        let selectedElement: Element = document.querySelectorAll('ng2-smart-table table tbody tr').item(id)
-        if (selectedElement) {
-          let row: HTMLElement = selectedElement.querySelector('td') as HTMLElement;
-          row.click();
-          this.selectedRow = this.smartTable.grid.getSelectedRows().length;
-          console.log(this.selectedRow)
+          this.request.get(
+            environment.SICAPITAL_JBPM_SERVICE,
+            `cdprpdocente/${nueva.Disponibilidad}/${nueva.Vigencia}/${nueva.PersonaId}`
+          ).subscribe(response => {
+            if (Object.keys(response.cdp_rp_docente).length > 0) {
+              (response.cdp_rp_docente.cdp_rp as Array<any>).forEach(rp => {
+                const reg = new DocumentoPresupuestal();
+                reg.Consecutivo = parseInt(rp.rp, 10);
+                reg.Vigencia = parseInt(rp.vigencia, 10);
+                reg.Tipo = 'rp';
+                //this.registrosPresupuestales[nueva.PersonaId].push(reg);
+              });
+            }
+          });
+          this.vinculacionesTotales = await this.getVinculaciones(nueva, event);
         }
+        // console.log("ASD1 ", this.cambioVincTemp)
+        await this.otrasVinculaciones(original, nueva)
+        this.cambioVincTemp = []
+        // console.log("ASD2 ", this.cambioVincTemp)
+      } else {
+        // console.log("ELSE")
+        const i = this.cambioVinculacion.findIndex(v => v.VinculacionOriginal.Id === nueva.Id);
+        this.cambioVinculacion.splice(i, 1);
+        delete this.registrosPresupuestales[nueva.PersonaId];
+        const vinculaciones : Vinculaciones[] = this.vinculacionesData['data']
+        var vinculaciones_rp = this.cambioVinculacion.filter(x => x.VinculacionOriginal.RegistroPresupuestal == nueva.RegistroPresupuestal)
+        // console.log("VINCULACIONES RP ", vinculaciones_rp)
+        if (vinculaciones_rp.length > 0){
+          var id = event.source.data.indexOf(vinculaciones_rp[0].VinculacionOriginal)
+          let selectedElement: Element = document.querySelectorAll('ng2-smart-table table tbody tr').item(id)
+          if (selectedElement) {
+            let row: HTMLElement = selectedElement.querySelector('td') as HTMLElement;
+            row.click();
+            this.selectedRow = this.smartTable.grid.getSelectedRows().length;
+            console.log(this.selectedRow)
+          }
+        }
+        var desvinc = this.cambioVinculacion.filter(x => x.VinculacionOriginal.PersonaId == nueva.PersonaId)
+        for (let i = 0; i < desvinc.length; i++) {
+          const index = this.cambioVinculacion.findIndex(v => v.VinculacionOriginal.Id === desvinc[i].VinculacionOriginal.Id);
+          this.cambioVinculacion.splice(index, 1);
+        }
+        // console.log("TERMINA ", this.cambioVinculacion)
       }
-      var desvinc = this.cambioVinculacion.filter(x => x.VinculacionOriginal.PersonaId == nueva.PersonaId)
-      for (let i = 0; i < desvinc.length; i++) {
-        const index = this.cambioVinculacion.findIndex(v => v.VinculacionOriginal.Id === desvinc[i].VinculacionOriginal.Id);
-        this.cambioVinculacion.splice(index, 1);
-      }
-      // console.log("TERMINA ", this.cambioVinculacion)
+    } else {
+      this.habilitado = false;
     }
   }
 

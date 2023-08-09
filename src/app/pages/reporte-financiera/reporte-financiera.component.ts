@@ -107,9 +107,10 @@ export class ReporteFinancieraComponent implements OnInit {
     var i = 0
     this.reporteFinanciera.forEach(async reporte => {
       texto += reporte.Id + ';';
-      texto += reporte.Resolucion + ';';
+      texto += "'" + reporte.Resolucion + "';";
       texto += reporte.Nombre + ';';
       texto += reporte.Cedula + ';';
+      texto += this.datosReporte.Facultad + ';'
       texto += reporte.Facultad + ';';
       texto += reporte.CodigoProyecto + ';';
       texto += reporte.ProyectoCurricular + ';';
