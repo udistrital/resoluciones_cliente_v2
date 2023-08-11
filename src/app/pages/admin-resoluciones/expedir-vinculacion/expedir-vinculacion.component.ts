@@ -55,6 +55,7 @@ export class ExpedirVinculacionComponent implements OnInit {
       this.resolucionActual = responseRes.Data as Resolucion;
       this.resolucionAux = responseRes.Data as Resolucion;
       this.acta.FechaInicio = (this.resolucionActual.FechaInicio).toString()
+      this.cambioFechaResolucion();
       if (this.resolucionActual.FechaExpedicion !== undefined
           && String(this.resolucionActual.FechaExpedicion) !== '0001-01-01T00:00:00Z') {
         this.resolucionActual.FechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
