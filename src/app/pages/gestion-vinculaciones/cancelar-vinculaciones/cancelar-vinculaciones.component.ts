@@ -42,6 +42,7 @@ export class CancelarVinculacionesComponent implements OnInit {
   tipoResolucion: Parametro;
   parametros: any;
   semanasMaximo: string;
+  semanasTotales: string;
   vinculacionesTotales: any;
   posgrado: boolean;
   habilitado: boolean = true;
@@ -90,6 +91,7 @@ export class CancelarVinculacionesComponent implements OnInit {
         ]).pipe().subscribe({
           next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
             this.resolucion = resp1.Data as Resolucion;
+            this.semanasTotales = (this.resolucion.NumeroSemanas).toString();
             this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
             if (this.resolucionVinculacion.NivelAcademico == 'POSGRADO') this.posgrado = true;
             else this.posgrado = false;
