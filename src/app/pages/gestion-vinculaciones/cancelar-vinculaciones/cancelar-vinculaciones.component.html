@@ -26,7 +26,7 @@
             <form #cform="ngForm" novalidate>
                 <mat-form-field class="form-field-column">
                     <mat-label>Numero de semanas a reversar:</mat-label>
-                    <input matInput type="number" min="0" max="{{semanasMaximo}}" [(ngModel)]="numeroSemanas" name="semanas" #semanas="ngModel" required >
+                    <input matInput type="number" min="0" max="{{semanasTotales}}" [(ngModel)]="numeroSemanas" name="semanas" #semanas="ngModel" required >
                 </mat-form-field>
                 <p style="color: red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
                 <mat-expansion-panel *ngFor="let v of cambioVinculacion; let i=index" hideToggle disabled>
