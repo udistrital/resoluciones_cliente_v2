@@ -84,10 +84,10 @@ export class PlantillasComponent implements OnInit {
             name: 'editar',
             title: '<em class="material-icons" title="Editar plantilla">edit</em>',
           },
-          {
-            name: 'copiar',
-            title: '<em class="material-icons" title="Copiar plantilla">file_copy</em>',
-          },
+          // {
+          //   name: 'copiar',
+          //   title: '<em class="material-icons" title="Copiar plantilla">file_copy</em>',
+          // },
           {
             name: 'borrar',
             title: '<em class="material-icons" title="Eliminar plantilla">delete</em>',
