@@ -108,6 +108,9 @@ export class ExpedirVinculacionComponent implements OnInit {
   }
 
   realizarContrato(): void {
+    let regexAnio = /\b\d{4}\b/
+    let anioInicio = parseInt(this.acta.FechaInicio.toString().match(regexAnio)[0])
+    let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
     if (this.resolucionVinculacion.Dedicacion === 'HCH') {
       this.Contrato.TipoContrato = { Id: 3 };
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Honorarios';
@@ -118,19 +121,29 @@ export class ExpedirVinculacionComponent implements OnInit {
       this.Contrato.TipoContrato = { Id: 18 };
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
+
     if (this.resolucionActual.FechaExpedicion && this.acta.FechaInicio) {
-      this.popUp.confirmarExpedicion(
-        '¿Expedir la resolución?',
-        '¿Está seguro de que desea expedir la resolución?',
-        this.resolucion,
-      ).then(result => {
-        if (result.isConfirmed) {
-          this.guardarContratos();
-        }
-      });
+      anioInicio != this.resolucion.Vigencia ?
+        this.popUp.error("Periodo de vincualción no coincide con vigencia") :
+        anioExpedicion != this.resolucion.Vigencia ?
+          this.popUp.error("Fecha de expedición no coincide con vigencia") :
+          this.expedir()
+
     } else {
       this.popUp.warning('Complete los campos');
     }
+  }
+
+  expedir(): void {
+    this.popUp.confirmarExpedicion(
+      '¿Expedir la resolución?',
+      '¿Está seguro de que desea expedir la resolución?',
+      this.resolucion,
+    ).then(result => {
+      if (result.isConfirmed) {
+        this.guardarContratos();
+      }
+    });
   }
 
   guardarContratos(): void {
