@@ -92,8 +92,8 @@ export class ExpedirCancelacionComponent implements OnInit {
   cancelarContrato(): void {
     this.asignarValoresDefecto();
     if (this.resolucionActual.FechaExpedicion && this.contratoCanceladoBase.MotivoCancelacion) {
-      let regexAnio = /\b\d{4}\b/
-      let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
+      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion)
+      const anioExpedicion = fechaExpedicion.getFullYear()
       anioExpedicion != this.resolucionActual.Vigencia ?
         this.popUp.warning("Fecha de expedición no coincide con vigencia") :
         this.confirmarExpedir()

@@ -108,9 +108,10 @@ export class ExpedirVinculacionComponent implements OnInit {
   }
 
   realizarContrato(): void {
-    let regexAnio = /\b\d{4}\b/
-    let anioInicio = parseInt(this.acta.FechaInicio.toString().match(regexAnio)[0])
-    let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
+    const fechaInicioVinculacion = new Date(this.acta.FechaInicio)
+    const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion)
+    const anioInicio = fechaInicioVinculacion.getFullYear()
+    const anioExpedicion = fechaExpedicion.getFullYear()
     if (this.resolucionVinculacion.Dedicacion === 'HCH') {
       this.Contrato.TipoContrato = { Id: 3 };
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Honorarios';

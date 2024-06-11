@@ -125,8 +125,8 @@ export class ExpedirModificacionComponent implements OnInit {
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
     if (this.resolucionActual.FechaExpedicion) {
-      let regexAnio = /\b\d{4}\b/
-      let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
+      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion)
+      const anioExpedicion = fechaExpedicion.getFullYear()
       anioExpedicion != this.resolucionActual.Vigencia ?
         this.popUp.warning("Fecha de expedición no coincide con vigencia") :
         this.confirmarExpedir()
