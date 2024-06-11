@@ -126,7 +126,7 @@ export class ExpedirVinculacionComponent implements OnInit {
       anioInicio != this.resolucion.Vigencia ?
         this.popUp.error("Periodo de vincualción no coincide con vigencia") :
         anioExpedicion != this.resolucion.Vigencia ?
-          this.popUp.error("Fecha de expedición no coincide con vigencia") :
+          this.popUp.warning("Fecha de expedición no coincide con vigencia") :
           this.expedir()
 
     } else {

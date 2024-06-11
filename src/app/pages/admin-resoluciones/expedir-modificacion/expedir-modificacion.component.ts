@@ -125,18 +125,26 @@ export class ExpedirModificacionComponent implements OnInit {
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
     if (this.resolucionActual.FechaExpedicion) {
-      this.popUp.confirmarExpedicion(
-        '¿Expedir la resolución?',
-        '¿Está seguro que desea expedir la resolución?',
-        this.resolucion,
-      ).then((result) => {
-        if (result.isConfirmed) {
-          this.guardarContratos();
-        }
-      });
+      let regexAnio = /\b\d{4}\b/
+      let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
+      anioExpedicion != this.resolucionActual.Vigencia ?
+        this.popUp.warning("Fecha de expedición no coincide con vigencia") :
+        this.confirmarExpedir()
     } else {
       this.popUp.warning('Complete los campos');
     }
+  }
+
+  confirmarExpedir() {
+    this.popUp.confirmarExpedicion(
+      '¿Expedir la resolución?',
+      '¿Está seguro que desea expedir la resolución?',
+      this.resolucion,
+    ).then((result) => {
+      if (result.isConfirmed) {
+        this.guardarContratos();
+      }
+    });
   }
 
   guardarContratos(): void {

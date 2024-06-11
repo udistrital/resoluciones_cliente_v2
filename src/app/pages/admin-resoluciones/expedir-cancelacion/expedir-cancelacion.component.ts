@@ -92,19 +92,27 @@ export class ExpedirCancelacionComponent implements OnInit {
   cancelarContrato(): void {
     this.asignarValoresDefecto();
     if (this.resolucionActual.FechaExpedicion && this.contratoCanceladoBase.MotivoCancelacion) {
-      this.popUp.confirmarExpedicion(
-        '¿Expedir la resolución?',
-        '¿Está seguro que desea expedir la resolución?',
-        this.resolucion,
-        this.contratados.length
-      ).then((result) => {
-        if (result.isConfirmed) {
-          this.expedirCancelar();
-        }
-      });
+      let regexAnio = /\b\d{4}\b/
+      let anioExpedicion = parseInt(this.resolucionActual.FechaExpedicion.toString().match(regexAnio)[0])
+      anioExpedicion != this.resolucionActual.Vigencia ?
+        this.popUp.warning("Fecha de expedición no coincide con vigencia") :
+        this.confirmarExpedir()
     } else {
       this.popUp.warning('Complete todos Los campos');
     }
+  }
+
+  confirmarExpedir() {
+    this.popUp.confirmarExpedicion(
+      '¿Expedir la resolución?',
+      '¿Está seguro que desea expedir la resolución?',
+      this.resolucion,
+      this.contratados.length
+    ).then((result) => {
+      if (result.isConfirmed) {
+        this.expedirCancelar();
+      }
+    });
   }
 
   expedirCancelar(): void {
