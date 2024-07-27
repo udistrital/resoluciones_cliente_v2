@@ -55,6 +55,20 @@
     align-items: flex-start;
 }
 
+::ng-deep .mat-tooltip {
+    font-size: 1em;
+    text-align: justify;
+    background-color: var(--primary);
+    position: absolute;
+    width: 200px;
+}
+
+.tooltip-container {
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
 @media screen and (max-width: 1024px) {
     .form-field-column {
         width: 100%;
