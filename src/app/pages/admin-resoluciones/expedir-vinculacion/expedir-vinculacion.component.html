@@ -32,12 +32,17 @@
     </div>
     <div class="section">
         <h2 class="section-title">Periodo de Vinculación</h2>
-        <mat-form-field class="form-field-date">
-            <mat-label>Fecha de inicio válida</mat-label>
-            <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="acta.FechaInicio" (dateChange)="cambioFechaResolucion()">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+        <div class="tooltip-container">
+            <mat-form-field class="form-field-date"
+                matTooltip="Por favor, no seleccionar la fecha dada por resolución. Seleccionar el sábado inmediatamente anterior para una correcta preliquidación."
+                matTooltipClass="mat-tooltip">
+                <mat-label>Fecha de inicio válida</mat-label>
+                <input matInput [matDatepicker]="picker" name="fechaInicio" [(ngModel)]="acta.FechaInicio"
+                    (dateChange)="cambioFechaResolucion()">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>  
         <mat-form-field class="form-field-date">
             <mat-label>Fecha fin</mat-label>
             <input matInput [matDatepicker]="picker2" name="fechaFin" [(ngModel)]="resolucionActual.FechaFin">
