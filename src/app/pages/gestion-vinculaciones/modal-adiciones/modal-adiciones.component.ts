@@ -21,6 +21,8 @@ export class ModalAdicionesComponent {
   horasTotales: number;
   semanasMaximo: string;
   mostrar = false;
+  horasTip = "Digite las horas a adicionar";
+  fechaInicioTip = "Seleccione la fecha inicio (se calcularan las semanas a aplicar la adición)";
   // habilitado = false;
 
   constructor(

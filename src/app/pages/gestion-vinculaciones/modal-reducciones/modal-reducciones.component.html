@@ -6,7 +6,8 @@
                 <mat-label>Horas actuales</mat-label>
                 <input matInput type="text" name="horasAct" #horasAct="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroHorasSemanales" disabled>
             </mat-form-field>
-            <mat-form-field class="form-field-modal">
+            <mat-form-field class="form-field-modal"
+                [matTooltip]="horasTip" matTooltipClass="mat-tooltip">
                 <mat-label>Horas a reducir</mat-label>
                 <input matInput type="number" name="horasRed" #horasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroHorasSemanales" (change)="sumarHoras()" required>
             </mat-form-field>
@@ -28,15 +29,23 @@
                 <mat-label>Semanas a reducir</mat-label>
                 <input matInput type="text" name="semanasRed" #semanasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroSemanas" required disabled>
             </mat-form-field>
-            <mat-form-field class="form-field-modal">
-                <mat-label>Fecha de inicio válida</mat-label>
-                <mat-datepicker #fechaPicker></mat-datepicker>
-                <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required >
-                <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
-            </mat-form-field>
+            <div class="tooltip-container">
+                <mat-form-field class="form-field-modal"
+                    [matTooltip]="fechaInicioTip" matTooltipClass="mat-tooltip">
+                    <mat-label>Fecha de inicio válida</mat-label>
+                    <mat-datepicker #fechaPicker></mat-datepicker>
+                    <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit"
+                        #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()"
+                        required>
+                    <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+                </mat-form-field>
+            </div>
+
             <mat-form-field class="form-field-modal" *ngIf="posgrado">
                 <mat-label>Horas trabajadas</mat-label>
-                <input matInput type="number" name="horasTra" #horasRed="ngModel" [(ngModel)]="cambioVinculacion.NumeroHorasTrabajadas" required>
+                <input matTooltip="Digitar las horas que ya trabajó el docente, si no ha empezado la vinculación digitar 0." matTooltipClass="mat-tooltip" matInput
+                    type="number" name="horasTra" #horasRed="ngModel"
+                    [(ngModel)]="cambioVinculacion.NumeroHorasTrabajadas" required>
             </mat-form-field>
         </mat-grid-tile>
     </mat-grid-list>
