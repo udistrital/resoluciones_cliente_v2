@@ -24,6 +24,8 @@ export class ModalReduccionesComponent implements OnInit {
   semanasMaximo: string;
   posgrado: boolean = false
   habilitado = false;
+  fechaInicioTip: string;
+  horasTip: string;
 
   constructor(
     private popUp: UtilService,
@@ -31,10 +33,12 @@ export class ModalReduccionesComponent implements OnInit {
     public dialogRef: MatDialogRef<ModalReduccionesComponent>,
     @Inject(MAT_DIALOG_DATA) private data: VinculacionesAux,
   ) {
+    this.verificarNivelAcademico()
+    this.definirTips();
+    this.calcularSemanasSugeridas();
     this.cambioVinculacion = new CambioVinculacion();
     this.cambioVinculacion.VinculacionOriginal = this.data;
     this.cambioVinculacion.DocPresupuestal = null;
-    this.calcularSemanasSugeridas();
     if (this.cambioVinculacion.VinculacionOriginal.RegistroPresupuestal == 0) this.habilitado = false;
     else this.habilitado = true;
     this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
@@ -69,11 +73,24 @@ export class ModalReduccionesComponent implements OnInit {
         });
       }
     });
+  }
 
+  verificarNivelAcademico() {
     if (this.data.NivelAcademico == 'POSGRADO') {
-      this.posgrado = true
+      this.posgrado = true;
     } else {
-      this.posgrado = false
+      this.posgrado = false;
+    }
+  }
+
+  definirTips() {
+    if (this.posgrado) {
+      this.fechaInicioTip = "Seleccione la fecha inicio (se calcularan las semanas a aplicar la reducción)"
+      this.horasTip = "Digite las horas a reducir del semestre"
+    }
+    else {
+      this.fechaInicioTip = "Seleccione la fecha desde la cual empieza la reducción"
+      this.horasTip = "Digite las horas a reducir por semana"
     }
   }
 

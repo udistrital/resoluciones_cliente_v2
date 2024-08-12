@@ -60,3 +60,13 @@
         }
     }
 }
+
+::ng-deep {
+    .mat-tooltip {
+        font-size: 1em;
+        text-align: justify;
+        background-color: var(--primary);
+        position: absolute;
+        width: 200px;
+    }
+}

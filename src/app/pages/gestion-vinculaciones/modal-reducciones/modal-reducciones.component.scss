@@ -8,3 +8,11 @@
 .centrado {
     text-align: center;
 }
+
+.tooltip-container {
+    width: 98%;
+    padding: 0 1%;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
