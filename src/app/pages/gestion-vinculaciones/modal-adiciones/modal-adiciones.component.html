@@ -4,11 +4,13 @@
         <mat-grid-tile>
             <mat-form-field class="form-field-modal">
                 <mat-label>Horas actuales</mat-label>
-                <input matInput type="tel" name="horasAct" #horasAct="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroHorasSemanales" disabled>
+                <input matInput type="tel" name="horasAct" #horasAct="ngModel"
+                    [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroHorasSemanales" disabled>
             </mat-form-field>
-            <mat-form-field class="form-field-modal">
+            <mat-form-field class="form-field-modal" [matTooltip]="horasTip" matTooltipClass="mat-tooltip">
                 <mat-label>Horas a adicionar</mat-label>
-                <input matInput type="tel" name="horasAdd" #horasAdd="ngModel" [(ngModel)]="cambioVinculacion.NumeroHorasSemanales" (change)="sumarHoras()" required>
+                <input matInput type="tel" name="horasAdd" #horasAdd="ngModel"
+                    [(ngModel)]="cambioVinculacion.NumeroHorasSemanales" (change)="sumarHoras()" required>
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Horas totales</mat-label>
@@ -16,25 +18,33 @@
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Disponibilidad actual</mat-label>
-                <input matInput type="text" name="cdp" #cdp="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.Disponibilidad" disabled>
+                <input matInput type="text" name="cdp" #cdp="ngModel"
+                    [(ngModel)]="cambioVinculacion.VinculacionOriginal.Disponibilidad" disabled>
             </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
             <mat-form-field class="form-field-modal">
                 <mat-label>Semanas actuales</mat-label>
-                <input matInput type="text" name="semanas" #semanas="ngModel" [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroSemanas" disabled>
+                <input matInput type="text" name="semanas" #semanas="ngModel"
+                    [(ngModel)]="cambioVinculacion.VinculacionOriginal.NumeroSemanas" disabled>
             </mat-form-field>
             <mat-form-field class="form-field-modal">
                 <mat-label>Semanas a adicionar</mat-label>
-                <input matInput type="text" name="semanasAdd" #semanasAdd="ngModel" [(ngModel)]="cambioVinculacion.NumeroSemanas" required disabled>
+                <input matInput type="text" name="semanasAdd" #semanasAdd="ngModel"
+                    [(ngModel)]="cambioVinculacion.NumeroSemanas" required disabled>
             </mat-form-field>
-            <mat-form-field class="form-field-modal">
-                <mat-label>fecha de inicio válida</mat-label>
-                <mat-datepicker #fechaPicker ></mat-datepicker>
-                <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit" #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()" required>
-                <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
-            </mat-form-field>
-            <button mat-button class="button button-add" type="button" (click)="mostrarDisponibilidad()">Cambiar disponibilidad</button>
+            <div class="tooltip-container">
+                <mat-form-field class="form-field-modal" [matTooltip]="fechaInicioTip" matTooltipClass="mat-tooltip">
+                    <mat-label>fecha de inicio válida</mat-label>
+                    <mat-datepicker #fechaPicker></mat-datepicker>
+                    <input matInput [matDatepickerFilter]="filtrarDias" [matDatepicker]="fechaPicker" name="fechaInit"
+                        #fechaInit="ngModel" [(ngModel)]="cambioVinculacion.FechaInicio" (dateInput)="calcularSemanas()"
+                        required>
+                    <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+                </mat-form-field>
+            </div>
+            <button mat-button class="button button-add" type="button" (click)="mostrarDisponibilidad()">Cambiar
+                disponibilidad</button>
         </mat-grid-tile>
     </mat-grid-list>
     <p style="color:red">Número máximo de semanas sugerido: {{semanasMaximo}}</p>
