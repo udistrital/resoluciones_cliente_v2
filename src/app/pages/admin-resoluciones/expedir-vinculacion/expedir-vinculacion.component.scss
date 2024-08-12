@@ -55,6 +55,12 @@
     align-items: flex-start;
 }
 
+.tooltip-container {
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
 @media screen and (max-width: 1024px) {
     .form-field-column {
         width: 100%;
