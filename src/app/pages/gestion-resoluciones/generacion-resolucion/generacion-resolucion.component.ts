@@ -32,6 +32,7 @@ export class GeneracionResolucionComponent implements OnInit {
   resolucionesExpedidasSettings: any;
   resolucionesExpedidasData: ResolucionesDataSourceComponent;
   contenidoResolucion: ContenidoResolucion;
+  resolucionAnterior: Resolucion;
 
   tipoResolucion = '';
   NumeroResolucion = '';
@@ -178,33 +179,44 @@ export class GeneracionResolucionComponent implements OnInit {
         'create'
       ).then(result => {
         if (result.isConfirmed) {
-          this.contenidoResolucion.Usuario = localStorage.getItem('user');
-          this.contenidoResolucion.Resolucion.NumeroResolucion = this.NumeroResolucion;
-          this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
-            (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
-          this.popUp.loading();
-          this.request.post(
-            environment.RESOLUCIONES_MID_V2_SERVICE,
-            `gestion_resoluciones`,
-            this.contenidoResolucion
-          ).subscribe({
-            next: (response: Respuesta) => {
-              if (response.Success) {
-                if (response.Data !== 0) {
+          this.request.get(environment.RESOLUCIONES_V2_SERVICE, `resolucion/${this.contenidoResolucion.ResolucionAnteriorId}`).subscribe({
+            next: (resAnt: Respuesta) => {
+              this.resolucionAnterior = resAnt.Data;
+              this.contenidoResolucion.Usuario = localStorage.getItem('user');
+              this.contenidoResolucion.Resolucion.NumeroResolucion = this.NumeroResolucion;
+              this.contenidoResolucion.Resolucion.VigenciaCarga = this.resolucionAnterior.VigenciaCarga;
+              this.contenidoResolucion.Resolucion.PeriodoCarga = this.resolucionAnterior.PeriodoCarga;
+              this.contenidoResolucion.Resolucion.TipoResolucionId = this.tiposResoluciones.filter(
+                (tipo: Parametro) => tipo.CodigoAbreviacion === this.tipoResolucion, this)[0].Id;
+              this.popUp.loading();
+              this.request.post(
+                environment.RESOLUCIONES_MID_V2_SERVICE,
+                `gestion_resoluciones`,
+                this.contenidoResolucion
+              ).subscribe({
+                next: (response: Respuesta) => {
+                  if (response.Success) {
+                    if (response.Data !== 0) {
+                      this.popUp.close();
+                      this.popUp.success('La resolución se ha generado con éxito').then(() => {
+                        this.router.navigate(['../'], { relativeTo: this.route });
+                      });
+                    } else {
+                      this.popUp.close();
+                      this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+                    }
+                  }
+                }, error: () => {
                   this.popUp.close();
-                  this.popUp.success('La resolución se ha generado con éxito').then(() => {
-                    this.router.navigate(['../'], {relativeTo: this.route});
-                  });
-                } else {
-                  this.popUp.close();
-                  this.popUp.error('No hay plantillas para el tipo de resolución indicada');
+                  this.popUp.error('No se ha podido generar la resolución.');
                 }
-              }
-            }, error: () => {
+              });
+            },
+            error: () => {
               this.popUp.close();
-              this.popUp.error('No se ha podido generar la resolución.');
+              this.popUp.error('No se ha podido consultar la resolución anterior.');
             }
-          });
+          })
         }
       });
     } else {
