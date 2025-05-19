@@ -9,6 +9,7 @@ import { NivelFormacion } from 'src/app/@core/models/nivel_formacion';
 import { Periodo } from 'src/app/@core/models/periodo';
 import { ReporteFinanciera, ReporteFinancieraExcel } from 'src/app/@core/models/reporte_financiera';
 import { formatCurrency } from '@angular/common';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-reporte-financiera',
@@ -101,7 +102,7 @@ export class ReporteFinancieraComponent implements OnInit {
       next: (response: Respuesta) => {
         if (response.Success) {
           this.reporteFinanciera = response.Data;
-          this.generarReporteCSV();
+          this.generarReporteExcel();
         }
       },
       error: () => {
@@ -111,103 +112,116 @@ export class ReporteFinancieraComponent implements OnInit {
     });
   }
 
-  async generarReporteCSV(): Promise<void> {
-    let texto = '';
 
-    if (this.modoReporte === 'consolidado') {
-      const columnas = [
-        'Resolucion',
-        'Vigencia',
-        'Periodo',
-        'NivelAcademico',
-        'TipoVinculacion',
-        'DocumentoDocente',
-        'Horas',
-        'Semanas',
-        'Total',
-        'Cdp',
-        'Rp',
-        'Proyectocurricular',
-        'TipoResolucion',
-        'Sueldobasico',
-        'Primanavidad',
-        'Vacaciones',
-        'Primavacaciones',
-        'Cesantias',
-        'Interesescesantias',
-        'Primaservicios',
-        'Bonificacionservicios'
-      ];
 
-      // Header
+async generarReporteExcel(): Promise<void> {
+  let columnas: string[] = [];
+  let datos: any[] = [];
+
+  const columnasMoneda = [
+    'Total',
+    'Sueldobasico',
+    'Primanavidad',
+    'Vacaciones',
+    'Primavacaciones',
+    'Cesantias',
+    'Interesescesantias',
+    'Primaservicios',
+    'Bonificacionservicios',
+  ];
+
+  if (this.modoReporte === 'consolidado') {
+    columnas = [
+      'Resolucion',
+      'Vigencia',
+      'Periodo',
+      'NivelAcademico',
+      'TipoVinculacion',
+      'DocumentoDocente',
+      'Horas',
+      'Semanas',
+      'Total',
+      'Cdp',
+      'Rp',
+      'Proyectocurricular',
+      'TipoResolucion',
+      'Sueldobasico',
+      'Primanavidad',
+      'Vacaciones',
+      'Primavacaciones',
+      'Cesantias',
+      'Interesescesantias',
+      'Primaservicios',
+      'Bonificacionservicios'
+    ];
+
+    datos = this.reporteFinanciera.map(item => {
+      const fila: any = {};
       columnas.forEach(col => {
-        texto += col + ';';
+        let val = item[col];
+        if (val === null || val === undefined) val = '';
+        else if (typeof val === 'string' && col === 'DocumentoDocente') {
+          // Evitar que Excel lo interprete como número grande
+          val = `'${val}`;
+        }
+        fila[col] = val;
       });
-      texto += '\n';
+      return fila;
+    });
 
-      // Datos
-      this.reporteFinanciera.forEach(item => {
-        columnas.forEach(col => {
-          let val = item[col];
-          if (val === null || val === undefined) val = '';
-          else if (
-            typeof val === 'number' &&
-            [
-              'Total',
-              'Sueldobasico',
-              'Primanavidad',
-              'Vacaciones',
-              'Primavacaciones',
-              'Cesantias',
-              'Interesescesantias',
-              'Primaservicios',
-              'Bonificacionservicios',
-            ].includes(col)
-          ) {
-            val = formatCurrency(val, this.locale, '$');
-          }
-          texto += val + ';';
-        });
-        texto += '\n';
-      });
+  } else {
+    columnas = Object.keys(this.reporteFinancieraCVS.columns).map(col => this.reporteFinancieraCVS.columns[col].title);
 
-    } else {
-      Object.keys(this.reporteFinancieraCVS.columns).forEach((col) => {
-        texto += this.reporteFinancieraCVS.columns[col].title + ';';
-      });
-      texto += '\n';
-
-      this.reporteFinanciera.forEach(reporte => {
-        texto += "'" + reporte.Resolucion + "';";
-        texto += reporte.Nombre + ';';
-        texto += reporte.Cedula + ';';
-        texto += (this.datosReporte as any).Facultad + ';';
-        texto += reporte.Facultad + ';';
-        texto += reporte.CodigoProyecto + ';';
-        texto += reporte.ProyectoCurricular + ';';
-        texto += reporte.Horas + ';';
-        texto += reporte.Semanas + ';';
-        texto += reporte.Cdp + ';';
-        texto += formatCurrency(reporte.Total, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.SueldoBasico, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.PrimaNavidad, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.Vacaciones, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.PrimaVacaciones, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.Cesantias, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.InteresesCesantias, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.PrimaServicios, this.locale, '$') + ';';
-        texto += formatCurrency(reporte.BonificacionServicios, this.locale, '$') + '\n';
-      });
-    }
-
-    const a = document.createElement('a');
-    a.href = window.URL.createObjectURL(new Blob([texto], { type: 'text/plain' }));
-    const nombreArchivo = this.modoReporte === 'resolucion'
-      ? `reporte_financiera_${(this.datosReporte as any).Resolucion}_${this.datosReporte.Vigencia}.csv`
-      : `reporte_financiera_consolidado_${this.datosReporte.Vigencia}.csv`;
-    a.download = nombreArchivo;
-    a.click();
+    datos = this.reporteFinanciera.map(reporte => ({
+      Resolucion: `'${reporte.Resolucion}`,
+      Nombre: reporte.Nombre,
+      Cedula: reporte.Cedula,
+      FacultadConsulta: (this.datosReporte as any).Facultad,
+      Facultad: reporte.Facultad,
+      CodigoProyecto: reporte.CodigoProyecto,
+      ProyectoCurricular: reporte.ProyectoCurricular,
+      Horas: reporte.Horas,
+      Semanas: reporte.Semanas,
+      Cdp: reporte.Cdp,
+      Total: reporte.Total,
+      SueldoBasico: reporte.SueldoBasico,
+      PrimaNavidad: reporte.PrimaNavidad,
+      Vacaciones: reporte.Vacaciones,
+      PrimaVacaciones: reporte.PrimaVacaciones,
+      Cesantias: reporte.Cesantias,
+      InteresesCesantias: reporte.InteresesCesantias,
+      PrimaServicios: reporte.PrimaServicios,
+      BonificacionServicios: reporte.BonificacionServicios,
+    }));
   }
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datos, { header: columnas });
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+
+  // Aplicar formato de moneda (USD) a columnas específicas (si quieres hacerlo automáticamente)
+  columnasMoneda.forEach((col) => {
+    const colIndex = columnas.indexOf(col);
+    if (colIndex === -1) return;
+
+    const colLetter = XLSX.utils.encode_col(colIndex);
+    for (let row = 1; row <= datos.length; row++) {
+      const cellAddress = `${colLetter}${row + 1}`;
+      const cell = ws[cellAddress];
+      if (cell && typeof cell.v === 'number') {
+        cell.z = '"$"#,##0.00';  // Formato USD
+        cell.t = 'n';
+      }
+    }
+  });
+
+  const nombreArchivo = this.modoReporte === 'resolucion'
+    ? `reporte_financiera_${(this.datosReporte as any).Resolucion}_${this.datosReporte.Vigencia}.xlsx`
+    : `reporte_financiera_consolidado_${this.datosReporte.Vigencia}.xlsx`;
+
+  XLSX.writeFile(wb, nombreArchivo);
+}
+
 
 
 
