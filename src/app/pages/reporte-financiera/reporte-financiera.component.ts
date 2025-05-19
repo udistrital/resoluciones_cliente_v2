@@ -84,7 +84,7 @@ export class ReporteFinancieraComponent implements OnInit {
     });
   }
 
-  generarReporte2() {
+  generarReporte() {
     const esConsolidado = this.modoReporte === 'consolidado';
 
     const servicio = esConsolidado
@@ -111,194 +111,104 @@ export class ReporteFinancieraComponent implements OnInit {
     });
   }
 
-  generarReporte() {
-  if (this.modoReporte === 'consolidado') {
-    this.generarReporteCSV();
-    return;
-  }
-
-  const servicio = environment.RESOLUCIONES_MID_V2_SERVICE;
-  const endpoint = 'reporte_financiera';
-  const payload = this.datosReporte;
-
-  this.request.post(servicio, endpoint, payload).subscribe({
-    next: (response: Respuesta) => {
-      if (response.Success) {
-        this.reporteFinanciera = response.Data;
-        this.generarReporteCSV();
-      }
-    },
-    error: () => {
-      this.popUp.close();
-      this.popUp.error('No se ha podido generar el reporte');
-    }
-  });
-}
-
   async generarReporteCSV(): Promise<void> {
-  let texto = '';
+    let texto = '';
 
-  if (this.modoReporte === 'consolidado') {
-    const mockData = [
-      {
-        Id: 1003,
-        Resolucion: "039",
-        Vigencia: 2025,
-        Periodo: 1,
-        NivelAcademico: "PREGRADO",
-        TipoVinculacion: "MTO",
-        DocumentoDocente: 3459012,
-        Horas: 8,
-        Semanas: 8,
-        Total: 2000000,
-        Cdp: 12345678,
-        Rp: 0,
-        Proyectocurricular: 101,
-        TipoResolucion: "adición",
-        Sueldobasico: 2000000,
-        Primanavidad: 160000,
-        Vacaciones: 150000,
-        Primavacaciones: 100000,
-        Cesantias: 170000,
-        Interesescesantias: 45000,
-        Primaservicios: 140000,
-        Bonificacionservicios: 90000
-      },
-      {
-        Id: 1002,
-        Resolucion: "038",
-        Vigencia: 2025,
-        Periodo: 1,
-        NivelAcademico: "PREGRADO",
-        TipoVinculacion: "TC",
-        DocumentoDocente: 2345671,
-        Horas: 16,
-        Semanas: 16,
-        Total: 4000000,
-        Cdp: 12345678,
-        Rp: 0,
-        Proyectocurricular: 101,
-        TipoResolucion: "vinculación",
-        Sueldobasico: 4000000,
-        Primanavidad: 320000,
-        Vacaciones: 300000,
-        Primavacaciones: 200000,
-        Cesantias: 350000,
-        Interesescesantias: 90000,
-        Primaservicios: 280000,
-        Bonificacionservicios: 180000
-      },
-      {
-        Id: 1001,
-        Resolucion: "037",
-        Vigencia: 2025,
-        Periodo: 1,
-        NivelAcademico: "PREGRADO",
-        TipoVinculacion: "TC",
-        DocumentoDocente: 1234567890,
-        Horas: 40,
-        Semanas: 16,
-        Total: 10000000,
-        Cdp: 12345678,
-        Rp: 0,
-        Proyectocurricular: 101,
-        TipoResolucion: "vinculación",
-        Sueldobasico: 10000000,
-        Primanavidad: 800000,
-        Vacaciones: 700000,
-        Primavacaciones: 500000,
-        Cesantias: 900000,
-        Interesescesantias: 200000,
-        Primaservicios: 600000,
-        Bonificacionservicios: 400000
-      }
-    ];
+    if (this.modoReporte === 'consolidado') {
+      const columnas = [
+        'Resolucion',
+        'Vigencia',
+        'Periodo',
+        'NivelAcademico',
+        'TipoVinculacion',
+        'DocumentoDocente',
+        'Horas',
+        'Semanas',
+        'Total',
+        'Cdp',
+        'Rp',
+        'Proyectocurricular',
+        'TipoResolucion',
+        'Sueldobasico',
+        'Primanavidad',
+        'Vacaciones',
+        'Primavacaciones',
+        'Cesantias',
+        'Interesescesantias',
+        'Primaservicios',
+        'Bonificacionservicios'
+      ];
 
-    // Columnas para consolidado (agregando NivelAcademico)
-    const columnas = [
-      'Id',
-      'Resolucion',
-      'Vigencia',
-      'Periodo',
-      'NivelAcademico',
-      'TipoVinculacion',
-      'DocumentoDocente',
-      'Horas',
-      'Semanas',
-      'Total',
-      'Cdp',
-      'Rp',
-      'Proyectocurricular',
-      'TipoResolucion',
-      'Sueldobasico',
-      'Primanavidad',
-      'Vacaciones',
-      'Primavacaciones',
-      'Cesantias',
-      'Interesescesantias',
-      'Primaservicios',
-      'Bonificacionservicios'
-    ];
-
-    // Header
-    columnas.forEach(col => {
-      texto += col + ';';
-    });
-    texto += '\n';
-
-    // Datos
-    mockData.forEach(item => {
+      // Header
       columnas.forEach(col => {
-        let val = item[col];
-        if (val === null || val === undefined) val = '';
-        else if (typeof val === 'number' && ['Total','Sueldobasico',
-          'Primanavidad','Vacaciones','Primavacaciones','Cesantias',
-          'Interesescesantias','Primaservicios','Bonificacionservicios'].includes(col)) {
-          val = formatCurrency(val, this.locale, '$');
-        }
-        texto += val + ';';
+        texto += col + ';';
       });
       texto += '\n';
-    });
 
-  } else {
-    Object.keys(this.reporteFinancieraCVS.columns).forEach((col) => {
-      texto += this.reporteFinancieraCVS.columns[col].title + ';';
-    });
-    texto += '\n';
+      // Datos
+      this.reporteFinanciera.forEach(item => {
+        columnas.forEach(col => {
+          let val = item[col];
+          if (val === null || val === undefined) val = '';
+          else if (
+            typeof val === 'number' &&
+            [
+              'Total',
+              'Sueldobasico',
+              'Primanavidad',
+              'Vacaciones',
+              'Primavacaciones',
+              'Cesantias',
+              'Interesescesantias',
+              'Primaservicios',
+              'Bonificacionservicios',
+            ].includes(col)
+          ) {
+            val = formatCurrency(val, this.locale, '$');
+          }
+          texto += val + ';';
+        });
+        texto += '\n';
+      });
 
-    this.reporteFinanciera.forEach(reporte => {
-      texto += reporte.Id + ';';
-      texto += "'" + reporte.Resolucion + "';";
-      texto += reporte.Nombre + ';';
-      texto += reporte.Cedula + ';';
-      texto += (this.datosReporte as any).Facultad + ';';
-      texto += reporte.Facultad + ';';
-      texto += reporte.CodigoProyecto + ';';
-      texto += reporte.ProyectoCurricular + ';';
-      texto += reporte.Horas + ';';
-      texto += reporte.Semanas + ';';
-      texto += reporte.Cdp + ';';
-      texto += formatCurrency(reporte.Total, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.SueldoBasico, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.PrimaNavidad, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.Vacaciones, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.PrimaVacaciones, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.Cesantias, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.InteresesCesantias, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.PrimaServicios, this.locale, '$') + ';';
-      texto += formatCurrency(reporte.BonificacionServicios, this.locale, '$') + '\n';
-    });
+    } else {
+      Object.keys(this.reporteFinancieraCVS.columns).forEach((col) => {
+        texto += this.reporteFinancieraCVS.columns[col].title + ';';
+      });
+      texto += '\n';
+
+      this.reporteFinanciera.forEach(reporte => {
+        texto += "'" + reporte.Resolucion + "';";
+        texto += reporte.Nombre + ';';
+        texto += reporte.Cedula + ';';
+        texto += (this.datosReporte as any).Facultad + ';';
+        texto += reporte.Facultad + ';';
+        texto += reporte.CodigoProyecto + ';';
+        texto += reporte.ProyectoCurricular + ';';
+        texto += reporte.Horas + ';';
+        texto += reporte.Semanas + ';';
+        texto += reporte.Cdp + ';';
+        texto += formatCurrency(reporte.Total, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.SueldoBasico, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.PrimaNavidad, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.Vacaciones, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.PrimaVacaciones, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.Cesantias, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.InteresesCesantias, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.PrimaServicios, this.locale, '$') + ';';
+        texto += formatCurrency(reporte.BonificacionServicios, this.locale, '$') + '\n';
+      });
+    }
+
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(new Blob([texto], { type: 'text/plain' }));
+    const nombreArchivo = this.modoReporte === 'resolucion'
+      ? `reporte_financiera_${(this.datosReporte as any).Resolucion}_${this.datosReporte.Vigencia}.csv`
+      : `reporte_financiera_consolidado_${this.datosReporte.Vigencia}.csv`;
+    a.download = nombreArchivo;
+    a.click();
   }
 
-  const a = document.createElement('a');
-  a.href = window.URL.createObjectURL(new Blob([texto], { type: 'text/plain' }));
-  const nombreArchivo = this.modoReporte === 'resolucion'
-    ? `reporte_financiera_${(this.datosReporte as any).Resolucion}_${this.datosReporte.Vigencia}.csv`
-    : `reporte_financiera_consolidado_${this.datosReporte.Vigencia}.csv`;
-  a.download = nombreArchivo;
-  a.click();
-}
 
 
 }
