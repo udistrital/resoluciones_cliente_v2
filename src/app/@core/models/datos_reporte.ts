@@ -4,3 +4,9 @@ export class DatosReporte {
     Facultad: number;
     Vigencia: number;
 }
+
+export class DatosReporteAll {
+    NivelAcademico: string;
+    Facultad: number;
+    Vigencia: number;
+}

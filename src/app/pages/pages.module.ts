@@ -30,6 +30,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { OasGridColsDirective } from './directives/oas-grid-cols.directive';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
@@ -107,7 +109,8 @@ const materialModules = [
   MatProgressBarModule,
   MatProgressSpinnerModule,
   MatSlideToggleModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatButtonToggleModule
 ];
 @NgModule({
   declarations: [
