@@ -86,22 +86,21 @@ export class ReporteFinancieraComponent implements OnInit {
   }
 
   generarReporte() {
-    const esConsolidado = this.modoReporte === 'consolidado';
-
-    const servicio = esConsolidado
-      ? environment.RESOLUCIONES_V2_SERVICE
-      : environment.RESOLUCIONES_MID_V2_SERVICE;
-
-    const endpoint = esConsolidado
-      ? 'reporte_financiera/all'
-      : 'reporte_financiera';
-
+    const servicio = environment.RESOLUCIONES_V2_SERVICE;
+    const endpoint = 'reporte_financiera/all';
     const payload = this.datosReporte;
 
     this.request.post(servicio, endpoint, payload).subscribe({
       next: (response: Respuesta) => {
         if (response.Success) {
-          this.reporteFinanciera = response.Data;
+          let datos = response.Data as ReporteFinanciera[];
+
+          if (this.modoReporte === 'resolucion') {
+            const resolucion = (this.datosReporte as DatosReporte).Resolucion;
+            datos = datos.filter(d => d.Resolucion === resolucion);
+          }
+
+          this.reporteFinanciera = datos;
           this.generarReporteExcel();
         }
       },
@@ -114,9 +113,31 @@ export class ReporteFinancieraComponent implements OnInit {
 
 
 
+
 async generarReporteExcel(): Promise<void> {
-  let columnas: string[] = [];
-  let datos: any[] = [];
+  const columnas: string[] = [
+    'Resolucion',
+    'Vigencia',
+    'Periodo',
+    'NivelAcademico',
+    'TipoVinculacion',
+    'DocumentoDocente',
+    'Horas',
+    'Semanas',
+    'Total',
+    'Cdp',
+    'Rp',
+    'Proyectocurricular',
+    'TipoResolucion',
+    'Sueldobasico',
+    'Primanavidad',
+    'Vacaciones',
+    'Primavacaciones',
+    'Cesantias',
+    'Interesescesantias',
+    'Primaservicios',
+    'Bonificacionservicios'
+  ];
 
   const columnasMoneda = [
     'Total',
@@ -130,76 +151,23 @@ async generarReporteExcel(): Promise<void> {
     'Bonificacionservicios',
   ];
 
-  if (this.modoReporte === 'consolidado') {
-    columnas = [
-      'Resolucion',
-      'Vigencia',
-      'Periodo',
-      'NivelAcademico',
-      'TipoVinculacion',
-      'DocumentoDocente',
-      'Horas',
-      'Semanas',
-      'Total',
-      'Cdp',
-      'Rp',
-      'Proyectocurricular',
-      'TipoResolucion',
-      'Sueldobasico',
-      'Primanavidad',
-      'Vacaciones',
-      'Primavacaciones',
-      'Cesantias',
-      'Interesescesantias',
-      'Primaservicios',
-      'Bonificacionservicios'
-    ];
-
-    datos = this.reporteFinanciera.map(item => {
-      const fila: any = {};
-      columnas.forEach(col => {
-        let val = item[col];
-        if (val === null || val === undefined) val = '';
-        else if (typeof val === 'string' && col === 'DocumentoDocente') {
-          // Evitar que Excel lo interprete como número grande
-          val = `'${val}`;
-        }
-        fila[col] = val;
-      });
-      return fila;
+  const datos: any[] = this.reporteFinanciera.map(item => {
+    const fila: any = {};
+    columnas.forEach(col => {
+      let val = item[col];
+      if (val === null || val === undefined) val = '';
+      else if (typeof val === 'string' && col === 'DocumentoDocente') {
+        val = `'${val}`;
+      }
+      fila[col] = val;
     });
-
-  } else {
-    columnas = Object.keys(this.reporteFinancieraCVS.columns).map(col => this.reporteFinancieraCVS.columns[col].title);
-
-    datos = this.reporteFinanciera.map(reporte => ({
-      Resolucion: `'${reporte.Resolucion}`,
-      Nombre: reporte.Nombre,
-      Cedula: reporte.Cedula,
-      FacultadConsulta: (this.datosReporte as any).Facultad,
-      Facultad: reporte.Facultad,
-      CodigoProyecto: reporte.CodigoProyecto,
-      ProyectoCurricular: reporte.ProyectoCurricular,
-      Horas: reporte.Horas,
-      Semanas: reporte.Semanas,
-      Cdp: reporte.Cdp,
-      Total: reporte.Total,
-      SueldoBasico: reporte.SueldoBasico,
-      PrimaNavidad: reporte.PrimaNavidad,
-      Vacaciones: reporte.Vacaciones,
-      PrimaVacaciones: reporte.PrimaVacaciones,
-      Cesantias: reporte.Cesantias,
-      InteresesCesantias: reporte.InteresesCesantias,
-      PrimaServicios: reporte.PrimaServicios,
-      BonificacionServicios: reporte.BonificacionServicios,
-    }));
-  }
+    return fila;
+  });
 
   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datos, { header: columnas });
   const wb: XLSX.WorkBook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
 
-  // Aplicar formato de moneda (USD) a columnas específicas (si quieres hacerlo automáticamente)
   columnasMoneda.forEach((col) => {
     const colIndex = columnas.indexOf(col);
     if (colIndex === -1) return;
@@ -209,7 +177,7 @@ async generarReporteExcel(): Promise<void> {
       const cellAddress = `${colLetter}${row + 1}`;
       const cell = ws[cellAddress];
       if (cell && typeof cell.v === 'number') {
-        cell.z = '"$"#,##0.00';  // Formato USD
+        cell.z = '"$"#,##0.00'; 
         cell.t = 'n';
       }
     }
@@ -221,6 +189,7 @@ async generarReporteExcel(): Promise<void> {
 
   XLSX.writeFile(wb, nombreArchivo);
 }
+
 
 
 
