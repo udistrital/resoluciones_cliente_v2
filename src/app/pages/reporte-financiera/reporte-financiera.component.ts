@@ -121,17 +121,18 @@ async generarReporteExcel(): Promise<void> {
     'Periodo',
     'NivelAcademico',
     'TipoVinculacion',
-    'TipoResolucion',
     'DocumentoDocente',
-    'Nombre',
-    'Facultad',
-    'CodigoProyecto',
-    'ProyectoCurricular',
     'Horas',
     'Semanas',
+    'Total',
     'Cdp',
     'Rp',
-    'Total',
+    'Nombre',
+    'ProyectoCurricular',
+    'CodigoProyecto',
+    'CodigoFacultad',
+    'Facultad',
+    'TipoResolucion',
     'Sueldobasico',
     'Primanavidad',
     'Vacaciones',
@@ -139,7 +140,7 @@ async generarReporteExcel(): Promise<void> {
     'Cesantias',
     'Interesescesantias',
     'Primaservicios',
-    'Bonificacionservicios',
+    'Bonificacionservicios'
   ];
 
   const columnasMoneda = [
