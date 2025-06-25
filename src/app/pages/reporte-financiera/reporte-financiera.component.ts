@@ -86,8 +86,8 @@ export class ReporteFinancieraComponent implements OnInit {
   }
 
   generarReporte() {
-    const servicio = environment.RESOLUCIONES_V2_SERVICE;
-    const endpoint = 'reporte_financiera/all';
+    const servicio = environment.RESOLUCIONES_MID_V2_SERVICE;
+    const endpoint = 'reporte_financiera';
     const payload = this.datosReporte;
 
     this.request.post(servicio, endpoint, payload).subscribe({
@@ -121,14 +121,17 @@ async generarReporteExcel(): Promise<void> {
     'Periodo',
     'NivelAcademico',
     'TipoVinculacion',
+    'TipoResolucion',
     'DocumentoDocente',
+    'Nombre',
+    'Facultad',
+    'CodigoProyecto',
+    'ProyectoCurricular',
     'Horas',
     'Semanas',
-    'Total',
     'Cdp',
     'Rp',
-    'Proyectocurricular',
-    'TipoResolucion',
+    'Total',
     'Sueldobasico',
     'Primanavidad',
     'Vacaciones',
@@ -136,7 +139,7 @@ async generarReporteExcel(): Promise<void> {
     'Cesantias',
     'Interesescesantias',
     'Primaservicios',
-    'Bonificacionservicios'
+    'Bonificacionservicios',
   ];
 
   const columnasMoneda = [
@@ -156,9 +159,7 @@ async generarReporteExcel(): Promise<void> {
     columnas.forEach(col => {
       let val = item[col];
       if (val === null || val === undefined) val = '';
-      else if (typeof val === 'string' && col === 'DocumentoDocente') {
-        val = `'${val}`;
-      }
+      else if (col === 'DocumentoDocente') val = `'${val}`;
       fila[col] = val;
     });
     return fila;
@@ -168,16 +169,17 @@ async generarReporteExcel(): Promise<void> {
   const wb: XLSX.WorkBook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
 
+  // Aplicar formato de moneda a las columnas designadas
   columnasMoneda.forEach((col) => {
     const colIndex = columnas.indexOf(col);
     if (colIndex === -1) return;
 
     const colLetter = XLSX.utils.encode_col(colIndex);
-    for (let row = 1; row <= datos.length; row++) {
-      const cellAddress = `${colLetter}${row + 1}`;
+    for (let row = 0; row < datos.length; row++) {
+      const cellAddress = `${colLetter}${row + 2}`; // +2 por encabezado
       const cell = ws[cellAddress];
       if (cell && typeof cell.v === 'number') {
-        cell.z = '"$"#,##0.00'; 
+        cell.z = '"$"#,##0.00';
         cell.t = 'n';
       }
     }
@@ -189,6 +191,7 @@ async generarReporteExcel(): Promise<void> {
 
   XLSX.writeFile(wb, nombreArchivo);
 }
+
 
 
 
