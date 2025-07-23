@@ -48,10 +48,6 @@ const routes: Routes = [{
           component: GeneracionResolucionComponent,
         },
         {
-          path: 'consulta_docente',
-          component: ConsultaDocenteComponent,
-        },
-        {
           path: 'vincular_docentes',
           component: VincularDocentesComponent,
         },
@@ -68,6 +64,12 @@ const routes: Routes = [{
           component: RpVinculacionesComponent,
         },
       ]
+    },
+    {
+      path: 'gestion_resoluciones/consulta_docente',
+      component: ConsultaDocenteComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
     },
     {
       path: 'resolucion_administracion',
