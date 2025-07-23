@@ -21,6 +21,7 @@ export class ConsultaDocenteComponent {
   resolucionesDocenteSettings: any;
   resolucionesDocenteData: LocalDataSource;
   documentoDocente = '';
+  isAdmin: boolean;
 
   constructor(
     private request: RequestManager,
@@ -34,6 +35,13 @@ export class ConsultaDocenteComponent {
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = '';
+  }
+
+  ngOnInit(): void {
+    const user = JSON.parse(atob(localStorage.getItem('user')));
+    this.isAdmin = user && user.user.role && Array.isArray(user.user.role)
+      ? user.user.role.includes('ADMINISTRADOR_RESOLUCIONES')
+      : false;
   }
 
   initTable(): void {

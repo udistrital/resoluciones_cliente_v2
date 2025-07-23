@@ -16,6 +16,6 @@
             [source]="resolucionesDocenteData"
             (custom)="eventHandler($event)"
         ></ng2-smart-table>
-        <button mat-button class="button button-remove" type="button" (click)="volver()">Volver</button>
+        <button *ngIf="isAdmin" mat-button class="button button-remove" type="button" (click)="volver()">Volver</button>
     </mat-card-content>
 </mat-card>
