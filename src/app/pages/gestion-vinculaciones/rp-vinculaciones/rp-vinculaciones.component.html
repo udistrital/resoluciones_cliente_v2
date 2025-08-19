@@ -1,20 +1,40 @@
 <mat-card class="card-oas">
-    <mat-card-title class="vinculacion-title">
-        <h1>Docentes registrados</h1>
-        <h2>{{ tipoResolucion.Nombre }} # {{ resolucion.NumeroResolucion }}</h2>
-        <h2>{{ resolucionVinculacion.Dedicacion }} - {{ resolucionVinculacion.NivelAcademico }}</h2>
-    </mat-card-title>
-    <mat-card-content>
-        <fieldset class="form-container">
-            <legend>
-                <h3>Docentes registrados</h3>
-            </legend>
-            <ng2-smart-table
-                [settings]="vinculacionesSettings"
-                [source]="vinculacionesData"
-            ></ng2-smart-table>
-            <button mat-button class="button button-submit" type="button" (click)="guardar()" [disabled]="!guardarRp">Guardar</button>
-        </fieldset>
-        <button mat-button class="button button-remove" type="button" (click)="volver()">Volver</button>
-    </mat-card-content>
+  <mat-card-title class="vinculacion-title">
+    <h1>Docentes registrados</h1>
+    <h2>{{ tipoResolucion.Nombre }} # {{ resolucion.NumeroResolucion }}</h2>
+    <h2>{{ resolucionVinculacion.Dedicacion }} - {{ resolucionVinculacion.NivelAcademico }}</h2>
+  </mat-card-title>
+
+  <mat-card-content>
+    <fieldset class="form-container">
+      <legend>
+        <h3>Docentes registrados</h3>
+      </legend>
+
+      <ng2-smart-table
+        [settings]="vinculacionesSettings"
+        [source]="vinculacionesData"
+      ></ng2-smart-table>
+
+      <button
+        mat-button
+        class="button button-submit"
+        type="button"
+        (click)="guardar()"
+        [disabled]="!guardarRp || isSubmitting || isFinalized"
+        [attr.aria-busy]="isSubmitting"
+      >
+        {{ isFinalized ? 'Guardado' : 'Guardar' }}
+      </button>
+    </fieldset>
+
+    <button
+      mat-button
+      class="button button-remove"
+      type="button"
+      (click)="volver()"
+    >
+      Volver
+    </button>
+  </mat-card-content>
 </mat-card>
