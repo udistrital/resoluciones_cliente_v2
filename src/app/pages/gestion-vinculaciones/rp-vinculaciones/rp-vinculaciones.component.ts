@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { first, forkJoin } from 'rxjs';
-import { RpSelectorComponent } from 'src/app/@core/components/rp-selector/rp-selector.component';
+import { finalize } from 'rxjs/operators';
 import { Parametro } from 'src/app/@core/models/parametro';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
@@ -29,6 +29,9 @@ export class RpVinculacionesComponent implements OnInit {
   rpsSeleccionados: RpSeleccionado[];
   vinc: any;
   guardarRp: boolean = false;
+
+  isSubmitting: boolean = false;
+  isFinalized: boolean = false;
 
   constructor(
     private request: RequestManager,
@@ -64,7 +67,8 @@ export class RpVinculacionesComponent implements OnInit {
         environment.RESOLUCIONES_V2_SERVICE,
         `resolucion_vinculacion_docente/${this.resolucionId}`
       ).pipe(first()),
-    ]).pipe().subscribe({
+    ])
+    .subscribe({
       next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
         this.resolucion = resp1.Data as Resolucion;
         this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
@@ -77,9 +81,10 @@ export class RpVinculacionesComponent implements OnInit {
               this.vinculacionesData.load(response.Data);
               this.vinc = response.Data;
               this.rps();
-              this.popUp.close();
             }
-          }, error: () => {
+            this.popUp.close();
+          },
+          error: () => {
             this.popUp.close();
             this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
@@ -90,11 +95,13 @@ export class RpVinculacionesComponent implements OnInit {
         ).subscribe({
           next: (response: Respuesta) => {
             this.tipoResolucion = response.Data as Parametro;
-          }, error: () => {
+          },
+          error: () => {
             this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
         });
-      }, error: () => {
+      },
+      error: () => {
         this.popUp.close();
         this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
       }
@@ -102,7 +109,7 @@ export class RpVinculacionesComponent implements OnInit {
   }
 
   initTable(): void {
-    const tabla = {...TablaVinculaciones,};
+    const tabla = { ...TablaVinculaciones };
 
     this.vinculacionesSettings = {
       mode: 'external',
@@ -114,54 +121,64 @@ export class RpVinculacionesComponent implements OnInit {
     };
   }
 
-  rps() {
-    (this.vinc).forEach(element => {
-      if (element.RegistroPresupuestal != 0){
-        var rp = {
+  rps(): void {
+    (this.vinc || []).forEach((element: any) => {
+      if (element.RegistroPresupuestal != 0) {
+        const rp: RpSeleccionado = {
           Consecutivo: element.RegistroPresupuestal,
           Vigencia: element.Vigencia,
           VinculacionId: element.Id
-        }
-        this.rpsSeleccionados.push(rp)
-        const user = JSON.parse(atob(localStorage.getItem('user')));
-        this.guardarRp = user.user.role.includes('ADMINISTRADOR_RESOLUCIONES');
+        };
+        this.rpsSeleccionados.push(rp);
+        const user = JSON.parse(atob(localStorage.getItem('user') || '')) || null;
+        this.guardarRp = !!user?.user?.role?.includes('ADMINISTRADOR_RESOLUCIONES');
       } else {
         this.guardarRp = false;
-        return
+        return;
       }
     });
   }
 
   guardar(): void {
+    if (this.isSubmitting || this.isFinalized) return;
     this.popUp.confirm(
       'Registros presupuestales',
       '¿Desea confirmar la actualización de los Registros presupuestales seleccionados?',
       'update'
     ).then(result => {
-      if (result.isConfirmed) {
-        this.popUp.loading();
-        this.request.post(
-          environment.RESOLUCIONES_MID_V2_SERVICE,
-          `gestion_vinculaciones/rp_vinculaciones`,
-          this.rpsSeleccionados
-        ).subscribe({
-          next: (response: Respuesta) => {
-            this.popUp.close();
-            if (response.Success) {
-              this.popUp.success(response.Message);
-            } else {
-              this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
-            }
-          }, error: () => {
+      if (!result.isConfirmed) return;
+
+      this.isSubmitting = true;
+      this.popUp.loading();
+
+      this.request.post(
+        environment.RESOLUCIONES_MID_V2_SERVICE,
+        `gestion_vinculaciones/rp_vinculaciones`,
+        this.rpsSeleccionados
+      )
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.popUp.close();
+        })
+      )
+      .subscribe({
+        next: (response: Respuesta) => {
+          if (response.Success) {
+            this.popUp.success(response.Message);
+            this.isFinalized = true;
+          } else {
             this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
           }
-        });
-      }
+        },
+        error: () => {
+          this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+        }
+      });
     });
   }
 
   volver(): void {
-    this.router.navigate(['../'], {relativeTo: this.route});
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
-
 }
