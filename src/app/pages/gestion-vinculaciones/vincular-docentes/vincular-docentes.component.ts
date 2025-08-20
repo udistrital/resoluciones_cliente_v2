@@ -72,7 +72,6 @@ export class VincularDocentesComponent implements OnInit {
     });
   }
 
-  /** <<< NUEVO >>>: cuenta real de filas seleccionadas en la grilla */
   get seleccionCount(): number {
     try {
       return this.smartTable?.grid?.getSelectedRows?.().length || 0;
@@ -238,9 +237,7 @@ export class VincularDocentesComponent implements OnInit {
     };
   }
 
-  /** <<< MODIFICADO >>>: ahora lee la selección real de la grilla (soporta check masivo) */
   abrirModalDisponibilidad(): void {
-    // Tomar selección real (cubre selección 1x1 y el checkbox del encabezado)
     const selected = this.smartTable?.grid?.getSelectedRows?.() || [];
     this.docentesSeleccionados = selected.map((r: any) => r.getData ? r.getData() : r);
 
