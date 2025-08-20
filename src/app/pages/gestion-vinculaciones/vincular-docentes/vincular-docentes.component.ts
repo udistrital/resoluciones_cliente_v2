@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { LocalDataSource, Ng2SmartTableComponent } from 'ng2-smart-table';
@@ -26,7 +26,7 @@ import { formatCurrency } from '@angular/common';
 export class VincularDocentesComponent implements OnInit {
 
   @ViewChild('table') smartTable: Ng2SmartTableComponent;
-  selectedRow;
+  selectedRow: any;
   dialogConfig: MatDialogConfig;
   resolucionId: number;
   resolucion: Resolucion;
@@ -62,15 +62,22 @@ export class VincularDocentesComponent implements OnInit {
     this.initTables();
     this.preloadData();
     this.userClick = true;
+
     this.cargaAcademicaData.onChanged().subscribe(change => {
-      console.log("CHANGE jhg ", change)
       switch (change.action) {
         case 'page':
-            this.seleccionarDocentesCambioTabla(change)
+          this.seleccionarDocentesCambioTabla(change);
           break;
       }
     });
-    console.log("ASD")
+  }
+
+  get seleccionCount(): number {
+    try {
+      return this.smartTable?.grid?.getSelectedRows?.().length || 0;
+    } catch {
+      return 0;
+    }
   }
 
   preloadData(): void {
@@ -95,7 +102,7 @@ export class VincularDocentesComponent implements OnInit {
               tablaCarga.columns.horas_lectivas.editable = false;
               tablaCarga.edit = false;
               tablaCarga.actions = false;
-              this.cargaAcademicaSettings = {...tablaCarga};
+              this.cargaAcademicaSettings = { ...tablaCarga };
             }
             this.request.get(
               environment.PARAMETROS_SERVICE,
@@ -180,41 +187,13 @@ export class VincularDocentesComponent implements OnInit {
   initTables(): void {
     this.cargaAcademicaSettings = {
       columns: {
-        docente_apellido: {
-          title: 'Apellidos',
-          width: '15%',
-          editable: false,
-        },
-        docente_nombre: {
-          title: 'Nombres',
-          width: '15%',
-          editable: false,
-        },
-        docente_documento: {
-          title: 'Documento',
-          width: '10%',
-          editable: false,
-        },
-        horas_lectivas: {
-          title: 'Horas',
-          width: '5%',
-          editable: true,
-        },
-        proyecto_nombre: {
-          title: 'Proyecto Curricular',
-          width: '25%',
-          editable: false,
-        },
-        CategoriaNombre: {
-          title: 'Categoria',
-          width: '10%',
-          editable: false,
-        },
-        tipo_vinculacion_nombre: {
-          title: 'Dedicación',
-          width: '10%',
-          editable: false,
-        },
+        docente_apellido: { title: 'Apellidos', width: '15%', editable: false },
+        docente_nombre: { title: 'Nombres', width: '15%', editable: false },
+        docente_documento: { title: 'Documento', width: '10%', editable: false },
+        horas_lectivas: { title: 'Horas', width: '5%', editable: true },
+        proyecto_nombre: { title: 'Proyecto Curricular', width: '25%', editable: false },
+        CategoriaNombre: { title: 'Categoria', width: '10%', editable: false },
+        tipo_vinculacion_nombre: { title: 'Dedicación', width: '10%', editable: false },
       },
       actions: {
         position: 'right',
@@ -227,9 +206,7 @@ export class VincularDocentesComponent implements OnInit {
         saveButtonContent: '<em class="material-icons" title="Guardar">check</em>',
         cancelButtonContent: '<em class="material-icons" title="Cancelar">close</em>'
       },
-      pager: {
-        display: true,
-      },
+      pager: { display: true },
       selectMode: 'multi',
       mode: 'internal',
       noDataMessage: 'No se ha cargado la información de carga académica',
@@ -261,55 +238,66 @@ export class VincularDocentesComponent implements OnInit {
   }
 
   abrirModalDisponibilidad(): void {
+    const selected = this.smartTable?.grid?.getSelectedRows?.() || [];
+    this.docentesSeleccionados = selected.map((r: any) => r.getData ? r.getData() : r);
+
+    if (!this.docentesSeleccionados.length) {
+      this.popUp.warning('Debes seleccionar al menos un docente.');
+      return;
+    }
+
     let puedeContratar = true;
     this.docentesSeleccionados.forEach((docente: CargaLectiva) => {
       puedeContratar = puedeContratar && docente.CategoriaNombre !== '';
     });
-    if (puedeContratar) {
-      const previnculaciones = {
-        Docentes: this.docentesSeleccionados,
-        ResolucionData: this.resolucionVinculacion,
-        NumeroSemanas: this.resolucion.NumeroSemanas,
-        Vigencia: this.resolucion.Vigencia,
-        Disponibilidad: []
-      };
-      this.request.post(
-        environment.RESOLUCIONES_MID_V2_SERVICE,
-        'gestion_vinculaciones/calcular_valor_contratos_seleccionados',
-        previnculaciones
-      ).subscribe((response: Respuesta) => {
-        this.dialogConfig.data = {
-          vigencia: this.resolucion.Vigencia,
-          total: response.Data as string
-        };
-        const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
-        dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
-          if (disponibilidad) {
-            previnculaciones.Disponibilidad = disponibilidad;
-            this.popUp.loading();
-            this.request.post(
-              environment.RESOLUCIONES_MID_V2_SERVICE,
-              'gestion_vinculaciones',
-              previnculaciones
-            ).subscribe({
-              next: (response2: Respuesta) => {
-                if (response2.Success) {
-                  this.popUp.close();
-                  this.popUp.success(response2.Message).then(() => {
-                    this.cargarVinculaciones();
-                  });
-                }
-              }, error: () => {
-                this.popUp.close();
-                this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
-              }
-            });
-          }
-        });
-      });
-    } else {
+
+    if (!puedeContratar) {
       this.popUp.warning('Debe seleccionar docentes con categoría.');
+      return;
     }
+
+    const previnculaciones = {
+      Docentes: this.docentesSeleccionados,
+      ResolucionData: this.resolucionVinculacion,
+      NumeroSemanas: this.resolucion.NumeroSemanas,
+      Vigencia: this.resolucion.Vigencia,
+      Disponibilidad: []
+    };
+
+    this.request.post(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      'gestion_vinculaciones/calcular_valor_contratos_seleccionados',
+      previnculaciones
+    ).subscribe((response: Respuesta) => {
+      this.dialogConfig.data = {
+        vigencia: this.resolucion.Vigencia,
+        total: response.Data as string
+      };
+      const dialog = this.dialog.open(ModalDisponibilidadComponent, this.dialogConfig);
+      dialog.afterClosed().subscribe((disponibilidad: DocumentoPresupuestal[]) => {
+        if (disponibilidad) {
+          previnculaciones.Disponibilidad = disponibilidad;
+          this.popUp.loading();
+          this.request.post(
+            environment.RESOLUCIONES_MID_V2_SERVICE,
+            'gestion_vinculaciones',
+            previnculaciones
+          ).subscribe({
+            next: (response2: Respuesta) => {
+              if (response2.Success) {
+                this.popUp.close();
+                this.popUp.success(response2.Message).then(() => {
+                  this.cargarVinculaciones();
+                });
+              }
+            }, error: () => {
+              this.popUp.close();
+              this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
+            }
+          });
+        }
+      });
+    });
   }
 
   async generarInformeCSV(): Promise<void> {
@@ -379,36 +367,25 @@ export class VincularDocentesComponent implements OnInit {
 
   seleccionarDocentesCambioTabla(event): void {
     this.userClick = false;
-    console.log("ASD ", event);
-    console.log(this.docentesSeleccionados);
     setTimeout(() => {
       this.docentesSeleccionados.forEach(docSel => {
-        console.log("DOC SEL ", docSel);
         if (event.elements.includes(docSel)) {
-          var idAux = event.elements.indexOf(docSel);
-          console.log("ID AUX ", idAux);
-          console.log(idAux + ((event.paging.page - 1) * event.paging.perPage));
-          console.log("Dc ", document)
-          let selectedElement: Element = document.querySelectorAll('ng2-smart-table table tbody tr').item(idAux)
-          console.log(selectedElement)
-          if(selectedElement) {
-            let row: HTMLElement = selectedElement.querySelector('td') as HTMLElement;
-            //row.setAttribute()
-            row.click()//
+          const idAux = event.elements.indexOf(docSel);
+          const selectedElement: Element = document.querySelectorAll('ng2-smart-table table tbody tr').item(idAux);
+          if (selectedElement) {
+            const row: HTMLElement = selectedElement.querySelector('td') as HTMLElement;
+            row.click();
             this.selectedRow = this.smartTable.grid.getSelectedRows().length;
           }
         }
       });
       this.userClick = true;
-    }, 500)
+    }, 500);
   }
 
   seleccionarDocentes(event): void {
-    console.log("ENTRA ", event)
     this.docSeleccionadosAux = event.data as CargaLectiva;
-    var id = event.source.data.indexOf(event.data);
-    console.log(id)
-    console.log("USER CLIC ", this.userClick)
+    const id = event.source.data.indexOf(event.data);
     if ((this.idSeleccionados).includes(id) && this.userClick) {
       const startIndex = this.idSeleccionados.indexOf(id);
       this.idSeleccionados.splice(startIndex, 1);
@@ -417,9 +394,6 @@ export class VincularDocentesComponent implements OnInit {
       this.idSeleccionados.push(id)
       this.docentesSeleccionados.push(this.docSeleccionadosAux)
     }
-    console.log("IDS ", this.idSeleccionados)
-    console.log("DOC ", this.docentesSeleccionados)
-
   }
 
   seleccionarVinculaciones(event): void {
@@ -470,5 +444,4 @@ export class VincularDocentesComponent implements OnInit {
       )
     })
   }
-
 }
