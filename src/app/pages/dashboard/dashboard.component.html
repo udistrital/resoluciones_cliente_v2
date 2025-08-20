@@ -1,8 +1,107 @@
 <mat-card class="welcome-card">
-    <mat-card-title class="welcome-title">
-        <h1>BIENVENIDO A LA NUEVA VERSIÓN DEL MÓDULO DE RESOLUCIONES</h1>
-    </mat-card-title>
-    <mat-card-content class="welcome-content">
-        Se han implementado nuevas funcionalidades para el sistema y se ha optimizado su funcionamiento.
-    </mat-card-content>
+  <mat-card-title class="welcome-title">
+    <h1>BIENVENIDO A LA NUEVA VERSIÓN DEL MÓDULO DE RESOLUCIONES</h1>
+  </mat-card-title>
+
+  <mat-card-content class="welcome-content">
+    Se han implementado nuevas funcionalidades para el sistema y se ha optimizado su funcionamiento.
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button color="primary" (click)="openManuales(manualesTpl)">
+      <mat-icon>menu_book</mat-icon>
+      Manuales y Videos
+    </button>
+  </mat-card-actions>
 </mat-card>
+
+<ng-template #manualesTpl>
+  <div class="md-header">
+    <div>
+      <h2>Manuales y Videos</h2>
+      <p class="sub">Recursos rápidos para cada rol</p>
+    </div>
+    <button mat-icon-button mat-dialog-close aria-label="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="md-content">
+    <div class="toolbar">
+      <mat-form-field appearance="fill" class="search">
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="q" placeholder="p. ej. supervisor, video, histórico">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-button-toggle-group
+        class="kind-toggle"
+        name="kind"
+        [value]="kind"
+        (change)="setKind($event.value)"
+      >
+        <mat-button-toggle value="all">Todos</mat-button-toggle>
+        <mat-button-toggle value="pdf">PDF</mat-button-toggle>
+        <mat-button-toggle value="video">Video</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="grid">
+      <section>
+        <header>Manuales de usuario</header>
+        <mat-list role="list" dense>
+          <mat-list-item role="listitem" *ngFor="let it of filtered(col1)" class="item">
+            <div class="leading">
+              <mat-icon class="bubble" [ngClass]="it.tipo === 'pdf' ? 'pdf' : 'video'">
+                {{ it.tipo === 'pdf' ? 'description' : 'slideshow' }}
+              </mat-icon>
+            </div>
+
+            <div class="content">
+              <div class="title" [matTooltip]="it.txt">{{ it.txt }}</div>
+              <div class="meta">
+                <mat-chip-set>
+                  <mat-chip [ngClass]="it.tipo">{{ it.tipo | uppercase }}</mat-chip>
+                </mat-chip-set>
+              </div>
+            </div>
+
+            <a class="trailing" [href]="it.url" target="_blank" rel="noopener" aria-label="Abrir">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </mat-list-item>
+        </mat-list>
+      </section>
+
+      <section>
+        <header>&nbsp;</header>
+        <mat-list role="list" dense>
+          <mat-list-item role="listitem" *ngFor="let it of filtered(col2)" class="item">
+            <div class="leading">
+              <mat-icon class="bubble"[ngClass]="it.tipo">
+                {{ it.tipo === 'pdf' ? 'description' : 'slideshow' }}
+              </mat-icon>
+
+            </div>
+
+            <div class="content">
+              <div class="title" [matTooltip]="it.txt">{{ it.txt }}</div>
+              <div class="meta">
+                <mat-chip-set>
+                  <mat-chip [ngClass]="it.tipo">{{ it.tipo | uppercase }}</mat-chip>
+                </mat-chip-set>
+              </div>
+            </div>
+
+            <a class="trailing" [href]="it.url" target="_blank" rel="noopener" aria-label="Abrir">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </mat-list-item>
+        </mat-list>
+      </section>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>
