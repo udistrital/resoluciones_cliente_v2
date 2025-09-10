@@ -229,9 +229,11 @@ export class ExpedirVinculacionComponent implements OnInit {
       `gestion_plantillas/calculo_fecha_fin`,
       object
     ).subscribe(response => {
-      this.resolucionActual.FechaFin = response.Data
-      this.resolucionAux.FechaInicio = new Date(this.acta.FechaInicio)
+      this.resolucionAux.FechaInicio = response.Data.FechaInicioPago
+      this.resolucionActual.FechaFin = response.Data.FechaFinPago
+      // this.resolucionAux.FechaInicio = new Date(this.acta.FechaInicio)
       this.resolucionAux.FechaFin = this.resolucionActual.FechaFin
+      this.acta.FechaInicio = response.Data.FechaInicioPago
       this.request.put(
         environment.RESOLUCIONES_V2_SERVICE,
         `resolucion`,

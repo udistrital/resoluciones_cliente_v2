@@ -190,7 +190,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
               object
             ).subscribe(response => {
               this.fechaFin = response.Data
-              this.contenidoResolucion.Resolucion.FechaFin  = response.Data
+              this.contenidoResolucion.Resolucion.FechaFin  = response.Data.FechaFinReal
             })
           }
           const responsabilidades: CuadroResponsabilidades[] = JSON.parse(this.contenidoResolucion.Resolucion.CuadroResponsabilidades || '[]');
@@ -415,7 +415,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
         object
       ).subscribe(response => {
         this.fechaFin = response.Data
-        this.contenidoResolucion.Resolucion.FechaFin  = response.Data
+        this.contenidoResolucion.Resolucion.FechaFin  = response.Data.FechaFinReal
       })
     }
   }
