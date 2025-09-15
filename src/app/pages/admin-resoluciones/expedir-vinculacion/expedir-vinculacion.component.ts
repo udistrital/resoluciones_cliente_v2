@@ -10,6 +10,7 @@ import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { ResolucionVinculacionDocente } from 'src/app/@core/models/resolucion_vinculacion_docente';
 import { UtilService } from '../../services/utilService';
 import { RequestManager } from '../../services/requestManager';
+import { FechasContrato } from 'src/app/@core/models/fechas_contrato';
 import * as moment from 'moment';
 
 @Component({
@@ -26,6 +27,7 @@ export class ExpedirVinculacionComponent implements OnInit {
   contratados: Vinculaciones[];
   acta: ActaInicio;
   fechaFin: Date;
+  fechasContrato  : FechasContrato;
   resolucionAux: Resolucion;
   esconderBoton = false;
 
@@ -154,7 +156,8 @@ export class ExpedirVinculacionComponent implements OnInit {
       this.contratados.forEach(contratado => {
         const contratoGeneral: ContratoGeneral = {...this.Contrato};
         const actaI: ActaInicio = {...this.acta};
-        actaI.FechaInicio = moment(actaI.FechaInicio).format('YYYY-MM-DDT00:00:00Z');
+        actaI.FechaInicio = moment(this.fechasContrato.FechaInicioPago).format('YYYY-MM-DDTHH:mm:ssZ');
+        // actaI.FechaInicio = moment(actaI.FechaInicio);
         contratoGeneral.Contratista = contratado.PersonaId;
         contratoGeneral.DependenciaSolicitante = contratado.ProyectoCurricularId.toString();
         contratoGeneral.PlazoEjecucion = contratado.NumeroHorasSemanales;
@@ -229,11 +232,11 @@ export class ExpedirVinculacionComponent implements OnInit {
       `gestion_plantillas/calculo_fecha_fin`,
       object
     ).subscribe(response => {
-      this.resolucionAux.FechaInicio = response.Data.FechaInicioPago
-      this.resolucionActual.FechaFin = response.Data.FechaFinPago
-      // this.resolucionAux.FechaInicio = new Date(this.acta.FechaInicio)
+      this.fechasContrato = response.Data as FechasContrato
+      this.resolucionAux.FechaInicio = this.fechasContrato.FechaInicioPago
+      this.resolucionActual.FechaFin = this.fechasContrato.FechaFinPago
       this.resolucionAux.FechaFin = this.resolucionActual.FechaFin
-      this.acta.FechaInicio = response.Data.FechaInicioPago
+      this.acta.FechaInicio = response.Data.FechaInicioReal
       this.request.put(
         environment.RESOLUCIONES_V2_SERVICE,
         `resolucion`,
