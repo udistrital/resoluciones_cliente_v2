@@ -45,7 +45,7 @@
         </div>  
         <mat-form-field class="form-field-date">
             <mat-label>Fecha fin</mat-label>
-            <input matInput [matDatepicker]="picker2" name="fechaFin" [(ngModel)]="resolucionActual.FechaFin">
+            <input matInput [matDatepicker]="picker2" name="fechaFin" [(ngModel)]="fechasContrato.FechaFinReal" disabled>
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
             <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
