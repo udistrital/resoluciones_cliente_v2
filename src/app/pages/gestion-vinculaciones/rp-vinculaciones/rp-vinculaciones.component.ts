@@ -72,6 +72,7 @@ export class RpVinculacionesComponent implements OnInit {
       next: ([resp1, resp2]: [Respuesta, Respuesta]) => {
         this.resolucion = resp1.Data as Resolucion;
         this.resolucionVinculacion = resp2.Data as ResolucionVinculacionDocente;
+
         this.request.get(
           environment.RESOLUCIONES_MID_V2_SERVICE,
           `gestion_vinculaciones/rp/${this.resolucionId}`
@@ -86,9 +87,10 @@ export class RpVinculacionesComponent implements OnInit {
           },
           error: () => {
             this.popUp.close();
-            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+            this.popUp.error('Ha ocurrido un error, comuníquese con el área de soporte.');
           }
         });
+
         this.request.get(
           environment.PARAMETROS_SERVICE,
           `parametro/${this.resolucion.TipoResolucionId}`
@@ -97,13 +99,13 @@ export class RpVinculacionesComponent implements OnInit {
             this.tipoResolucion = response.Data as Parametro;
           },
           error: () => {
-            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+            this.popUp.error('Ha ocurrido un error, comuníquese con el área de soporte.');
           }
         });
       },
       error: () => {
         this.popUp.close();
-        this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+        this.popUp.error('Ha ocurrido un error, comuníquese con el área de soporte.');
       }
     });
   }
@@ -123,24 +125,25 @@ export class RpVinculacionesComponent implements OnInit {
 
   rps(): void {
     (this.vinc || []).forEach((element: any) => {
-      if (element.RegistroPresupuestal != 0) {
+      if (element.RegistroPresupuestal !== 0) {
         const rp: RpSeleccionado = {
           Consecutivo: element.RegistroPresupuestal,
           Vigencia: element.Vigencia,
           VinculacionId: element.Id
         };
         this.rpsSeleccionados.push(rp);
+
         const user = JSON.parse(atob(localStorage.getItem('user') || '')) || null;
         this.guardarRp = !!user?.user?.role?.includes('ADMINISTRADOR_RESOLUCIONES');
       } else {
         this.guardarRp = false;
-        return;
       }
     });
   }
 
   guardar(): void {
     if (this.isSubmitting || this.isFinalized) return;
+
     this.popUp.confirm(
       'Registros presupuestales',
       '¿Desea confirmar la actualización de los Registros presupuestales seleccionados?',
@@ -156,23 +159,42 @@ export class RpVinculacionesComponent implements OnInit {
         `gestion_vinculaciones/rp_vinculaciones`,
         this.rpsSeleccionados
       )
-      .pipe(
-        finalize(() => {
-          this.isSubmitting = false;
-          this.popUp.close();
-        })
-      )
+      .pipe(finalize(() => {
+        this.isSubmitting = false;
+        this.popUp.close();
+      }))
       .subscribe({
         next: (response: Respuesta) => {
-          if (response.Success) {
-            this.popUp.success(response.Message);
-            this.isFinalized = true;
-          } else {
-            this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
-          }
-        },
+            if (response.Success) {
+              this.isSubmitting = false;
+              this.isFinalized = false;
+              this.popUp.success('Solicitud enviada. Puedes ver el progreso en el panel           inferior.');
+
+              const jobId =
+                (response.Data && (response.Data as any).JobId)
+                  ? (response.Data as any).JobId
+                  : (response as any).          JobId;
+
+              if (jobId) {
+                const key = `jobId_${this.resolucionId}`;
+                localStorage.setItem(key,           jobId);
+                const event = new CustomEvent('job-iniciado', {
+                  detail: { jobId, resolucionId: this.resolucionId },
+                });
+                window.dispatchEvent(         event);
+
+                console.log(`🚀 Nuevo Job iniciado para resolución ${this.resolucionId}: ${jobId}`);
+              } else {
+                console.warn('⚠️ No se encontró JobId en la respuesta del MID.');
+              }
+
+            } else {
+              this.popUp.error('Ha ocurrido un error, comuníquese con el área de soporte.');
+            }
+          },
+
         error: () => {
-          this.popUp.error('Ha ocurrido un error, comuniquese con el área de soporte.');
+          this.popUp.error('Ha ocurrido un error, comuníquese con el área de soporte.');
         }
       });
     });
