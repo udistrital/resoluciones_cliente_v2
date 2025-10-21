@@ -1,0 +1,139 @@
+<div class="dashboard-container">
+
+  <ng-container *ngIf="estadoJob === 'activo' || estadoJob === 'finalizado'; else sinProceso">
+
+    <div class="indicadores-grid">
+  <mat-card class="indicador-card procesados">
+    <div class="icon-wrapper">
+      <svg viewBox="0 0 24 24" class="icon-svg">
+        <circle cx="12" cy="12" r="10" fill="rgba(115, 21, 20, 0.1)"></circle>
+        <path d="M9 12l2 2 4-4" stroke="#731514" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <h2>{{ progreso?.Procesados || 0 }}</h2>
+    <p>Contratos procesados</p>
+  </mat-card>
+
+  <mat-card class="indicador-card omitidos">
+    <div class="icon-wrapper">
+      <svg viewBox="0 0 24 24" class="icon-svg">
+        <circle cx="12" cy="12" r="10" fill="rgba(194, 123, 0, 0.1)"></circle>
+        <path d="M12 8v4l2 2" stroke="#c27b00" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <h2>{{ progreso?.Omitidos || 0 }}</h2>
+    <p>Contratos omitidos</p>
+  </mat-card>
+
+  <mat-card class="indicador-card errores">
+    <div class="icon-wrapper">
+      <svg viewBox="0 0 24 24" class="icon-svg">
+        <circle cx="12" cy="12" r="10" fill="rgba(161, 16, 16, 0.1)"></circle>
+        <line x1="12" y1="8" x2="12" y2="12" stroke="#a11010" stroke-width="2.5" stroke-linecap="round"></line>
+        <circle cx="12" cy="16" r="1.5" fill="#a11010"></circle>
+      </svg>
+    </div>
+    <h2>{{ progreso?.Errores || 0 }}</h2>
+    <p>Errores detectados</p>
+  </mat-card>
+
+  <mat-card class="indicador-card preliquidaciones">
+    <div class="icon-wrapper">
+      <svg viewBox="0 0 24 24" class="icon-svg">
+        <circle cx="12" cy="12" r="10" fill="rgba(44, 62, 80, 0.1)"></circle>
+        <path d="M8 12l2 2 4-4M9 5h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V7a2 2 0 012-2z" stroke="#2c3e50" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <h2>{{ progreso?.Preliquidados || 0 }}</h2>
+    <p>Vinculaciones preliquidadas</p>
+  </mat-card>
+</div>
+
+
+
+    <div class="resumen-tarjeta">
+      <div class="header">
+        <h3>Estado general</h3>
+        <span class="estado" [ngClass]="progreso?.Estado">{{ progreso?.Estado || 'Sin estado' }}</span>
+      </div>
+
+      <p><strong>Avance:</strong> {{ progreso?.PorcentajeAvance | number:'1.0-0' }}%</p>
+      <mat-progress-bar
+        color="accent"
+        mode="determinate"
+        [value]="progreso?.PorcentajeAvance || 0">
+      </mat-progress-bar>
+    </div>
+
+    <div class="tarjetas-grid">
+
+      <mat-card class="tarjeta procesados">
+        <div class="header">
+          <h3>Contratos procesados</h3>
+          <button mat-stroked-button color="primary" (click)="toggle('exitosos')">
+            {{ mostrarExitosos ? 'Ocultar' : 'Ver detalles' }}
+          </button>
+        </div>
+        <div *ngIf="mostrarExitosos">
+          <ul>
+            <li *ngFor="let msg of procesados">{{ msg }}</li>
+          </ul>
+        </div>
+      </mat-card>
+
+      <mat-card class="tarjeta omitidos">
+        <div class="header">
+          <h3>Contratos omitidos</h3>
+          <button mat-stroked-button color="accent" (click)="toggle('omitidos')">
+            {{ mostrarOmitidos ? 'Ocultar' : 'Ver detalles' }}
+          </button>
+        </div>
+        <div *ngIf="mostrarOmitidos">
+          <ul>
+            <li *ngFor="let msg of omitidos">{{ msg }}</li>
+          </ul>
+        </div>
+      </mat-card>
+
+      <mat-card class="tarjeta errores">
+        <div class="header">
+          <h3>Errores detectados</h3>
+          <button mat-stroked-button color="warn" (click)="toggle('errores')">
+            {{ mostrarErrores ? 'Ocultar' : 'Ver detalles' }}
+          </button>
+        </div>
+        <div *ngIf="mostrarErrores">
+          <ul>
+            <li *ngFor="let msg of errores">{{ msg }}</li>
+          </ul>
+        </div>
+      </mat-card>
+
+      <mat-card class="tarjeta preliquidaciones">
+        <div class="header">
+          <h3>Vinculaciones preliquidadas</h3>
+          <button mat-stroked-button color="primary" (click)="toggle('preliquidacion')">
+            {{ mostrarPreliquidados ? 'Ocultar' : 'Ver detalles' }}
+          </button>
+        </div>
+        <div *ngIf="mostrarPreliquidados">
+          <ul>
+            <li *ngFor="let msg of preliquidacion">{{ msg }}</li>
+          </ul>
+        </div>
+      </mat-card>
+
+    </div>
+
+    <div *ngIf="estadoJob === 'finalizado'" class="alert alert-success mt-3 text-center">
+      <strong>Proceso finalizado correctamente.</strong>
+    </div>
+  </ng-container>
+
+  <ng-template #sinProceso>
+    <mat-card class="sin-proceso text-center mt-5">
+      <h3>No hay procesos activos en seguimiento</h3>
+      <p>Puedes generar una nueva solicitud desde el módulo de vinculaciones.</p>
+    </mat-card>
+  </ng-template>
+</div>

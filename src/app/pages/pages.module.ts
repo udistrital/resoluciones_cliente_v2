@@ -60,10 +60,12 @@ import { RpSelectorComponent } from '../@core/components/rp-selector/rp-selector
 import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
+import { DashboardProgresoComponent } from './gestion-vinculaciones/dashboard-progreso/dashboard-progreso.component';
 
 
 const pagesComponents = [
   RpVinculacionesComponent,
+  DashboardProgresoComponent,
   RpSelectorComponent,
   TablasDisponibilidadesComponent,
   CancelarVinculacionesComponent,

@@ -26,9 +26,7 @@
       >
         {{ isFinalized ? 'Guardado' : 'Guardar' }}
       </button>
-    </fieldset>
-
-    <button
+          <button
       mat-button
       class="button button-remove"
       type="button"
@@ -36,5 +34,8 @@
     >
       Volver
     </button>
+    </fieldset>
+    <hr class="divider" />
+    <app-dashboard-progreso [resolucionId]="resolucionId"></app-dashboard-progreso>
   </mat-card-content>
 </mat-card>
