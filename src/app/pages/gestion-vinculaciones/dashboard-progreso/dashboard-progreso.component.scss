@@ -1,0 +1,327 @@
+/* === DASHBOARD INSTITUCIONAL DINÁMICO CON COLOR === */
+.dashboard-container {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #faf7f7 100%);
+  padding: 2.2rem;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #222;
+}
+
+/* === GRID DE INDICADORES === */
+.indicadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.8rem;
+}
+
+/* === TARJETAS DE INDICADORES === */
+.indicador-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #f5f5f5 100%);
+  border: 1px solid #e0dede;
+  border-radius: 14px;
+  padding: 1.4rem 1rem;
+  text-align: center;
+  color: #222;
+  transition: all 0.35s ease;
+  cursor: default;
+  overflow: hidden;
+  min-height: 155px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #731514;
+    margin: 0.3rem 0;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: #444;
+    margin: 0;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    background: radial-gradient(circle at 50% 40%, #fff 0%, #f3f3f3 100%);
+    box-shadow: 0 8px 20px rgba(115, 21, 20, 0.15);
+  }
+
+  /* Borde lateral por tipo */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::before {
+    width: 6px;
+  }
+}
+
+/* === COLORES DE BORDE POR TARJETA === */
+.procesados::before,
+.omitidos::before,
+.errores::before,
+.preliquidaciones::before {
+  background: linear-gradient(180deg, #731514, #a33c2a);
+}
+
+/* === ICONOS SVG PERSONALIZADOS === */
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.icon-svg {
+  width: 2.6rem;
+  height: 2.6rem;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.05));
+}
+
+.indicador-card:hover .icon-svg {
+  transform: scale(1.08);
+  filter: drop-shadow(0 3px 6px rgba(115, 21, 20, 0.2));
+}
+
+/* Tonos suaves */
+.procesados .icon-svg circle {
+  fill: rgba(115, 21, 20, 0.08);
+}
+.omitidos .icon-svg circle {
+  fill: rgba(194, 123, 0, 0.08);
+}
+.errores .icon-svg circle {
+  fill: rgba(161, 16, 16, 0.08);
+}
+.preliquidaciones .icon-svg circle {
+  fill: rgba(44, 62, 80, 0.08);
+}
+
+/* === TARJETA DE RESUMEN === */
+.resumen-tarjeta {
+  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f7f6f6 100%);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  border-left: 6px solid #731514;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-weight: 700;
+      margin: 0;
+      color: #731514;
+    }
+  }
+
+  .estado {
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    text-transform: capitalize;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+
+    &.Completado {
+      background: #f3e9e9;
+      color: #731514;
+    }
+    &.EnProgreso {
+      background: #fff5e6;
+      color: #9e6b00;
+    }
+    &.Error {
+      background: #fdecea;
+      color: #b71c1c;
+    }
+  }
+
+  strong {
+    color: #333;
+  }
+}
+
+/* === BARRA DE PROGRESO (AZUL CLARO Y MÁS ANCHA) === */
+:host ::ng-deep .mat-progress-bar.mat-accent {
+  height: 12px !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+:host ::ng-deep .mat-progress-bar.mat-accent .mat-progress-bar-fill::after {
+  background-color: #4a90e2 !important;
+  background-image: linear-gradient(90deg, #4a90e2, #8ec5fc) !important;
+}
+
+:host ::ng-deep .mat-progress-bar.mat-accent .mat-progress-bar-buffer {
+  background-color: #e3f2fd !important;
+}
+
+/* === VARIANTES POR ESTADO === */
+:host ::ng-deep .mat-progress-bar.Completado .mat-progress-bar-fill::after {
+  background-image: linear-gradient(90deg, #4db6ac, #80cbc4) !important;
+}
+:host ::ng-deep .mat-progress-bar.EnProgreso .mat-progress-bar-fill::after {
+  background-image: linear-gradient(90deg, #42a5f5, #90caf9) !important;
+}
+:host ::ng-deep .mat-progress-bar.Error .mat-progress-bar-fill::after {
+  background-image: linear-gradient(90deg, #b71c1c, #ef5350) !important;
+}
+
+/* === TARJETAS DE DETALLE (mat-card "Ver detalles") === */
+.tarjetas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.6rem;
+  align-items: stretch;
+  justify-items: stretch;
+  margin-top: 1rem;
+  padding: 0.5rem;
+}
+
+/* === TARJETA BASE === */
+.tarjeta {
+  position: relative;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fafafa 100%);
+  border-radius: 16px;
+  border: 1px solid #e0dede;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: default;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    transition: width 0.3s ease;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(115, 21, 20, 0.15);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h3 {
+    color: #731514;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  button {
+    border: 1px solid #731514 !important;
+    color: #731514 !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(90deg, #731514, #9e2a25) !important;
+      color: #fff !important;
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* === ILUMINACIÓN LATERAL SEGÚN TIPO === */
+.tarjeta.procesados:hover::before,
+.tarjeta.omitidos:hover::before,
+.tarjeta.errores:hover::before,
+.tarjeta.preliquidaciones:hover::before {
+  width: 6px;
+  background: linear-gradient(180deg, #731514, #a33c2a);
+}
+
+/* === SIN PROCESO === */
+.sin-proceso {
+  text-align: center;
+  background: #fafafa;
+  padding: 2rem;
+  border-radius: 12px;
+  color: #555;
+  border: 1px dashed #ccc;
+  font-style: italic;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #f3f2f2;
+  }
+
+  h3 {
+    color: #731514;
+    font-weight: 600;
+  }
+}
+
+/* === ALERTA DE ÉXITO === */
+.alert-success {
+  background: #f0f7f0;
+  border-left: 5px solid #2e7d32;
+  padding: 1rem;
+  border-radius: 10px;
+  color: #2e7d32;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+/* === AJUSTE DE ALINEACIÓN GENERAL === */
+.dashboard-container,
+.indicadores-grid,
+.resumen-tarjeta,
+.tarjetas-grid {
+  width: 100%;
+  max-width: 1900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.resumen-tarjeta mat-progress-bar {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.indicador-card,
+.resumen-tarjeta,
+.tarjeta {
+  box-sizing: border-box;
+}
