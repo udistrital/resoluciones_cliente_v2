@@ -82,7 +82,7 @@ mat-card-actions button[mat-stroked-button] {
 .md-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
   padding: 18px 20px 6px;
 
   h2 {

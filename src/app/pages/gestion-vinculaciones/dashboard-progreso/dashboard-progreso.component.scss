@@ -1,4 +1,3 @@
-/* === DASHBOARD INSTITUCIONAL DINÁMICO CON COLOR === */
 .dashboard-container {
   margin-top: 2rem;
   display: flex;
@@ -12,14 +11,12 @@
   color: #222;
 }
 
-/* === GRID DE INDICADORES === */
 .indicadores-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.8rem;
 }
 
-/* === TARJETAS DE INDICADORES === */
 .indicador-card {
   position: relative;
   display: flex;
@@ -57,7 +54,6 @@
     box-shadow: 0 8px 20px rgba(115, 21, 20, 0.15);
   }
 
-  /* Borde lateral por tipo */
   &::before {
     content: "";
     position: absolute;
@@ -75,7 +71,6 @@
   }
 }
 
-/* === COLORES DE BORDE POR TARJETA === */
 .procesados::before,
 .omitidos::before,
 .errores::before,
@@ -83,7 +78,6 @@
   background: linear-gradient(180deg, #731514, #a33c2a);
 }
 
-/* === ICONOS SVG PERSONALIZADOS === */
 .icon-wrapper {
   display: flex;
   justify-content: center;
@@ -103,7 +97,6 @@
   filter: drop-shadow(0 3px 6px rgba(115, 21, 20, 0.2));
 }
 
-/* Tonos suaves */
 .procesados .icon-svg circle {
   fill: rgba(115, 21, 20, 0.08);
 }
@@ -117,7 +110,6 @@
   fill: rgba(44, 62, 80, 0.08);
 }
 
-/* === TARJETA DE RESUMEN === */
 .resumen-tarjeta {
   background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f7f6f6 100%);
   padding: 2rem;
@@ -165,7 +157,6 @@
   }
 }
 
-/* === BARRA DE PROGRESO (AZUL CLARO Y MÁS ANCHA) === */
 :host ::ng-deep .mat-progress-bar.mat-accent {
   height: 12px !important;
   border-radius: 10px !important;
@@ -181,7 +172,6 @@
   background-color: #e3f2fd !important;
 }
 
-/* === VARIANTES POR ESTADO === */
 :host ::ng-deep .mat-progress-bar.Completado .mat-progress-bar-fill::after {
   background-image: linear-gradient(90deg, #4db6ac, #80cbc4) !important;
 }
@@ -192,7 +182,6 @@
   background-image: linear-gradient(90deg, #b71c1c, #ef5350) !important;
 }
 
-/* === TARJETAS DE DETALLE (mat-card "Ver detalles") === */
 .tarjetas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -203,7 +192,6 @@
   padding: 0.5rem;
 }
 
-/* === TARJETA BASE === */
 .tarjeta {
   position: relative;
   background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fafafa 100%);
@@ -261,7 +249,6 @@
   }
 }
 
-/* === ILUMINACIÓN LATERAL SEGÚN TIPO === */
 .tarjeta.procesados:hover::before,
 .tarjeta.omitidos:hover::before,
 .tarjeta.errores:hover::before,
@@ -270,7 +257,6 @@
   background: linear-gradient(180deg, #731514, #a33c2a);
 }
 
-/* === SIN PROCESO === */
 .sin-proceso {
   text-align: center;
   background: #fafafa;
@@ -291,7 +277,6 @@
   }
 }
 
-/* === ALERTA DE ÉXITO === */
 .alert-success {
   background: #f0f7f0;
   border-left: 5px solid #2e7d32;
@@ -303,7 +288,6 @@
   letter-spacing: 0.2px;
 }
 
-/* === AJUSTE DE ALINEACIÓN GENERAL === */
 .dashboard-container,
 .indicadores-grid,
 .resumen-tarjeta,

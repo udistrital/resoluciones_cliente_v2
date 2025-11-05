@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { PagesRoutingModule } from './pages-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { VinculacionRpComponent } from './vinculacion-rp/vinculacion-rp.component';
 import { PagesComponent } from './pages.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestManager } from './services/requestManager';
@@ -66,6 +67,7 @@ import { DashboardProgresoComponent } from './gestion-vinculaciones/dashboard-pr
 const pagesComponents = [
   RpVinculacionesComponent,
   DashboardProgresoComponent,
+  VinculacionRpComponent,
   RpSelectorComponent,
   TablasDisponibilidadesComponent,
   CancelarVinculacionesComponent,
