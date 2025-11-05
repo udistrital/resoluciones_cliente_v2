@@ -91,7 +91,7 @@ mat-label {
 
 .mat-grid-tile-content {
   flex-wrap: wrap;
-  align-content: flex-start;
+  align-content: flex-flex-start;
 }
 
 .section-title {
@@ -240,7 +240,7 @@ a {
 .item-list-important {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   text-align: justify;
   font-family: "Open Sans", Arial, sans-serif;
