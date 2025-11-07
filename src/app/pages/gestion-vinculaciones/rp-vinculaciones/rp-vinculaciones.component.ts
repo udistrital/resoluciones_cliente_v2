@@ -32,6 +32,7 @@ export class RpVinculacionesComponent implements OnInit {
 
   isSubmitting: boolean = false;
   isFinalized: boolean = false;
+  isJobActivo: boolean = false;
 
   constructor(
     private request: RequestManager,
@@ -55,6 +56,11 @@ export class RpVinculacionesComponent implements OnInit {
       this.initTable();
     });
   }
+
+  onEstadoJobChange(estado: 'activo' | 'finalizado' | 'inexistente'): void {
+  this.isJobActivo = estado === 'activo';
+}
+
 
   preloadData(): void {
     this.popUp.loading();
@@ -142,14 +148,14 @@ export class RpVinculacionesComponent implements OnInit {
   }
 
   guardar(): void {
-    if (this.isSubmitting || this.isFinalized) return;
+    if (this.isSubmitting || this.isFinalized) {return;}
 
     this.popUp.confirm(
       'Registros presupuestales',
       '¿Desea confirmar la actualización de los Registros presupuestales seleccionados?',
       'update'
     ).then(result => {
-      if (!result.isConfirmed) return;
+      if (!result.isConfirmed) {return;}
 
       this.isSubmitting = true;
       this.popUp.loading();
@@ -183,9 +189,9 @@ export class RpVinculacionesComponent implements OnInit {
                 });
                 window.dispatchEvent(         event);
 
-                console.log(`🚀 Nuevo Job iniciado para resolución ${this.resolucionId}: ${jobId}`);
+                console.log(`Nuevo Job iniciado para resolución ${this.resolucionId}: ${jobId}`);
               } else {
-                console.warn('⚠️ No se encontró JobId en la respuesta del MID.');
+                console.warn('No se encontró JobId en la respuesta del MID.');
               }
 
             } else {

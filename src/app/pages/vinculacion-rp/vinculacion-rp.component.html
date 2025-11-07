@@ -1,6 +1,5 @@
 <div class="vinculacion-container">
 
-  <!-- HEADER -->
   <div class="header-section">
     <div class="icon-circle">
       <mat-icon>cloud_upload</mat-icon>
@@ -11,12 +10,10 @@
     </div>
   </div>
 
-  <!-- FORMULARIO -->
   <mat-card class="form-card">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-grid">
 
-        <!-- Vigencia -->
         <mat-form-field appearance="outline">
           <mat-label>Vigencia del RP</mat-label>
           <mat-select formControlName="vigenciaRp" required>
@@ -27,7 +24,6 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Archivo -->
         <div class="file-upload">
           <label for="file" class="file-label" [class.has-file]="archivo">
             <mat-icon>upload_file</mat-icon>
@@ -37,7 +33,6 @@
         </div>
       </div>
 
-      <!-- Botones -->
       <div class="button-row">
         <button mat-flat-button color="primary" type="submit" [disabled]="cargando">
           <mat-icon>cloud_upload</mat-icon> Procesar archivo
@@ -52,7 +47,6 @@
     </form>
   </mat-card>
 
-  <!-- RESULTADOS -->
   <div *ngIf="resultado" class="resultado-card">
     <mat-card>
       <h3><mat-icon>bar_chart</mat-icon> Resultado del procesamiento</h3>
@@ -60,23 +54,22 @@
       <div class="resumen-grid">
         <div class="resumen-item exito">
           <mat-icon>check_circle</mat-icon>
-          <p><strong>{{ resultado.Procesados || 0 }}</strong><br>procesados</p>
+          <p><strong>{{ resultado.procesados || 0 }}</strong><br>procesados</p>
         </div>
         <div class="resumen-item omitidos">
           <mat-icon>warning</mat-icon>
-          <p><strong>{{ resultado.Omitidos || 0 }}</strong><br>omitidos</p>
+          <p><strong>{{ resultado.omitidos || 0 }}</strong><br>omitidos</p>
         </div>
         <div class="resumen-item error">
           <mat-icon>error</mat-icon>
-          <p><strong>{{ resultado.Errores || 0 }}</strong><br>con errores</p>
+          <p><strong>{{ resultado.errores || 0 }}</strong><br>con errores</p>
         </div>
       </div>
 
-      <!-- Detalles de CRP -->
-      <div *ngIf="resultado?.Detalles?.length" class="detalle-card">
+      <div *ngIf="resultado?.detalles?.length" class="detalle-card">
         <h4>Detalle del procesamiento</h4>
         <ul>
-          <li *ngFor="let linea of resultado.Detalles"
+          <li *ngFor="let linea of resultado.detalles"
               [innerHTML]="linea"
               [ngClass]="{
                 'ok': linea.includes('fue registrado correctamente'),
@@ -87,5 +80,4 @@
       </div>
     </mat-card>
   </div>
-
 </div>
