@@ -1,4 +1,3 @@
-// 🎨 VARIABLES DE COLOR Y ESTILO BASE
 $color-principal: #731514;
 $color-principal-oscuro: #5c1010;
 $color-fondo: #faf7f7;
@@ -7,7 +6,6 @@ $color-borde: #e4e4e4;
 $radio: 12px;
 $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
 
-// ⚙️ ANIMACIONES GLOBALES
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -18,7 +16,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   to { box-shadow: 0 0 12px rgba($color-principal, 0.35); }
 }
 
-// 🧱 CONTENEDOR PRINCIPAL
 .vinculacion-container {
   display: flex;
   flex-direction: column;
@@ -32,7 +29,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
-// 🟥 CABECERA
 .header-section {
   display: flex;
   align-items: center;
@@ -79,7 +75,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 🧾 TARJETA DE FORMULARIO
 .form-card {
   width: 100%;
   max-width: 900px;
@@ -99,7 +94,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📂 GRID FORMULARIO
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -110,7 +104,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📁 INPUT DE ARCHIVO
 .file-upload {
   display: flex;
   flex-direction: column;
@@ -153,7 +146,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 🔘 BOTONES
 .button-row {
   text-align: center;
   margin-top: 1rem;
@@ -174,7 +166,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   mat-icon { margin-right: 5px; }
 }
 
-// 📘 SECCIÓN GUÍA
 .guia-seccion {
   display: flex;
   justify-content: center;
@@ -194,7 +185,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📊 TARJETA RESULTADOS
 .resultado-card {
   width: 100%;
   max-width: 900px;
@@ -229,7 +219,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📈 GRID RESUMEN
 .resumen-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -278,7 +267,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📄 DETALLE DE CRPs
 .detalle-card {
   margin-top: 1.5rem;
   border-top: 1px solid #eee;
@@ -319,7 +307,6 @@ $sombra-suave: 0 6px 16px rgba(0, 0, 0, 0.05);
   }
 }
 
-// 📱 RESPONSIVE GENERAL
 @media (min-width: 900px) {
   .form-card,
   .resultado-card {
