@@ -21,21 +21,25 @@
         class="button button-submit"
         type="button"
         (click)="guardar()"
-        [disabled]="!guardarRp || isSubmitting || isFinalized"
-        [attr.aria-busy]="isSubmitting"
-      >
-        {{ isFinalized ? 'Guardado' : 'Guardar' }}
+        [disabled]="!guardarRp || isSubmitting || isFinalized || isJobActivo"
+        [attr.aria-busy]="isSubmitting">
+        {{ isFinalized ? 'Guardado' : (isJobActivo ? 'Procesando...' : 'Guardar') }}
       </button>
-          <button
-      mat-button
-      class="button button-remove"
-      type="button"
-      (click)="volver()"
+
+      <button
+        mat-button
+        class="button button-remove"
+        type="button"
+        (click)="volver()"
     >
       Volver
-    </button>
+      </button>
     </fieldset>
     <hr class="divider" />
-    <app-dashboard-progreso [resolucionId]="resolucionId"></app-dashboard-progreso>
+    <app-dashboard-progreso
+      [resolucionId]="resolucionId"
+      (estadoCambio)="onEstadoJobChange($event)">
+    </app-dashboard-progreso>
+
   </mat-card-content>
 </mat-card>
