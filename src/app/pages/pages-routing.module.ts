@@ -16,6 +16,8 @@ import { PlantillasComponent } from './plantillas/plantillas.component';
 import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
+import { VinculacionRpComponent } from './vinculacion-rp/vinculacion-rp.component';
+
 
 const routes: Routes = [{
   path: '',
@@ -24,6 +26,12 @@ const routes: Routes = [{
     {
       path: 'dashboard',
       component: DashboardComponent,
+    },
+    {
+      path: 'vinculacion_rp',
+      component: VinculacionRpComponent,
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always',
     },
     {
       path: 'plantillas',

@@ -1,0 +1,83 @@
+<div class="vinculacion-container">
+
+  <div class="header-section">
+    <div class="icon-circle">
+      <mat-icon>cloud_upload</mat-icon>
+    </div>
+    <div class="text">
+      <h1>Carga de RPs</h1>
+      <p>Sube tu archivo Excel y actualiza las vinculaciones fácilmente.</p>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vigencia del RP</mat-label>
+          <mat-select formControlName="vigenciaRp" required>
+            <mat-option *ngFor="let year of aniosDisponibles" [value]="year">{{ year }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('vigenciaRp')?.hasError('required')">
+            Este campo es obligatorio.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="file-upload">
+          <label for="file" class="file-label" [class.has-file]="archivo">
+            <mat-icon>upload_file</mat-icon>
+            <span>{{ archivo ? archivo.name : 'Seleccionar archivo Excel (.xlsx)' }}</span>
+          </label>
+          <input type="file" id="file" (change)="onFileChange($event)" accept=".xlsx" />
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button mat-flat-button color="primary" type="submit" [disabled]="cargando">
+          <mat-icon>cloud_upload</mat-icon> Procesar archivo
+        </button>
+      </div>
+
+      <div class="guia-seccion">
+        <button type="button" mat-stroked-button (click)="abrirGuia($event)">
+          <mat-icon>info</mat-icon> Ver estructura esperada
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <div *ngIf="resultado" class="resultado-card">
+    <mat-card>
+      <h3><mat-icon>bar_chart</mat-icon> Resultado del procesamiento</h3>
+
+      <div class="resumen-grid">
+        <div class="resumen-item exito">
+          <mat-icon>check_circle</mat-icon>
+          <p><strong>{{ resultado.procesados || 0 }}</strong><br>procesados</p>
+        </div>
+        <div class="resumen-item omitidos">
+          <mat-icon>warning</mat-icon>
+          <p><strong>{{ resultado.omitidos || 0 }}</strong><br>omitidos</p>
+        </div>
+        <div class="resumen-item error">
+          <mat-icon>error</mat-icon>
+          <p><strong>{{ resultado.errores || 0 }}</strong><br>con errores</p>
+        </div>
+      </div>
+
+      <div *ngIf="resultado?.detalles?.length" class="detalle-card">
+        <h4>Detalle del procesamiento</h4>
+        <ul>
+          <li *ngFor="let linea of resultado.detalles"
+              [innerHTML]="linea"
+              [ngClass]="{
+                'ok': linea.includes('fue registrado correctamente'),
+                'fail': linea.includes('no fue registrado')
+              }">
+          </li>
+        </ul>
+      </div>
+    </mat-card>
+  </div>
+</div>
