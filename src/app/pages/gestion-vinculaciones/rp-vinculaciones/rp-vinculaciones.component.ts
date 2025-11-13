@@ -140,7 +140,7 @@ export class RpVinculacionesComponent implements OnInit {
         this.rpsSeleccionados.push(rp);
 
         const user = JSON.parse(atob(localStorage.getItem('user') || '')) || null;
-        this.guardarRp = !!user?.user?.role?.includes('ADMINISTRADOR_RESOLUCIONES');
+        this.guardarRp = !!user?.user?.role?.includes('ADMINISTRADOR_RESOLUCIONES')|| user?.user?.role?.includes('ASIS_FINANCIERA');
       } else {
         this.guardarRp = false;
       }
