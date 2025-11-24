@@ -70,3 +70,112 @@
         width: 200px;
     }
 }
+.icono-fijo {
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-decoration: none;
+  width: 85px;
+  height: 85px;
+  cursor: pointer;
+}
+
+/* círculo visual */
+.icono-fijo::before {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid #7a0019;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.25),
+              0 6px 12px rgba(122,0,25,0.4);
+  z-index: 1;
+  animation: pulse 3s infinite ease-in-out;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* el ícono */
+.icono-fijo img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+/* efecto hover solo sobre el círculo */
+.icono-fijo:hover::before {
+  border-color: #c2185b;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.25),
+              0 6px 12px rgba(194,24,91,0.35);
+}
+
+.icono-fijo:hover img {
+  transform: scale(1.1);
+}
+
+/* tooltip */
+.tooltip-text {
+  position: absolute;
+  bottom: 100px;
+  right: 0;
+  background-color: #7a0019;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 13px;
+  font-family: 'Roboto', sans-serif;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  pointer-events: none; /* <-- evita activar hover por el texto */
+}
+
+/* solo se muestra al pasar por el botón */
+.icono-fijo:hover .tooltip-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* triángulo del tooltip */
+.tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 15px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #7a0019 transparent transparent transparent;
+}
+
+/* animación */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* versión móvil */
+@media (max-width: 768px) {
+  .icono-fijo {
+    bottom: 70px;
+    right: 15px;
+  }
+  .icono-fijo img {
+    width: 55px;
+    height: 55px;
+  }
+  .tooltip-text {
+    bottom: 85px;
+    font-size: 12px;
+  }}

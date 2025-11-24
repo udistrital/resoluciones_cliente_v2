@@ -424,7 +424,7 @@ export class FormDetalleResolucionComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) =>  {
       this.request.get(
         environment.RESOLUCIONES_V2_SERVICE,
-        `vinculacion_docente?query=resolucion_vinculacion_docente_id:${id},activo:true`
+        `vinculacion_docente?limit=0&query=resolucion_vinculacion_docente_id:${id},activo:true`
       ).subscribe({
         next: (response: Respuesta) => {
           if (response.Success) {
