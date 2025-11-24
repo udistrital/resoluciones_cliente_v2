@@ -27,10 +27,11 @@ export class PagesComponent implements OnInit {
     this.loaded = true;
 
     this.userService.user$.subscribe((data: any) => {
-      if (data ? data.userService ? data.userService.documento ? true : false : false : false) {
+      const documento = this.userService.getUserDocument();
+      if (documento) {
         this.request.get(
           environment.TERCEROS_SERVICE,
-          `datos_identificacion?query=Numero:${data.userService.documento}`
+          `datos_identificacion?query=Numero:${documento}`
         ).subscribe({
           next: (datosIdentificacion: DatosIdentificacion[]) => {
             const tercero: Tercero = datosIdentificacion[0].TerceroId;
