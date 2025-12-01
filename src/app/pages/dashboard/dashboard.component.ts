@@ -21,7 +21,7 @@ export class DashboardComponent {
 
 col1: ManualItem[] = [
   { txt: 'Gestión de resoluciones', url: 'https://ti.udistrital.edu.co/sites/default/files/documentacion/2023-07/Gesti%c3%b3n%20de%20Resoluciones%20v2.pdf', tipo: 'pdf' },
- { txt: 'Gestión de CRP', url: 'https://udistritaleduco-my.sharepoint.com/:b:/g/personal/computo_udistrital_edu_co/IQCFM4XESMlWQr4tQjiGSwYqAVrdqUNUL79CzAJhMKcDa2U?e=sUrxsF', tipo: 'pdf' },
+  { txt: 'Gestión de CRP', url: 'https://udistritaleduco-my.sharepoint.com/:b:/g/personal/computo_udistrital_edu_co/IQCFM4XESMlWQr4tQjiGSwYqAVrdqUNUL79CzAJhMKcDa2U?e=sUrxsF', tipo: 'pdf' },
   { txt: 'Aprobación de resoluciones V2', url: 'https://youtu.be/ThVonSWaLbo', tipo: 'video' },
 ];
 
