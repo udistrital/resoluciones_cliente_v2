@@ -61,7 +61,7 @@ export class ReporteFinancieraComponent implements OnInit {
     forkJoin([
       this.request.get(
         environment.PARAMETROS_SERVICE,
-        `periodo?query=CodigoAbreviacion:VG&fields=Year`
+        `periodo?query=CodigoAbreviacion:VG&fields=Year&sortby=Year&order=desc`
       ).pipe(first()),
       this.request.get(
         environment.OIKOS_SERVICE,
