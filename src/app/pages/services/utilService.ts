@@ -77,7 +77,7 @@ export class UtilService {
         });
     }
 
-    loading(): void{
+    loading(): void {
         Swal.fire({
             title: 'Cargando...',
             allowOutsideClick: false,
@@ -89,6 +89,60 @@ export class UtilService {
 
     close(): void {
         Swal.close();
+    }
+
+    /**
+     * Obtiene un mensaje legible desde la respuesta de error del backend.
+     * Soporta respuestas en objeto o en string JSON.
+     */
+    getBackendErrorMessage(err: any, fallback = 'Ocurrió un error'): string {
+        let body = err?.error;
+
+        if (typeof body === 'string' && body.trim()) {
+            try {
+                body = JSON.parse(body);
+            } catch {
+            }
+        }
+
+        if (typeof body?.Message === 'string' && body.Message.trim()) {
+            return body.Message;
+        }
+
+        if (typeof body?.Detalle === 'string' && body.Detalle.trim()) {
+            return body.Detalle;
+        }
+
+        if (typeof body?.Error?.detail === 'string' && body.Error.detail.trim()) {
+            return body.Error.detail;
+        }
+
+        if (typeof body?.err === 'string' && body.err.trim()) {
+            return body.err;
+        }
+
+        if (typeof body === 'string' && body.trim()) {
+            return body;
+        }
+
+        if (typeof err?.message === 'string' && err.message.trim()) {
+            return err.message;
+        }
+
+        return fallback;
+    }
+
+    /**
+     * Muestra el error HTTP usando warning para 409 y error para el resto.
+     */
+    showHttpError(err: any, fallback = 'Ocurrió un error'): Promise<any> {
+        const msg = this.getBackendErrorMessage(err, fallback);
+
+        if (err?.status === 409) {
+            return this.warning(msg);
+        }
+
+        return this.error(msg);
     }
 
     submitAlert({ option, type, fn, data, info, fnReturn }): void {
@@ -125,13 +179,14 @@ export class UtilService {
                             Swal.close();
                             Swal.fire(
                                 `No se ha podido ${option === 'update' ? 'Actualizar' : 'Crear'}  ${type}`,
-                                `error: ${err}`,
+                                `error: ${this.getBackendErrorMessage(err, String(err))}`,
                                 'error'
                             );
                         });
                 }
             });
     }
+
     async termsAndConditional(): Promise<any> {
         const { value: accept } = await Swal.fire({
             input: 'checkbox',
@@ -155,4 +210,3 @@ export class UtilService {
         return !!accept;
     }
 }
-

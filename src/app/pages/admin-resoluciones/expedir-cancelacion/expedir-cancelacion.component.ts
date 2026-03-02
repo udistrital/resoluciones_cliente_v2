@@ -92,13 +92,13 @@ export class ExpedirCancelacionComponent implements OnInit {
   cancelarContrato(): void {
     this.asignarValoresDefecto();
     if (this.resolucionActual.FechaExpedicion && this.contratoCanceladoBase.MotivoCancelacion) {
-      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion)
-      const anioExpedicion = fechaExpedicion.getFullYear()
+      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
+      const anioExpedicion = fechaExpedicion.getFullYear();
       anioExpedicion != this.resolucionActual.Vigencia ?
-        this.popUp.warning("Fecha de expedición no coincide con vigencia") :
-        this.confirmarExpedir()
+        this.popUp.warning('Fecha de expedición no coincide con vigencia') :
+        this.confirmarExpedir();
     } else {
-      this.popUp.warning('Complete todos Los campos');
+      this.popUp.warning('Complete todos los campos');
     }
   }
 
@@ -120,10 +120,11 @@ export class ExpedirCancelacionComponent implements OnInit {
     const conjuntoContratos = [];
     if (this.contratados) {
       this.contratados.forEach(contratado => {
-        const contratoCancelado: ContratoCancelado = {...this.contratoCanceladoBase};
+        const contratoCancelado: ContratoCancelado = { ...this.contratoCanceladoBase };
         contratoCancelado.NumeroContrato = contratado.NumeroContrato;
         contratoCancelado.Vigencia = contratado.Vigencia;
         contratoCancelado.FechaCancelacion = new Date();
+
         const CancelacionContrato = {
           ContratoCancelado: contratoCancelado,
           VinculacionDocente: {
@@ -133,11 +134,13 @@ export class ExpedirCancelacionComponent implements OnInit {
         };
         conjuntoContratos.push(CancelacionContrato);
       });
+
       const expedicionResolucion = {
         Vinculaciones: conjuntoContratos,
         idResolucion: this.resolucion.Id,
         FechaExpedicion: this.resolucionActual.FechaExpedicion
       };
+
       this.popUp.loading();
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
@@ -154,10 +157,11 @@ export class ExpedirCancelacionComponent implements OnInit {
               }
             });
           }
-        }, error: () => {
+        },
+        error: (err) => {
           this.esconderBoton = false;
           this.popUp.close();
-          this.popUp.error('No se ha podido expedir la resolución.');
+          this.popUp.showHttpError(err, 'No se ha podido expedir la resolución.');
         }
       });
     } else {
@@ -168,5 +172,4 @@ export class ExpedirCancelacionComponent implements OnInit {
   cancelarExpedicion(): void {
     this.dialogRef.close(false);
   }
-
 }

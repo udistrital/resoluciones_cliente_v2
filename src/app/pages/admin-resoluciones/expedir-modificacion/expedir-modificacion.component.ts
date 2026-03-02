@@ -84,7 +84,6 @@ export class ExpedirModificacionComponent implements OnInit {
     ).subscribe((response3: Respuesta) => {
       this.contratados = response3.Data as Vinculaciones[];
     });
-
   }
 
   asignarValoresDefecto(): void {
@@ -124,12 +123,13 @@ export class ExpedirModificacionComponent implements OnInit {
       this.Contrato.TipoContrato = { Id: 18 };
       this.Contrato.ObjetoContrato = 'Docente de Vinculación Especial - Medio Tiempo Ocasional (MTO) - Tiempo Completo Ocasional (TCO)';
     }
+
     if (this.resolucionActual.FechaExpedicion) {
-      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion)
-      const anioExpedicion = fechaExpedicion.getFullYear()
+      const fechaExpedicion = new Date(this.resolucionActual.FechaExpedicion);
+      const anioExpedicion = fechaExpedicion.getFullYear();
       anioExpedicion != this.resolucionActual.Vigencia ?
-        this.popUp.warning("Fecha de expedición no coincide con vigencia") :
-        this.confirmarExpedir()
+        this.popUp.warning('Fecha de expedición no coincide con vigencia') :
+        this.confirmarExpedir();
     } else {
       this.popUp.warning('Complete los campos');
     }
@@ -150,14 +150,17 @@ export class ExpedirModificacionComponent implements OnInit {
   guardarContratos(): void {
     this.esconderBoton = true;
     const conjuntoContratos = [];
+
     if (this.contratados.length > 0) {
       this.contratados.forEach(contratado => {
-        const contratoGeneral = {...this.Contrato};
-        const actaI = {...this.acta};
+        const contratoGeneral = { ...this.Contrato };
+        const actaI = { ...this.acta };
+
         actaI.FechaInicio = moment(actaI.FechaInicio).format('YYYY-MM-DDT00:00:00Z');
         contratoGeneral.Contratista = contratado.PersonaId;
         contratoGeneral.DependenciaSolicitante = contratado.ProyectoCurricularId.toString();
         contratoGeneral.PlazoEjecucion = contratado.NumeroHorasSemanales;
+
         const contratoVinculacion = {
           ContratoGeneral: contratoGeneral,
           ActaInicio: actaI,
@@ -169,15 +172,19 @@ export class ExpedirModificacionComponent implements OnInit {
             Dedicacion: this.resolucion.Dedicacion
           }
         };
+
         conjuntoContratos.push(contratoVinculacion);
       });
+
       const expedicionResolucion = {
         Vinculaciones: conjuntoContratos,
         idResolucion: this.resolucion.Id,
         FechaExpedicion: this.resolucionActual.FechaExpedicion,
         Usuario: localStorage.getItem('user'),
       };
+
       this.popUp.loading();
+
       this.request.post(
         environment.RESOLUCIONES_MID_V2_SERVICE,
         'expedir_resolucion/validar_datos_expedicion',
@@ -200,21 +207,36 @@ export class ExpedirModificacionComponent implements OnInit {
                     }
                   });
                 }
-              }, error: () => {
+              },
+              error: (err) => {
+                this.esconderBoton = false;
                 this.popUp.close();
-                this.popUp.error('No se ha podido expedir la resolución.');
+                this.popUp.showHttpError(err, 'No se ha podido expedir la resolución.');
               }
             });
           } else {
+            this.esconderBoton = false;
             this.popUp.close();
-            this.popUp.warning('Datos invalidos. Por favor revise la información de la resolución y las vinculaciones.');
+            this.popUp.warning('Datos inválidos. Por favor revise la información de la resolución y las vinculaciones.');
           }
-        }, error: () => {
+        },
+        error: (err) => {
+          this.esconderBoton = false;
           this.popUp.close();
-          this.popUp.warning('Datos invalidos. Por favor revise la información de la resolución y las vinculaciones.');
+
+          if (err?.status === 409) {
+            this.popUp.showHttpError(err, 'No se ha podido validar la información.');
+          } else {
+            const msg = this.popUp.getBackendErrorMessage(
+              err,
+              'Datos inválidos. Por favor revise la información de la resolución y las vinculaciones.'
+            );
+            this.popUp.warning(msg);
+          }
         }
       });
     } else {
+      this.esconderBoton = false;
       this.popUp.warning('No hay docentes inscritos dentro de la resolución');
     }
   }
@@ -222,5 +244,4 @@ export class ExpedirModificacionComponent implements OnInit {
   cancelarExpedicion(): void {
     this.dialogRef.close(false);
   }
-
 }
