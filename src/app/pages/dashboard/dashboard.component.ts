@@ -15,7 +15,6 @@ interface ManualItem {
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
-  // Estado / filtros
   q = '';
   kind: Kind = 'all';
 
@@ -38,7 +37,7 @@ col2: ManualItem[] = [
       width: '920px',
       maxWidth: '96vw',
       maxHeight: '90vh',
-      panelClass: 'manuales-modern', // <-- clase para los estilos nuevos
+      panelClass: 'manuales-modern',
     });
   }
 
