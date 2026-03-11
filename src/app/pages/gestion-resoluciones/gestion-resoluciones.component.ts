@@ -16,6 +16,19 @@ import { UserService } from '../services/userService';
 import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 
+interface DependenciaUsuario {
+  codigo_dependencia: number;
+  id_oikos: number;
+  nombre?: string;
+  rol?: string;
+}
+
+interface AlcanceUsuario {
+  rol_principal: string;
+  es_global: boolean;
+  dependencias: DependenciaUsuario[];
+}
+
 @Component({
   selector: 'app-gestion-resoluciones',
   templateUrl: './gestion-resoluciones.component.html',
@@ -32,7 +45,22 @@ export class GestionResolucionesComponent implements OnInit {
 
   icono: string;
   dependenciaUsuario = 0;
-  filtrarFacultad: boolean;
+
+  dependencias: DependenciaUsuario[] = [];
+  dependenciaSeleccionada: number | null = null;
+
+  vigenciaSeleccionada: number = new Date().getFullYear();
+  vigencias: number[] = [];
+
+  numeroDocumento = '';
+  rolesUsuario: string[] = [];
+  rolesParam = '';
+
+  rolPrincipal = '';
+  esGlobal = false;
+
+  cargando = false;
+  mostrarTabla = false;
 
   constructor(
     private request: RequestManager,
@@ -44,24 +72,21 @@ export class GestionResolucionesComponent implements OnInit {
     private userService: UserService,
   ) {
     this.initTable();
+    this.initVigencias();
   }
 
   ngOnInit(): void {
-    this.resolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}`:'', {
-      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
-      dataKey: 'Data',
-      pagerPageKey: 'offset',
-      pagerLimitKey: 'limit',
-      filterFieldKey: '#field#',
-      totalKey: 'Total',
-    });
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = '';
+
     this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
-      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+      this.dependenciaUsuario = data?.DependenciaId ? data.DependenciaId : 0;
     });
+
+    this.cargarDatosUsuario();
+    this.cargarAlcanceUsuario();
   }
 
   initTable(): void {
@@ -82,8 +107,10 @@ export class GestionResolucionesComponent implements OnInit {
         });
       },
     };
+
     TablaResoluciones.Estado.filter = true;
     TablaResoluciones.TipoResolucion.filter = true;
+
     this.resolucionesSettings = {
       columns: TablaResoluciones,
       mode: 'external',
@@ -91,6 +118,143 @@ export class GestionResolucionesComponent implements OnInit {
       selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones registradas en el sistema',
     };
+  }
+
+  initVigencias(): void {
+    const actual = new Date().getFullYear();
+    this.vigencias = [actual, actual - 1, actual - 2, actual - 3, actual - 4];
+  }
+
+  cargarDatosUsuario(): void {
+    const user = this.userService.getCurrentUser();
+
+    if (!user) {
+      this.popUp.warning('No se encontró la información del usuario autenticado.');
+      return;
+    }
+
+    this.numeroDocumento = this.userService.getUserDocument() || '';
+
+    const roles = user?.userService?.role || user?.role || [];
+
+    if (Array.isArray(roles)) {
+      this.rolesUsuario = roles
+        .map((rol: string) => String(rol).trim().toUpperCase())
+        .filter((rol: string) => !!rol);
+    } else if (typeof roles === 'string' && roles.trim()) {
+      this.rolesUsuario = [roles.trim().toUpperCase()];
+    } else {
+      this.rolesUsuario = [];
+    }
+
+    const rolesPermitidos = [
+      'ADMINISTRADOR_RESOLUCIONES',
+      'ASIS_FINANCIERA',
+      'DECANO',
+      'ASISTENTE_DECANATURA'
+    ];
+
+    this.rolesUsuario = this.rolesUsuario.filter(r => rolesPermitidos.includes(r));
+    this.rolesParam = this.rolesUsuario.join(',');
+  }
+
+  cargarAlcanceUsuario(): void {
+    if (!this.numeroDocumento || !this.rolesParam) {
+      return;
+    }
+
+    this.cargando = true;
+    this.popUp.loading();
+
+    const query =
+      `?roles=${encodeURIComponent(this.rolesParam)}` +
+      `&numero_documento=${encodeURIComponent(this.numeroDocumento)}`;
+
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `resoluciones_por_rol/dependencias${query}`
+    ).subscribe({
+      next: (response: Respuesta) => {
+        this.popUp.close();
+        this.cargando = false;
+
+        if (response.Success) {
+          const alcance = response.Data as AlcanceUsuario;
+          this.rolPrincipal = alcance?.rol_principal || '';
+          this.esGlobal = !!alcance?.es_global;
+          this.dependencias = alcance?.dependencias || [];
+
+          if (!this.esGlobal && this.dependencias.length === 1) {
+            this.dependenciaSeleccionada = Number(this.dependencias[0].id_oikos);
+          }
+        } else {
+          this.esGlobal = false;
+          this.rolPrincipal = '';
+          this.dependencias = [];
+        }
+      },
+      error: () => {
+        this.popUp.close();
+        this.cargando = false;
+        this.esGlobal = false;
+        this.rolPrincipal = '';
+        this.dependencias = [];
+      }
+    });
+  }
+
+  get mostrarFiltroDependencia(): boolean {
+    return !this.esGlobal && this.dependencias.length > 0;
+  }
+
+  private construirFiltroBase(): string {
+    const filtros: string[] = [];
+
+    filtros.push(`numero_documento=${encodeURIComponent(this.numeroDocumento)}`);
+    filtros.push(`roles=${encodeURIComponent(this.rolesParam)}`);
+    filtros.push(`vigencia=${encodeURIComponent(String(this.vigenciaSeleccionada))}`);
+
+    if (this.dependenciaSeleccionada) {
+      filtros.push(`id_oikos=${encodeURIComponent(String(this.dependenciaSeleccionada))}`);
+    }
+
+    return filtros.join('&');
+  }
+
+  private inicializarDataSource(): void {
+    this.resolucionesData = new ResolucionesDataSourceComponent(
+      this.http,
+      this.popUp,
+      this.request,
+      this.construirFiltroBase(),
+      {
+        endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}resoluciones_por_rol/consulta`,
+        dataKey: 'Data',
+        pagerPageKey: 'offset',
+        pagerLimitKey: 'limit',
+        filterFieldKey: '#field#',
+        totalKey: 'Total',
+      }
+    );
+  }
+
+  consultarResoluciones(): void {
+    if (!this.vigenciaSeleccionada) {
+      this.popUp.warning('Seleccione una vigencia.');
+      return;
+    }
+
+    if (!this.esGlobal && this.dependencias.length > 1 && !this.dependenciaSeleccionada) {
+      this.popUp.warning('Seleccione una dependencia.');
+      return;
+    }
+
+    if (!this.esGlobal && this.dependencias.length === 1 && !this.dependenciaSeleccionada) {
+      this.dependenciaSeleccionada = Number(this.dependencias[0].id_oikos);
+    }
+
+    this.inicializarDataSource();
+    this.mostrarTabla = true;
   }
 
   eventHandler(event: string, rowData: Resoluciones): void {
@@ -201,7 +365,7 @@ export class GestionResolucionesComponent implements OnInit {
             if (response.Success) {
               this.popUp.close();
               this.popUp.success('La resolución ha sido anulada con éxito').then(() => {
-                this.ngOnInit();
+                this.consultarResoluciones();
               });
             }
           }, error: () => {
@@ -261,7 +425,7 @@ export class GestionResolucionesComponent implements OnInit {
                   if (response.Success) {
                     this.popUp.close();
                     this.popUp.success('La resolución ha sido enviada a revisión con éxito').then(() => {
-                      this.ngOnInit();
+                      this.consultarResoluciones();
                     });
                   }
                 }, error: () => {
@@ -282,6 +446,16 @@ export class GestionResolucionesComponent implements OnInit {
     });
   }
 
+  limpiarConsulta(): void {
+    this.dependenciaSeleccionada = (!this.esGlobal && this.dependencias.length === 1)
+      ? Number(this.dependencias[0].id_oikos)
+      : null;
+
+    this.vigenciaSeleccionada = new Date().getFullYear();
+    this.mostrarTabla = false;
+    this.resolucionesData = undefined;
+  }
+
   crearResolucion(): void {
     this.router.navigate(['generacion_resolucion'], { relativeTo: this.route });
   }
@@ -289,5 +463,4 @@ export class GestionResolucionesComponent implements OnInit {
   consultarDocente(): void {
     this.router.navigate(['consulta_docente'], { relativeTo: this.route });
   }
-
 }
