@@ -1,17 +1,57 @@
-.plantillas-title, td {
-    text-align: center;
+.card-oas {
+  margin: 16px auto;
+  padding: 16px;
+}
+
+.plantillas-title {
+  text-align: center;
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #7d1416;
+    margin: 0;
+  }
+}
+
+.form-grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.form-grid mat-form-field {
+  min-width: 320px;
+  max-width: 360px;
+  flex: 1 1 320px;
+}
+
+.acciones-formulario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
 }
 
 .inner-container {
-    padding: 3% 10%;
+  margin-top: 12px;
 }
 
 .bigger-container {
-    padding: 2%;
+  margin-top: 16px;
 }
 
-@media screen and (max-width: 1024px) {
-    .inner-container {
-        padding: 3% 3%;
-    }
-  }
+::ng-deep ng2-smart-table table {
+  width: 100%;
+}
+
+::ng-deep ng2-smart-table thead th {
+  text-align: center;
+}
+
+::ng-deep ng2-smart-table tbody td {
+  vertical-align: middle;
+}
