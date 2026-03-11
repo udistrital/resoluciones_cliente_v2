@@ -1,30 +1,74 @@
 <mat-card class="card-oas">
-    <mat-card-title class="plantillas-title"><h1>Módulo de plantillas</h1></mat-card-title>
-    <mat-card-content>
-        <mat-tab-group mat-stretch-tabs 
-            [selectedIndex]="selectedTab"
-            (selectedIndexChange)="setSelectedTab($event, false)"    
-        >
-            <mat-tab label="Lista">
-                <div class="inner-container">
-                    <ng2-smart-table 
-                        [settings]="plantillasSettings" 
-                        [source]="plantillasData"
-                        (create)="createPlantilla()"
-                        (custom)="eventHandler($event)"
-                    ></ng2-smart-table>
-                </div>
-            </mat-tab>
-            <mat-tab label="Detalle">
-                <div class="bigger-container">
-                    <app-form-detalle-resolucion 
-                        [resolucionId]="resolucionId" 
-                        [esPlantilla]="true"
-                        [esCopia]="copia"
-                        (volver)="setSelectedTab(0, true)"
-                    ></app-form-detalle-resolucion>
-                </div>
-            </mat-tab>
-        </mat-tab-group>
-    </mat-card-content>
+
+  <mat-card-title class="plantillas-title">
+    <h1>Módulo de plantillas</h1>
+  </mat-card-title>
+
+  <mat-card-content>
+
+    <div class="form-grid">
+
+      <mat-form-field appearance="outline" *ngIf="mostrarFiltroDependencia">
+        <mat-label>Dependencia</mat-label>
+
+        <mat-select [(ngModel)]="dependenciaSeleccionada" name="dependencia">
+          <mat-option [value]="null" *ngIf="dependencias.length > 1">
+            Seleccione una dependencia
+          </mat-option>
+
+          <mat-option *ngFor="let item of dependencias" [value]="item.id_oikos">
+            {{ item.nombre || ('Dependencia ' + item.codigo_dependencia) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="acciones-formulario">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="cargarPlantillas()">
+          Consultar
+        </button>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="limpiarConsulta()">
+          Limpiar
+        </button>
+      </div>
+
+    </div>
+
+    <mat-tab-group
+      mat-stretch-tabs
+      [selectedIndex]="selectedTab"
+      (selectedIndexChange)="setSelectedTab($event, false)"
+    >
+      <mat-tab label="Lista">
+        <div class="inner-container" *ngIf="mostrarTabla">
+          <ng2-smart-table
+            [settings]="plantillasSettings"
+            [source]="plantillasData"
+            (create)="createPlantilla()"
+            (custom)="eventHandler($event)">
+          </ng2-smart-table>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Detalle">
+        <div class="bigger-container">
+          <app-form-detalle-resolucion
+            [resolucionId]="resolucionId"
+            [esPlantilla]="true"
+            [esCopia]="copia"
+            (volver)="setSelectedTab(0, true)">
+          </app-form-detalle-resolucion>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+  </mat-card-content>
+
 </mat-card>
