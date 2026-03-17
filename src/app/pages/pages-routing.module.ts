@@ -17,6 +17,8 @@ import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
 import { VinculacionRpComponent } from './vinculacion-rp/vinculacion-rp.component';
+import { DetalleSemaforoResolucionComponent } from './dashboard-semaforo-resoluciones/detalle-semaforo-resolucion/detalle-semaforo-resolucion.component';
+import { DashboardSemaforoResolucionesComponent } from './dashboard-semaforo-resoluciones/dashboard-semaforo-resoluciones.component';
 
 
 const routes: Routes = [{
@@ -94,8 +96,20 @@ const routes: Routes = [{
     {
       path: 'reporte_financiera',
       component: ReporteFinancieraComponent,
-      //canActivate: [NavGuard, RoleGuard],
-      //runGuardsAndResolvers: 'always'
+      canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
+    },
+    {
+      path: 'dashboard_semaforo_resoluciones',
+      component: DashboardSemaforoResolucionesComponent,
+      // canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
+    },
+    {
+      path: 'dashboard_semaforo_resoluciones/detalle/:Id',
+      component: DetalleSemaforoResolucionComponent,
+      // canActivate: [NavGuard, RoleGuard],
+      runGuardsAndResolvers: 'always'
     },
     {
       path: '', redirectTo: 'dashboard', pathMatch: 'full',
