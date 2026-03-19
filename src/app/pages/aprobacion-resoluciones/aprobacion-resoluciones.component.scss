@@ -1,27 +1,34 @@
-.button {
-    margin-top: 5px;
-    margin-right: 5px;
-    margin-left: 5px;
-    width: 45%;
-    color: #fff;
-
-    &.button-add {
-        background-color: var(--others-main);
-    }
-    &.button-remove {
-        background-color: var(--danger-main);
-    }
-    &.button-submit {
-        background-color: var(--success-base);
-    }
-    &.button-submit:disabled,
-    &.button-submit[disabled] {
-        background-color: var(--success-accent);
-        color: #999;
-    }
-
+.aprobaciones-title,
+td {
+  text-align: center;
 }
 
-.aprobaciones-title {
-    text-align: center;
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.form-grid mat-form-field {
+  min-width: 320px;
+  max-width: 360px;
+  flex: 1 1 320px;
+}
+
+.acciones-formulario {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.tabla-container {
+  margin-top: 20px;
+}
+
+mat-card-content {
+  overflow: visible;
 }

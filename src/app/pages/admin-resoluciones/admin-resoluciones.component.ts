@@ -14,9 +14,20 @@ import { Respuesta } from 'src/app/@core/models/respuesta';
 import { Resolucion } from 'src/app/@core/models/resolucion';
 import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-documento-viewer.component';
 import { UtilService } from '../services/utilService';
-import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { UserService } from '../services/userService';
 
+interface DependenciaUsuario {
+  codigo_dependencia: number;
+  id_oikos: number;
+  nombre?: string;
+  rol?: string;
+}
+
+interface AlcanceUsuario {
+  rol_principal: string;
+  es_global: boolean;
+  dependencias: DependenciaUsuario[];
+}
 
 @Component({
   selector: 'app-admin-resoluciones',
@@ -30,8 +41,18 @@ export class AdminResolucionesComponent implements OnInit {
 
   adminResolucionesSettings: any;
   adminResolucionesData: ResolucionesDataSourceComponent;
-  filtrarFacultad = false;
-  dependenciaUsuario = 0;
+
+  numeroDocumento = '';
+  rolesUsuario: string[] = [];
+  rolesParam = '';
+
+  rolPrincipal = '';
+  esGlobal = false;
+
+  dependencias: DependenciaUsuario[] = [];
+  dependenciaSeleccionada: number | null = null;
+
+  mostrarTabla = false;
 
   constructor(
     private request: RequestManager,
@@ -44,22 +65,143 @@ export class AdminResolucionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const query = `${this.filtrarFacultad?`Facultad=${this.dependenciaUsuario}&`:``}Estado=Expedida|Aprobada`;
-    this.adminResolucionesData = new ResolucionesDataSourceComponent(this.http, this.popUp, this.request, query, {
-      endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
-      dataKey: 'Data',
-      pagerPageKey: 'offset',
-      pagerLimitKey: 'limit',
-      filterFieldKey: '#field#',
-      totalKey: 'Total',
-    });
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.width = '1200px';
     this.dialogConfig.height = '800px';
     this.dialogConfig.data = {};
-    this.userService.dependenciaUser$.subscribe((data: VinculacionTercero) => {
-      this.dependenciaUsuario = data.DependenciaId?data.DependenciaId:0;
+
+    this.cargarDatosUsuario();
+    this.cargarAlcanceUsuario();
+  }
+
+  get mostrarFiltroDependencia(): boolean {
+    return !this.esGlobal && this.dependencias.length > 0;
+  }
+
+  cargarDatosUsuario(): void {
+    const user = this.userService.getCurrentUser();
+
+    if (!user) {
+      this.popUp.warning('No se encontró la información del usuario autenticado.');
+      return;
+    }
+
+    this.numeroDocumento = this.userService.getUserDocument() || '';
+
+    const roles = user?.userService?.role || user?.role || [];
+
+    if (Array.isArray(roles)) {
+      this.rolesUsuario = roles
+        .map((rol: string) => String(rol).trim().toUpperCase())
+        .filter((rol: string) => !!rol);
+    } else if (typeof roles === 'string' && roles.trim()) {
+      this.rolesUsuario = [roles.trim().toUpperCase()];
+    } else {
+      this.rolesUsuario = [];
+    }
+
+    const rolesPermitidos = [
+      'ADMINISTRADOR_RESOLUCIONES',
+      'ASIS_FINANCIERA',
+      'DECANO',
+      'ASISTENTE_DECANATURA'
+    ];
+
+    this.rolesUsuario = this.rolesUsuario.filter(r => rolesPermitidos.includes(r));
+    this.rolesParam = this.rolesUsuario.join(',');
+  }
+
+  cargarAlcanceUsuario(): void {
+    if (!this.numeroDocumento || !this.rolesParam) {
+      this.popUp.warning('No se encontró la información del usuario autenticado.');
+      return;
+    }
+
+    this.popUp.loading();
+
+    const query =
+      `?roles=${encodeURIComponent(this.rolesParam)}` +
+      `&numero_documento=${encodeURIComponent(this.numeroDocumento)}`;
+
+    this.request.get(
+      environment.RESOLUCIONES_MID_V2_SERVICE,
+      `resoluciones_por_rol/dependencias${query}`
+    ).subscribe({
+      next: (response: Respuesta) => {
+        this.popUp.close();
+
+        if (response.Success) {
+          const alcance = response.Data as AlcanceUsuario;
+
+          this.rolPrincipal = alcance?.rol_principal || '';
+          this.esGlobal = !!alcance?.es_global;
+          this.dependencias = alcance?.dependencias || [];
+
+          if (!this.esGlobal && this.dependencias.length === 1) {
+            this.dependenciaSeleccionada = Number(this.dependencias[0].id_oikos);
+          } else {
+            this.dependenciaSeleccionada = null;
+          }
+
+          this.mostrarTabla = false;
+          this.adminResolucionesData = undefined;
+        } else {
+          this.mostrarTabla = false;
+          this.adminResolucionesData = undefined;
+          this.popUp.error('No se pudo determinar el alcance del usuario.');
+        }
+      },
+      error: (error) => {
+        this.popUp.close();
+        this.mostrarTabla = false;
+        this.adminResolucionesData = undefined;
+        const mensaje = error?.error?.Message || 'No se pudo determinar el alcance del usuario.';
+        this.popUp.error(mensaje);
+      }
     });
+  }
+
+  consultarResoluciones(): void {
+    if (!this.esGlobal && !this.dependenciaSeleccionada) {
+      this.popUp.warning('Debe seleccionar una dependencia para realizar la consulta.');
+      return;
+    }
+
+    this.cargarTabla();
+  }
+
+  limpiarConsulta(): void {
+    this.dependenciaSeleccionada = (!this.esGlobal && this.dependencias.length === 1)
+      ? Number(this.dependencias[0].id_oikos)
+      : null;
+
+    this.mostrarTabla = false;
+    this.adminResolucionesData = undefined;
+  }
+
+  cargarTabla(): void {
+    let query = 'Estado=Expedida|Aprobada';
+
+    if (!this.esGlobal && this.dependenciaSeleccionada) {
+      query = `Facultad=${this.dependenciaSeleccionada}&${query}`;
+    }
+
+    this.adminResolucionesData = new ResolucionesDataSourceComponent(
+      this.http,
+      this.popUp,
+      this.request,
+      query,
+      {
+        endPoint: `${environment.RESOLUCIONES_MID_V2_SERVICE}gestion_resoluciones`,
+        dataKey: 'Data',
+        pagerPageKey: 'offset',
+        pagerLimitKey: 'limit',
+        filterFieldKey: '#field#',
+        totalKey: 'Total',
+      }
+    );
+
+    this.mostrarTabla = true;
   }
 
   initTable(): void {
@@ -88,7 +230,6 @@ export class AdminResolucionesComponent implements OnInit {
       selectedRowIndex: -1,
       noDataMessage: 'No hay resoluciones aprobadas en el sistema',
     };
-
   }
 
   eventHandler(event: string, rowData: Resoluciones): void {
@@ -104,6 +245,7 @@ export class AdminResolucionesComponent implements OnInit {
 
   cargarDocumento(rowData: Resoluciones): void {
     this.popUp.loading();
+
     if (rowData.Estado === 'Expedida') {
       this.request.get(
         environment.RESOLUCIONES_V2_SERVICE,
@@ -112,6 +254,7 @@ export class AdminResolucionesComponent implements OnInit {
         next: (response: Respuesta) => {
           if (response.Success) {
             const resolucion = response.Data as Resolucion;
+
             this.request.get(
               environment.GESTOR_DOCUMENTAL_SERVICE,
               `document/${resolucion.NuxeoUid}`
@@ -120,13 +263,15 @@ export class AdminResolucionesComponent implements OnInit {
                 this.popUp.close();
                 this.dialogConfig.data = response2.file as string;
                 this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
-              }, error: () => {
+              },
+              error: () => {
                 this.popUp.close();
                 this.popUp.error('No se ha podido generar la resolución.');
               }
             });
           }
-        }, error: () => {
+        },
+        error: () => {
           this.popUp.close();
           this.popUp.error('No se ha podido generar la resolución.');
         }
@@ -142,7 +287,8 @@ export class AdminResolucionesComponent implements OnInit {
             this.dialogConfig.data = response.Data as string;
             this.dialog.open(ModalDocumentoViewerComponent, this.dialogConfig);
           }
-        }, error: () => {
+        },
+        error: () => {
           this.popUp.close();
           this.popUp.error('No se ha podido generar la resolución.');
         }
@@ -154,6 +300,7 @@ export class AdminResolucionesComponent implements OnInit {
     const cadena = rowData.TipoResolucion.replace('Resolución de ', '');
     let dialogo: MatDialogRef<any>;
     this.dialogConfig.data = rowData;
+
     switch (cadena) {
       case 'Vinculación':
         dialogo = this.dialog.open(ExpedirVinculacionComponent, this.dialogConfig);
@@ -166,11 +313,11 @@ export class AdminResolucionesComponent implements OnInit {
         dialogo = this.dialog.open(ExpedirCancelacionComponent, this.dialogConfig);
         break;
     }
+
     dialogo.afterClosed().subscribe((resp: boolean) => {
       if (resp) {
-        this.ngOnInit();
+        this.consultarResoluciones();
       }
     });
   }
-
 }

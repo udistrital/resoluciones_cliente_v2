@@ -1,8 +1,42 @@
-.resoluciones-title, td {
-    text-align: center;
+.resoluciones-title,
+.plantillas-title,
+td {
+  text-align: center;
 }
 
 .field {
-    padding: 0 1% 0 0;
-    text-align: center;
+  padding: 0 1% 0 0;
+  text-align: center;
+}
+
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.form-grid mat-form-field {
+  min-width: 320px;
+  max-width: 360px;
+  flex: 1 1 320px;
+}
+
+.acciones-formulario {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.tabla-container,
+.inner-container,
+.bigger-container {
+  margin-top: 20px;
+}
+
+mat-card-content {
+  overflow: visible;
 }
