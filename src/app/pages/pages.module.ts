@@ -62,6 +62,8 @@ import { NavGuard } from '../@core/components/guard/nav.guard';
 import { RoleGuard } from '../@core/components/guard/role.guard';
 import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financiera.component';
 import { DashboardProgresoComponent } from './gestion-vinculaciones/dashboard-progreso/dashboard-progreso.component';
+import { DetalleSemaforoResolucionComponent } from './dashboard-semaforo-resoluciones/detalle-semaforo-resolucion/detalle-semaforo-resolucion.component';
+import { DashboardSemaforoResolucionesComponent } from './dashboard-semaforo-resoluciones/dashboard-semaforo-resoluciones.component';
 
 
 const pagesComponents = [
@@ -91,6 +93,8 @@ const pagesComponents = [
   PlantillasComponent,
   DashboardComponent,
   PagesComponent,
+  DetalleSemaforoResolucionComponent,
+  DashboardSemaforoResolucionesComponent
 ];
 
 const materialModules = [
