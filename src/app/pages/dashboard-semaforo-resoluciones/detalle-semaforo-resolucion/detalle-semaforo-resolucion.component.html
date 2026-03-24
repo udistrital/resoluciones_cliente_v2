@@ -1,0 +1,265 @@
+<section class="dashboard-main full-width">
+ <div class="dashboard-header" *ngIf="!cargando && dashboardData">
+  <div class="header-top">
+    <div class="header-left">
+      <button
+        mat-stroked-button
+        color="primary"
+        class="btn-volver"
+        (click)="volver()">
+        ← Volver
+      </button>
+
+      <div class="header-text">
+        <h1>Dashboard de vinculaciones</h1>
+        <p class="subtitulo">
+          Resolución {{ dashboardData.resumen.resolucion_id }}
+        </p>
+      </div>
+    </div>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      class="btn-limpiar-header"
+      (click)="limpiarFiltros()">
+      Limpiar filtros
+    </button>
+  </div>
+
+  <div class="chips-filtros">
+    <span class="chip-filtro">
+      Resolución: {{ dashboardData.resumen.resolucion_id }}
+    </span>
+
+    <span class="chip-filtro" *ngIf="filtroEstado">
+      Estado: {{ filtroEstado }}
+    </span>
+
+    <span class="chip-filtro" *ngIf="filtroDocumento">
+      Documento: {{ filtroDocumento }}
+    </span>
+  </div>
+</div>
+
+  <!-- Loader moderno -->
+  <div class="estado-carga-moderno" *ngIf="cargando">
+    <div class="loader-card">
+      <div class="loader-icono">
+        <div class="spinner-institucional"></div>
+      </div>
+
+      <div class="loader-contenido">
+        <div class="loader-titulo">Consultando información</div>
+        <div class="loader-texto">
+          Cargando dashboard de vinculaciones<span class="dots-loader"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="estado-error" *ngIf="error && !cargando">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && dashboardData" class="contenido-dashboard">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Total vinculaciones</span>
+          <span class="kpi-icon icon-documento">📄</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen.total }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Con RP</span>
+          <span class="kpi-icon icon-rp">RP</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen.total_con_rp }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Completas</span>
+          <span class="kpi-icon icon-ok">✔</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen.completas }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Pendientes Titan</span>
+          <span class="kpi-icon icon-warning">⏳</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen.pendientes_titan }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Sin RP</span>
+          <span class="kpi-icon icon-alert">⚠</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen.sin_rp }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metricas-grid">
+      <div class="metrica-card">
+        <div class="metrica-info">
+          <span>Completitud</span>
+          <strong>
+            {{ dashboardData.resumen.porcentaje_completas | number:'1.0-2' }}%
+          </strong>
+        </div>
+        <div class="metrica-progress">
+          <div class="metrica-progress-bar progress-completa"
+            [style.width.%]="dashboardData.resumen.porcentaje_completas">
+          </div>
+        </div>
+      </div>
+
+      <div class="metrica-card">
+        <div class="metrica-info">
+          <span>Pendientes Titan</span>
+          <strong>
+            {{ dashboardData.resumen.porcentaje_pendientes_titan | number:'1.0-2' }}%
+          </strong>
+        </div>
+        <div class="metrica-progress">
+          <div class="metrica-progress-bar progress-pendiente"
+            [style.width.%]="dashboardData.resumen.porcentaje_pendientes_titan">
+          </div>
+        </div>
+      </div>
+
+      <div class="metrica-card">
+        <div class="metrica-info">
+          <span>Sin RP</span>
+          <strong>
+            {{ dashboardData.resumen.porcentaje_sin_rp | number:'1.0-2' }}%
+          </strong>
+        </div>
+        <div class="metrica-progress">
+          <div class="metrica-progress-bar progress-sin-rp" [style.width.%]="dashboardData.resumen.porcentaje_sin_rp">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-panel">
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Documento</mat-label>
+          <input matInput [(ngModel)]="filtroDocumento" (input)="aplicarFiltrosLocales()"
+            placeholder="Buscar por documento">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="aplicarFiltrosLocales()">
+
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="COMPLETO">Completo</mat-option>
+            <mat-option value="PENDIENTE_TITAN">Pendiente Titan</mat-option>
+            <mat-option value="SIN_RP">Sin RP</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="acciones-filtros">
+
+          <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <mat-card class="widget-card tabla-principal-card">
+      <div class="widget-header tabla-header">
+        <div>
+          <h2>Detalle de vinculaciones</h2>
+          <p class="tabla-subinfo">
+            Registros visibles: {{ detalleFiltrado.length }}
+          </p>
+        </div>
+      </div>
+
+      <div class="tabla-container tabla-container-principal">
+        <table class="tabla-dashboard">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Contrato</th>
+              <th>RP</th>
+              <th>Vigencia</th>
+              <th>Avance</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of detalleFiltrado">
+              <td class="documento-cell">
+                <div class="documento-pill">
+                  {{ item.numero_documento }}
+                </div>
+              </td>
+
+              <td>
+                {{ item.numero_contrato || 'N/A' }}
+              </td>
+
+              <td>
+                {{ item.numero_rp || 'N/A' }}
+              </td>
+
+              <td>
+                {{ item.vigencia }}
+              </td>
+
+              <td>
+                <div class="progress-semaforo progress-semaforo-detalle">
+                  <div class="segmento" [ngClass]="obtenerClaseSegmento(item.estado_codigo)">
+                  </div>
+                </div>
+
+                <div class="progress-legend-mini">
+                  <span>{{ obtenerSemaforoTexto(item.estado_codigo) }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="estado-chip" [ngClass]="obtenerClaseEstado(item.estado_codigo)">
+                  <span class="estado-dot"></span>
+                  {{ item.estado_nombre }}
+                </span>
+              </td>
+            </tr>
+
+            <tr *ngIf="detalleFiltrado.length === 0">
+              <td colspan="6" class="sin-datos">
+                No hay registros para los filtros aplicados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+</section>

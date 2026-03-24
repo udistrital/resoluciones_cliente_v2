@@ -1,0 +1,239 @@
+<section class="dashboard-main full-width">
+  <div class="dashboard-header">
+    <div class="header-top">
+      <div>
+        <h1>Semaforo vinculaciones</h1>
+        <p class="subtitulo">
+          Seguimiento de estado RP y carga en Titan por resolución
+        </p>
+      </div>
+
+      <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
+    </div>
+
+    <div class="filtros-panel">
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Vigencia</mat-label>
+          <mat-select [(ngModel)]="vigenciaSeleccionada">
+            <mat-option *ngFor="let year of vigencias" [value]="year">
+              {{ year }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="mostrarFiltroDependencia">
+          <mat-label>Dependencia</mat-label>
+          <mat-select [(ngModel)]="dependenciaSeleccionada">
+            <mat-option *ngIf="esGlobal" [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let dependencia of dependencias" [value]="dependencia.id_oikos">
+              {{ dependencia.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="acciones-filtros">
+          <button mat-raised-button color="primary" (click)="consultarDashboard()">
+            Consultar
+          </button>
+
+          <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
+            Limpiar
+          </button>
+        </div>
+      </div>
+      <div class="chips-filtros">
+        <span class="chip-filtro">
+          Vigencia: {{ vigenciaSeleccionada }}
+        </span>
+
+        <span class="chip-filtro" *ngIf="mostrarFiltroDependencia">
+          Dependencia: {{ obtenerNombreDependenciaSeleccionada() }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="estado-carga-moderno" *ngIf="cargando || cargandoDependencias">
+    <div class="loader-card">
+      <div class="loader-icono">
+        <div class="spinner-institucional"></div>
+      </div>
+
+      <div class="loader-contenido">
+        <div class="loader-titulo">Procesando información del tablero</div>
+        <div class="loader-texto">
+          Estamos consolidando el estado de las resoluciones<span class="dots-loader"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="estado-error" *ngIf="error && !cargando && !cargandoDependencias">
+    {{ error }}
+  </div>
+
+  <div *ngIf="dashboardData && !cargando" class="contenido-dashboard">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Resoluciones en página</span>
+          <span class="kpi-icon icon-documento">📄</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen_global.total_resoluciones }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Completas</span>
+          <span class="kpi-icon icon-ok">✔</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen_global.resoluciones_completas }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Pendientes Titan</span>
+          <span class="kpi-icon icon-warning">⏳</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen_global.resoluciones_con_pendientes_titan }}
+        </strong>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Sin RP</span>
+          <span class="kpi-icon icon-alert">⚠</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen_global.resoluciones_con_sin_rp }}
+        </strong>
+      </div>
+
+      <div class="kpi-card destacado">
+        <div class="kpi-top">
+          <span class="kpi-label">% completas</span>
+          <span class="kpi-icon icon-percent">%</span>
+        </div>
+        <strong class="kpi-value">
+          {{ dashboardData.resumen_global.porcentaje_resoluciones_completas | number:'1.0-2' }}%
+        </strong>
+        <div class="kpi-progress">
+          <div class="kpi-progress-bar"
+            [style.width.%]="dashboardData.resumen_global.porcentaje_resoluciones_completas">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <mat-card class="widget-card tabla-principal-card">
+      <div class="widget-header tabla-header">
+        <div>
+          <h2>Resoluciones por estado</h2>
+        </div>
+
+        <div class="paginacion-inline">
+          <button mat-stroked-button color="primary" [disabled]="!puedeIrAnterior" (click)="cambiarPagina('anterior')">
+            Anterior
+          </button>
+
+          <span class="texto-paginacion">
+            Página {{ paginaActual }} de {{ totalPaginas }}
+          </span>
+
+          <button mat-stroked-button color="primary" [disabled]="!puedeIrSiguiente"
+            (click)="cambiarPagina('siguiente')">
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <div class="tabla-container tabla-container-principal">
+        <table class="tabla-dashboard">
+          <thead>
+            <tr>
+              <th>Resolución</th>
+              <th>Dependencia</th>
+              <th>Total</th>
+              <th>Sin RP</th>
+              <th>Con RP</th>
+              <th>Pendientes Titan</th>
+              <th>Completas</th>
+              <th>% Completas</th>
+              <th>Avance</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of resoluciones">
+              <td class="resolucion-cell">
+                <div class="resolucion-pill">
+                  {{ item.numero_resolucion }}
+                </div>
+              </td>
+
+              <td class="texto-izquierda dependencia-cell">
+                {{ item.dependencia_nombre || 'N/A' }}
+              </td>
+
+              <td>{{ item.total }}</td>
+              <td>{{ item.sin_rp }}</td>
+              <td>{{ item.total_con_rp }}</td>
+              <td>{{ item.pendientes_titan }}</td>
+              <td>{{ item.completas }}</td>
+              <td>{{ item.porcentaje_completas | number:'1.0-2' }}%</td>
+
+              <td>
+                <div class="progress-semaforo">
+                  <div class="segmento segmento-sin-rp" [style.width.%]="getPorcentaje(item.sin_rp, item.total)">
+                  </div>
+
+                  <div class="segmento segmento-pendiente"
+                    [style.width.%]="getPorcentaje(item.pendientes_titan, item.total)">
+                  </div>
+
+                  <div class="segmento segmento-completa" [style.width.%]="getPorcentaje(item.completas, item.total)">
+                  </div>
+                </div>
+
+                <div class="progress-legend-mini">
+                  <span>SRP {{ item.sin_rp }}</span>
+                  <span>PEN {{ item.pendientes_titan }}</span>
+                  <span>COM {{ item.completas }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="estado-chip" [ngClass]="obtenerClaseEstado(item.estado_general_codigo)">
+                  <span class="estado-dot"></span>
+                  {{ getSemaforoTexto(item) }}
+                </span>
+              </td>
+
+              <td>
+                <button mat-stroked-button color="primary" (click)="verDetalle(item.resolucion_id)">
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="resoluciones.length === 0">
+              <td colspan="11" class="sin-datos">
+                No hay resoluciones para mostrar
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+</section>
