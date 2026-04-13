@@ -64,6 +64,7 @@ import { ReporteFinancieraComponent } from './reporte-financiera/reporte-financi
 import { DashboardProgresoComponent } from './gestion-vinculaciones/dashboard-progreso/dashboard-progreso.component';
 import { DetalleSemaforoResolucionComponent } from './dashboard-semaforo-resoluciones/detalle-semaforo-resolucion/detalle-semaforo-resolucion.component';
 import { DashboardSemaforoResolucionesComponent } from './dashboard-semaforo-resoluciones/dashboard-semaforo-resoluciones.component';
+import { SmartTableCommitFilterComponent } from '../@core/components/smart-table-commit-filter/smart-table-commit-filter.component';
 
 
 const pagesComponents = [
@@ -94,7 +95,8 @@ const pagesComponents = [
   DashboardComponent,
   PagesComponent,
   DetalleSemaforoResolucionComponent,
-  DashboardSemaforoResolucionesComponent
+  DashboardSemaforoResolucionesComponent,
+  SmartTableCommitFilterComponent,
 ];
 
 const materialModules = [
