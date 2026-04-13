@@ -15,6 +15,7 @@ import { Resolucion } from 'src/app/@core/models/resolucion';
 import { UserService } from '../services/userService';
 import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
+import { SmartTableCommitFilterComponent } from 'src/app/@core/components/smart-table-commit-filter/smart-table-commit-filter.component';
 
 interface DependenciaUsuario {
   codigo_dependencia: number;
@@ -108,8 +109,19 @@ export class GestionResolucionesComponent implements OnInit {
       },
     };
 
-    TablaResoluciones.Estado.filter = true;
-    TablaResoluciones.TipoResolucion.filter = true;
+    const filtroTabla = {
+      type: 'custom',
+      component: SmartTableCommitFilterComponent,
+    };
+
+    TablaResoluciones.NumeroResolucion.filter = filtroTabla;
+    TablaResoluciones.Vigencia.filter = filtroTabla;
+    TablaResoluciones.Periodo.filter = filtroTabla;
+    TablaResoluciones.NivelAcademico.filter = filtroTabla;
+    TablaResoluciones.Dedicacion.filter = filtroTabla;
+    TablaResoluciones.Semanas.filter = filtroTabla;
+    TablaResoluciones.Estado.filter = filtroTabla;
+    TablaResoluciones.TipoResolucion.filter = filtroTabla;
 
     this.resolucionesSettings = {
       columns: TablaResoluciones,
@@ -255,6 +267,14 @@ export class GestionResolucionesComponent implements OnInit {
 
     this.inicializarDataSource();
     this.mostrarTabla = true;
+  }
+
+  limpiarFiltrosTabla(): void {
+    if (!this.resolucionesData) {
+      return;
+    }
+
+    this.resolucionesData.setFilter([]);
   }
 
   eventHandler(event: string, rowData: Resoluciones): void {
