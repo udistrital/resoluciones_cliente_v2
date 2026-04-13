@@ -55,6 +55,15 @@
 
     </div>
 
+    <div class="acciones-formulario" *ngIf="mostrarTabla">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="limpiarFiltrosTabla()">
+        Limpiar filtros de tabla
+      </button>
+    </div>
+
     <div class="tabla-container" *ngIf="mostrarTabla">
       <ng2-smart-table
         [settings]="resolucionesSettings"

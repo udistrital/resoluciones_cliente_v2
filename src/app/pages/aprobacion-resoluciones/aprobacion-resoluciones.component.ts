@@ -11,6 +11,7 @@ import { ModalDocumentoViewerComponent } from '../modal-documento-viewer/modal-d
 import { RequestManager } from '../services/requestManager';
 import { UserService } from '../services/userService';
 import { UtilService } from '../services/utilService';
+import { SmartTableCommitFilterComponent } from 'src/app/@core/components/smart-table-commit-filter/smart-table-commit-filter.component';
 
 interface DependenciaUsuario {
   codigo_dependencia: number;
@@ -175,6 +176,14 @@ export class AprobacionResolucionesComponent implements OnInit {
     this.aprobResolucionesData = undefined;
   }
 
+  limpiarFiltrosTabla(): void {
+    if (!this.aprobResolucionesData) {
+      return;
+    }
+
+    this.aprobResolucionesData.setFilter([]);
+  }
+
   cargarTabla(): void {
     let query = 'Estado=Aprobada|Por revisar';
 
@@ -218,6 +227,19 @@ export class AprobacionResolucionesComponent implements OnInit {
         });
       },
     };
+
+    const filtroTabla = {
+      type: 'custom',
+      component: SmartTableCommitFilterComponent,
+    };
+
+    TablaResolucion.NumeroResolucion.filter = filtroTabla;
+    TablaResolucion.Vigencia.filter = filtroTabla;
+    TablaResolucion.Facultad.filter = filtroTabla;
+    TablaResolucion.TipoResolucion.filter = filtroTabla;
+    TablaResolucion.NivelAcademico.filter = filtroTabla;
+    TablaResolucion.Dedicacion.filter = filtroTabla;
+    TablaResolucion.Estado.filter = filtroTabla;
 
     this.aprobResolucionesSettings = {
       columns: TablaResolucion,

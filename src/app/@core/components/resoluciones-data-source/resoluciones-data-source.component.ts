@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ServerDataSource } from 'ng2-smart-table';
 import { ServerSourceConf } from 'ng2-smart-table/lib/lib/data-source/server/server-source.conf';
 import { Observable, finalize } from 'rxjs';
@@ -6,7 +6,6 @@ import { RequestManager } from 'src/app/pages/services/requestManager';
 import { UtilService } from 'src/app/pages/services/utilService';
 
 export class ResolucionesDataSourceComponent extends ServerDataSource {
-
   constructor(
     protected http: HttpClient,
     protected popUp: UtilService,
@@ -15,6 +14,18 @@ export class ResolucionesDataSourceComponent extends ServerDataSource {
     protected conf: ServerSourceConf | any,
   ) {
     super(http, conf);
+  }
+
+  protected createRequesParams(): HttpParams {
+    let params = super.createRequesParams();
+    const numeroResolucion = this.obtenerValorFiltro('NumeroResolucion');
+
+    if (numeroResolucion) {
+      params = params.set('NumeroResolucion', numeroResolucion);
+      params = params.set('numero_resolucion', numeroResolucion);
+    }
+
+    return params;
   }
 
   protected requestElements(): Observable<any> {
@@ -28,5 +39,16 @@ export class ResolucionesDataSourceComponent extends ServerDataSource {
       );
     });
     return request;
+  }
+
+  private obtenerValorFiltro(campo: string): string {
+    const filtroActual = this.getFilter();
+
+    if (!filtroActual?.filters?.length) {
+      return '';
+    }
+
+    const filtro = filtroActual.filters.find((item: any) => item.field === campo);
+    return filtro?.search ? String(filtro.search).trim() : '';
   }
 }
