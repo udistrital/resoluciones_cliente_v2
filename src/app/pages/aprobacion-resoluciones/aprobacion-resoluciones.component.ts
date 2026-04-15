@@ -12,19 +12,12 @@ import { RequestManager } from '../services/requestManager';
 import { UserService } from '../services/userService';
 import { UtilService } from '../services/utilService';
 import { SmartTableCommitFilterComponent } from 'src/app/@core/components/smart-table-commit-filter/smart-table-commit-filter.component';
-
-interface DependenciaUsuario {
-  codigo_dependencia: number;
-  id_oikos: number;
-  nombre?: string;
-  rol?: string;
-}
-
-interface AlcanceUsuario {
-  rol_principal: string;
-  es_global: boolean;
-  dependencias: DependenciaUsuario[];
-}
+import { cloneTableDefinition } from 'src/app/@core/models/smart-table.util';
+import {
+  AlcanceUsuario,
+  DependenciaUsuario,
+  ResolucionesScopeService,
+} from '../services/resoluciones-scope.service';
 
 @Component({
   selector: 'app-aprobacion-resoluciones',
@@ -57,6 +50,7 @@ export class AprobacionResolucionesComponent implements OnInit {
     private request: RequestManager,
     private popUp: UtilService,
     private userService: UserService,
+    private resolucionesScopeService: ResolucionesScopeService,
   ) {
     this.initTable();
   }
@@ -76,36 +70,16 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   cargarDatosUsuario(): void {
-    const user = this.userService.getCurrentUser();
+    const context = this.resolucionesScopeService.getUsuarioContext();
 
-    if (!user) {
+    if (!context) {
       this.popUp.warning('No se encontró la información del usuario autenticado.');
       return;
     }
 
-    this.numeroDocumento = this.userService.getUserDocument() || '';
-
-    const roles = user?.userService?.role || user?.role || [];
-
-    if (Array.isArray(roles)) {
-      this.rolesUsuario = roles
-        .map((rol: string) => String(rol).trim().toUpperCase())
-        .filter((rol: string) => !!rol);
-    } else if (typeof roles === 'string' && roles.trim()) {
-      this.rolesUsuario = [roles.trim().toUpperCase()];
-    } else {
-      this.rolesUsuario = [];
-    }
-
-    const rolesPermitidos = [
-      'ADMINISTRADOR_RESOLUCIONES',
-      'ASIS_FINANCIERA',
-      'DECANO',
-      'ASISTENTE_DECANATURA'
-    ];
-
-    this.rolesUsuario = this.rolesUsuario.filter(r => rolesPermitidos.includes(r));
-    this.rolesParam = this.rolesUsuario.join(',');
+    this.numeroDocumento = context.numeroDocumento;
+    this.rolesUsuario = context.rolesUsuario;
+    this.rolesParam = context.rolesParam;
   }
 
   cargarAlcanceUsuario(): void {
@@ -116,37 +90,23 @@ export class AprobacionResolucionesComponent implements OnInit {
 
     this.popUp.loading();
 
-    const query =
-      `?roles=${encodeURIComponent(this.rolesParam)}` +
-      `&numero_documento=${encodeURIComponent(this.numeroDocumento)}`;
-
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `resoluciones_por_rol/dependencias${query}`
+    this.resolucionesScopeService.getAlcanceUsuario(
+      this.numeroDocumento,
+      this.rolesParam,
     ).subscribe({
-      next: (response: Respuesta) => {
+      next: (alcance: AlcanceUsuario) => {
         this.popUp.close();
 
-        if (response.Success) {
-          const alcance = response.Data as AlcanceUsuario;
+        this.rolPrincipal = alcance?.rol_principal || '';
+        this.esGlobal = !!alcance?.es_global;
+        this.dependencias = alcance?.dependencias || [];
+        this.dependenciaSeleccionada = this.resolucionesScopeService.getDependenciaInicial(
+          this.esGlobal,
+          this.dependencias,
+        );
 
-          this.rolPrincipal = alcance?.rol_principal || '';
-          this.esGlobal = !!alcance?.es_global;
-          this.dependencias = alcance?.dependencias || [];
-
-          if (!this.esGlobal && this.dependencias.length === 1) {
-            this.dependenciaSeleccionada = Number(this.dependencias[0].id_oikos);
-          } else {
-            this.dependenciaSeleccionada = null;
-          }
-
-          this.mostrarTabla = false;
-          this.aprobResolucionesData = undefined;
-        } else {
-          this.mostrarTabla = false;
-          this.aprobResolucionesData = undefined;
-          this.popUp.error('No se pudo determinar el alcance del usuario.');
-        }
+        this.mostrarTabla = false;
+        this.aprobResolucionesData = undefined;
       },
       error: (error) => {
         this.popUp.close();
@@ -210,7 +170,9 @@ export class AprobacionResolucionesComponent implements OnInit {
   }
 
   initTable(): void {
-    TablaResolucion['Acciones'] = {
+    const columns = cloneTableDefinition(TablaResolucion);
+
+    columns['Acciones'] = {
       title: 'Acciones',
       editable: true,
       filter: false,
@@ -233,16 +195,16 @@ export class AprobacionResolucionesComponent implements OnInit {
       component: SmartTableCommitFilterComponent,
     };
 
-    TablaResolucion.NumeroResolucion.filter = filtroTabla;
-    TablaResolucion.Vigencia.filter = filtroTabla;
-    TablaResolucion.Facultad.filter = filtroTabla;
-    TablaResolucion.TipoResolucion.filter = filtroTabla;
-    TablaResolucion.NivelAcademico.filter = filtroTabla;
-    TablaResolucion.Dedicacion.filter = filtroTabla;
-    TablaResolucion.Estado.filter = filtroTabla;
+    columns.NumeroResolucion.filter = filtroTabla;
+    columns.Vigencia.filter = filtroTabla;
+    columns.Facultad.filter = filtroTabla;
+    columns.TipoResolucion.filter = filtroTabla;
+    columns.NivelAcademico.filter = filtroTabla;
+    columns.Dedicacion.filter = filtroTabla;
+    columns.Estado.filter = filtroTabla;
 
     this.aprobResolucionesSettings = {
-      columns: TablaResolucion,
+      columns,
       mode: 'external',
       actions: false,
       selectedRowIndex: -1,

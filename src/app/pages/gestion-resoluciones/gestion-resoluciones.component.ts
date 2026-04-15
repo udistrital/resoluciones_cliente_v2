@@ -16,19 +16,12 @@ import { UserService } from '../services/userService';
 import { VinculacionTercero } from 'src/app/@core/models/vinculacion_tercero';
 import { Vinculaciones } from 'src/app/@core/models/vinculaciones';
 import { SmartTableCommitFilterComponent } from 'src/app/@core/components/smart-table-commit-filter/smart-table-commit-filter.component';
-
-interface DependenciaUsuario {
-  codigo_dependencia: number;
-  id_oikos: number;
-  nombre?: string;
-  rol?: string;
-}
-
-interface AlcanceUsuario {
-  rol_principal: string;
-  es_global: boolean;
-  dependencias: DependenciaUsuario[];
-}
+import { cloneTableDefinition } from 'src/app/@core/models/smart-table.util';
+import {
+  AlcanceUsuario,
+  DependenciaUsuario,
+  ResolucionesScopeService,
+} from '../services/resoluciones-scope.service';
 
 @Component({
   selector: 'app-gestion-resoluciones',
@@ -71,6 +64,7 @@ export class GestionResolucionesComponent implements OnInit {
     private http: HttpClient,
     private dialog: MatDialog,
     private userService: UserService,
+    private resolucionesScopeService: ResolucionesScopeService,
   ) {
     this.initTable();
     this.initVigencias();
@@ -91,7 +85,9 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   initTable(): void {
-    TablaResoluciones['Acciones'] = {
+    const columns = cloneTableDefinition(TablaResoluciones);
+
+    columns['Acciones'] = {
       title: 'Acciones',
       editable: true,
       filter: false,
@@ -114,17 +110,17 @@ export class GestionResolucionesComponent implements OnInit {
       component: SmartTableCommitFilterComponent,
     };
 
-    TablaResoluciones.NumeroResolucion.filter = filtroTabla;
-    TablaResoluciones.Vigencia.filter = filtroTabla;
-    TablaResoluciones.Periodo.filter = filtroTabla;
-    TablaResoluciones.NivelAcademico.filter = filtroTabla;
-    TablaResoluciones.Dedicacion.filter = filtroTabla;
-    TablaResoluciones.Semanas.filter = filtroTabla;
-    TablaResoluciones.Estado.filter = filtroTabla;
-    TablaResoluciones.TipoResolucion.filter = filtroTabla;
+    columns.NumeroResolucion.filter = filtroTabla;
+    columns.Vigencia.filter = filtroTabla;
+    columns.Periodo.filter = filtroTabla;
+    columns.NivelAcademico.filter = filtroTabla;
+    columns.Dedicacion.filter = filtroTabla;
+    columns.Semanas.filter = filtroTabla;
+    columns.Estado.filter = filtroTabla;
+    columns.TipoResolucion.filter = filtroTabla;
 
     this.resolucionesSettings = {
-      columns: TablaResoluciones,
+      columns,
       mode: 'external',
       actions: false,
       selectedRowIndex: -1,
@@ -138,36 +134,16 @@ export class GestionResolucionesComponent implements OnInit {
   }
 
   cargarDatosUsuario(): void {
-    const user = this.userService.getCurrentUser();
+    const context = this.resolucionesScopeService.getUsuarioContext();
 
-    if (!user) {
+    if (!context) {
       this.popUp.warning('No se encontró la información del usuario autenticado.');
       return;
     }
 
-    this.numeroDocumento = this.userService.getUserDocument() || '';
-
-    const roles = user?.userService?.role || user?.role || [];
-
-    if (Array.isArray(roles)) {
-      this.rolesUsuario = roles
-        .map((rol: string) => String(rol).trim().toUpperCase())
-        .filter((rol: string) => !!rol);
-    } else if (typeof roles === 'string' && roles.trim()) {
-      this.rolesUsuario = [roles.trim().toUpperCase()];
-    } else {
-      this.rolesUsuario = [];
-    }
-
-    const rolesPermitidos = [
-      'ADMINISTRADOR_RESOLUCIONES',
-      'ASIS_FINANCIERA',
-      'DECANO',
-      'ASISTENTE_DECANATURA'
-    ];
-
-    this.rolesUsuario = this.rolesUsuario.filter(r => rolesPermitidos.includes(r));
-    this.rolesParam = this.rolesUsuario.join(',');
+    this.numeroDocumento = context.numeroDocumento;
+    this.rolesUsuario = context.rolesUsuario;
+    this.rolesParam = context.rolesParam;
   }
 
   cargarAlcanceUsuario(): void {
@@ -178,32 +154,21 @@ export class GestionResolucionesComponent implements OnInit {
     this.cargando = true;
     this.popUp.loading();
 
-    const query =
-      `?roles=${encodeURIComponent(this.rolesParam)}` +
-      `&numero_documento=${encodeURIComponent(this.numeroDocumento)}`;
-
-    this.request.get(
-      environment.RESOLUCIONES_MID_V2_SERVICE,
-      `resoluciones_por_rol/dependencias${query}`
+    this.resolucionesScopeService.getAlcanceUsuario(
+      this.numeroDocumento,
+      this.rolesParam,
     ).subscribe({
-      next: (response: Respuesta) => {
+      next: (alcance: AlcanceUsuario) => {
         this.popUp.close();
         this.cargando = false;
 
-        if (response.Success) {
-          const alcance = response.Data as AlcanceUsuario;
-          this.rolPrincipal = alcance?.rol_principal || '';
-          this.esGlobal = !!alcance?.es_global;
-          this.dependencias = alcance?.dependencias || [];
-
-          if (!this.esGlobal && this.dependencias.length === 1) {
-            this.dependenciaSeleccionada = Number(this.dependencias[0].id_oikos);
-          }
-        } else {
-          this.esGlobal = false;
-          this.rolPrincipal = '';
-          this.dependencias = [];
-        }
+        this.rolPrincipal = alcance?.rol_principal || '';
+        this.esGlobal = !!alcance?.es_global;
+        this.dependencias = alcance?.dependencias || [];
+        this.dependenciaSeleccionada = this.resolucionesScopeService.getDependenciaInicial(
+          this.esGlobal,
+          this.dependencias,
+        );
       },
       error: () => {
         this.popUp.close();

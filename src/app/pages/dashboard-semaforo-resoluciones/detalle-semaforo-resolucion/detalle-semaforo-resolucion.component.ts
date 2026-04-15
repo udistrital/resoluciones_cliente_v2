@@ -10,6 +10,7 @@ import {
   RespuestaSemaforoResolucion,
   SemaforoResolucionData,
 } from 'src/app/@core/models/semaforo-resolucion';
+import { ResolucionesScopeService } from '../../services/resoluciones-scope.service';
 
 @Component({
   selector: 'app-detalle-semaforo-resolucion',
@@ -38,6 +39,7 @@ export class DetalleSemaforoResolucionComponent implements OnInit {
     private popUp: UtilService,
     private userService: UserService,
     private router: Router,
+    private resolucionesScopeService: ResolucionesScopeService,
   ) {}
 
   ngOnInit(): void {
@@ -53,36 +55,16 @@ export class DetalleSemaforoResolucionComponent implements OnInit {
   }
 
   cargarDatosUsuario(): void {
-    const user = this.userService.getCurrentUser();
+    const context = this.resolucionesScopeService.getUsuarioContext();
 
-    if (!user) {
+    if (!context) {
       this.popUp.warning('No se encontró la información del usuario autenticado.');
       return;
     }
 
-    this.numeroDocumento = this.userService.getUserDocument() || '';
-
-    const roles = user?.userService?.role || user?.role || [];
-
-    if (Array.isArray(roles)) {
-      this.rolesUsuario = roles
-        .map((rol: string) => String(rol).trim().toUpperCase())
-        .filter((rol: string) => !!rol);
-    } else if (typeof roles === 'string' && roles.trim()) {
-      this.rolesUsuario = [roles.trim().toUpperCase()];
-    } else {
-      this.rolesUsuario = [];
-    }
-
-    const rolesPermitidos = [
-      'ADMINISTRADOR_RESOLUCIONES',
-      'ASIS_FINANCIERA',
-      'DECANO',
-      'ASISTENTE_DECANATURA'
-    ];
-
-    this.rolesUsuario = this.rolesUsuario.filter(r => rolesPermitidos.includes(r));
-    this.rolesParam = this.rolesUsuario.join(',');
+    this.numeroDocumento = context.numeroDocumento;
+    this.rolesUsuario = context.rolesUsuario;
+    this.rolesParam = context.rolesParam;
   }
 
   consultarDashboard(numeroDocumentoFiltro?: string): void {
