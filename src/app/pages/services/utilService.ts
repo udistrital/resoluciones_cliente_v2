@@ -69,6 +69,14 @@ export class UtilService {
         });
     }
 
+    errorHtml(titulo: string, html: string): Promise<any> {
+        return Swal.fire({
+            title: titulo,
+            html,
+            icon: 'error',
+        });
+    }
+
     warning(texto: string): Promise<any> {
         return Swal.fire({
             title: 'Atención',
@@ -136,6 +144,13 @@ export class UtilService {
      * Muestra el error HTTP usando warning para 409 y error para el resto.
      */
     showHttpError(err: any, fallback = 'Ocurrió un error'): Promise<any> {
+        if (err?.status === 409 && err?.error?.Code === 'docentes_no_vinculables') {
+            return this.warningHtml(
+                'Cargue de Soportes Previnculación',
+                this.buildDocentesNoVinculablesHtml(err?.error)
+            );
+        }
+
         const msg = this.getBackendErrorMessage(err, fallback);
 
         if (err?.status === 409) {
@@ -143,6 +158,60 @@ export class UtilService {
         }
 
         return this.error(msg);
+    }
+
+    private warningHtml(titulo: string, html: string): Promise<any> {
+        return Swal.fire({
+            title: titulo,
+            html,
+            icon: 'warning',
+        });
+    }
+
+    private buildDocentesNoVinculablesHtml(body: any): string {
+        const docentes = Array.isArray(body?.Data) ? body.Data : [];
+        const totalSeleccionados = this.extractSelectedCount(body);
+        const totalConInconsistencias = docentes.length;
+        const intro = `<p style="margin:0 0 12px 0;">
+            Se seleccionaron ${totalSeleccionados} docente(s). ${totalConInconsistencias} presentan inconsistencias en el proceso Cargue de Soportes Previnculación,
+            por lo tanto la vinculación no continuará y no se vinculará ningún docente de la selección actual.
+        </p>`;
+
+        if (!docentes.length) {
+            return intro;
+        }
+
+        const items = docentes.map((docente: any) => {
+            const nombre = docente?.nombre || docente?.Nombre || 'Docente';
+            const documento = docente?.documento || docente?.Documento || '';
+            const motivos = Array.isArray(docente?.motivos || docente?.Motivos)
+                ? (docente?.motivos || docente?.Motivos).join(', ')
+                : 'Sin detalle';
+
+            return `<li style="margin-bottom:8px;text-align:left;">
+                <strong>${nombre}${documento ? ` (${documento})` : ''}</strong><br>
+                <span>${motivos}</span>
+            </li>`;
+        }).join('');
+
+        return `${intro}<ul style="max-height:260px;overflow:auto;padding-left:20px;margin:0;">${items}</ul>`;
+    }
+
+    private extractSelectedCount(body: any): number {
+        const data = Array.isArray(body?.Data) ? body.Data : [];
+        const message = typeof body?.Message === 'string' ? body.Message : '';
+        const match = message.match(/Se seleccionaron (\d+) docente/);
+
+        if (match) {
+            return Number(match[1]);
+        }
+
+        const selectedCount = body?.SelectedCount ?? body?.selectedCount;
+        if (typeof selectedCount === 'number' && selectedCount > 0) {
+            return selectedCount;
+        }
+
+        return data.length;
     }
 
     submitAlert({ option, type, fn, data, info, fnReturn }): void {
