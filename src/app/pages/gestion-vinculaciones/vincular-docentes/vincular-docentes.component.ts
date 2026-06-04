@@ -290,9 +290,9 @@ export class VincularDocentesComponent implements OnInit {
                   this.cargarVinculaciones();
                 });
               }
-            }, error: () => {
+            }, error: (err) => {
               this.popUp.close();
-              this.popUp.error('Los docentes seleccionados ya se encuentran contratados');
+              this.popUp.showHttpError(err, 'No se pudo registrar la vinculación.');
             }
           });
         }
